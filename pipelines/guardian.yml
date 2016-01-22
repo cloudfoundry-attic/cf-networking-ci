@@ -16,7 +16,7 @@ jobs:
       - get: guardian-release
         trigger: true
       - task: guardian-tests-unit
-        file: guardian-release/ci/nested-guardian-tests.yml
+        file: guardian-release/ci/nested-shed-tests.yml
         privileged: true
 
   - name: ducati-tests
