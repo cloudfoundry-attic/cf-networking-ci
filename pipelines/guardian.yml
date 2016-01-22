@@ -1,0 +1,14 @@
+resources:
+  - name: guardian-release
+    type: git
+    source:
+      uri: git://github.com/cloudfoundry-incubator/guardian-release
+      branch: master
+
+jobs:
+  - name: guardian-tests-unit
+    plan:
+      - get: guardian-release
+      - task: guardian-tests-unit
+        file: guardian-release/ci/nested-guardian-tests.yml
+        privileged: true
