@@ -4,6 +4,11 @@ resources:
     source:
       uri: git://github.com/cloudfoundry-incubator/guardian-release
       branch: master
+  - name: ducati-release
+    type: git
+    source:
+      uri: git://github.com/cloudfoundry-incubator/ducati-release
+      branch: master
 
 jobs:
   - name: guardian-tests-unit
@@ -11,4 +16,11 @@ jobs:
       - get: guardian-release
       - task: guardian-tests-unit
         file: guardian-release/ci/nested-guardian-tests.yml
+        privileged: true
+
+  - name: ducati-tests
+    plan:
+      - get: ducati-release
+      - task: ducati-tests
+        file: ducati-release/ci/ducati-tests.yml
         privileged: true
