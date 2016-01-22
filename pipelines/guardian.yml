@@ -14,6 +14,7 @@ jobs:
   - name: guardian-tests-unit
     plan:
       - get: guardian-release
+        trigger: true
       - task: guardian-tests-unit
         file: guardian-release/ci/nested-guardian-tests.yml
         privileged: true
@@ -21,6 +22,7 @@ jobs:
   - name: ducati-tests
     plan:
       - get: ducati-release
+        trigger: true
       - task: ducati-tests
         file: ducati-release/ci/ducati-tests.yml
         privileged: true
