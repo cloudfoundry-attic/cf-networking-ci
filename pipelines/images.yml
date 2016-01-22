@@ -1,0 +1,25 @@
+resources:
+- name: ducati-dev-image-src
+  type: git
+  source:
+    uri: git://github.com/cloudfoundry-incubator/ducati-release
+    branch: master
+    paths:
+      - Dockerfile
+
+- name: ducati-dev-image
+  type: docker-image
+  source:
+    username: {{dockerhub_username}}
+    password: {{dockerhub_password}}
+    email: {{dockerhub_email}}
+    repository: c2cnetworking/ducati-dev
+
+jobs:
+- name: build-ducati-dev-image
+  plan:
+  - get: ducati-dev-image-src
+    params: {submodules: all}
+    trigger: true
+  - put: ducati-dev-image
+    params: {build: ducati-dev-image-src}
