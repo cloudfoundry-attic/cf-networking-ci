@@ -26,3 +26,16 @@ jobs:
       - task: ducati-tests
         file: ducati-release/ci/ducati-tests.yml
         privileged: true
+
+  - name: gqt-ducati-tests
+    plan:
+      - aggregate:
+        - get: ducati-release
+          trigger: true
+          passed: [ducati-tests]
+        - get: guardian-release
+          trigger: true
+          passed: [guardian-tests-unit]
+      - task: gqt-ducati-tests
+        file: ducati-release/ci/gqt.yml
+        privileged: true
