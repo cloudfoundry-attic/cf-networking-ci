@@ -7,7 +7,15 @@ resources:
     paths:
       - Dockerfile
 
-- name: dockerhub
+- name: ducati-deployment-dockerfile
+  type: git
+  source:
+    uri: git://github.com/cloudfoundry-incubator/ducati-release
+    branch: master
+    paths:
+      - ci/Dockerfile
+
+- name: dockerhub-dev-image
   type: docker-image
   source:
     username: {{dockerhub_username}}
@@ -15,11 +23,27 @@ resources:
     email: {{dockerhub_email}}
     repository: c2cnetworking/ducati-dev
 
+- name: dockerhub-deployment-image
+  type: docker-image
+  source:
+    username: {{dockerhub_username}}
+    password: {{dockerhub_password}}
+    email: {{dockerhub_email}}
+    repository: c2cnetworking/ducati-deployment
+
 jobs:
 - name: build-ducati-dev-image
   plan:
   - get: ducati-dev-dockerfile
     params: {submodules: all}
     trigger: true
-  - put: dockerhub
+  - put: dockerhub-dev-image
     params: {build: ducati-dev-dockerfile}
+
+- name: build-ducati-deployment-image
+  plan:
+  - get: ducati-deployment-dockerfile
+    params: {submodules: none}
+    trigger: true
+  - put: dockerhub-deployment-image
+    params: {build: ducati-deployment-dockerfile/ci}
