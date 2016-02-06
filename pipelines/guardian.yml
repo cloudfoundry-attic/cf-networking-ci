@@ -74,8 +74,8 @@ jobs:
             args:
             - -c
             - |
-              bosh create release --with-tarball --name ducati --dir ducati-release \
-               && bosh create release --with-tarball --name guardian --dir guardian-release \
+              bosh create release --version $(date "+%s") --with-tarball --name ducati --dir ducati-release \
+               && bosh create release --version $(date "+%s") --with-tarball --name guardian --dir guardian-release \
                && cp ducati-release/dev_releases/ducati/*.tgz tarballs \
                && cp guardian-release/dev_releases/guardian/*.tgz tarballs
       - task: prep-manifest
@@ -94,6 +94,7 @@ jobs:
               cat ducati-release/manifests/ducati-manifest.yml | grep -v director_uuid > manifest/manifest.yml
       - put: bosh-lite-environment
         params:
+          cleanup: true
           manifest: manifest/manifest.yml
           stemcells:
           - bosh-io-stemcell/*.tgz
