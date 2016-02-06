@@ -9,6 +9,17 @@ resources:
     source:
       uri: git://github.com/cloudfoundry-incubator/ducati-release
       branch: master
+  - name: bosh-io-stemcell
+    type: bosh-io-stemcell
+    source:
+      name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  - name: bosh-lite-environment
+    type: bosh-deployment
+    source:
+      target: {{bosh-lite-ip}}
+      username: admin
+      password: {{bosh-lite-password}}
+      deployment: ducati-guardian
 
 jobs:
   - name: guardian-tests-unit
@@ -39,3 +50,52 @@ jobs:
       - task: gqt-ducati-tests
         file: ducati-release/ci/gqt.yml
         privileged: true
+
+
+  - name: deploy-to-bosh-lite
+    plan:
+      - aggregate:
+        - get: bosh-io-stemcell
+        - get: ducati-release
+          trigger: true
+        - get: guardian-release
+          trigger: true
+      - task: create-release-tarballs
+        config:
+          image: docker:///c2cnetworking/ducati-deployment
+          platform: linux
+          inputs:
+          - name: ducati-release
+          - name: guardian-release
+          outputs:
+          - name: tarballs
+          run:
+            path: bash
+            args:
+            - -c
+            - |
+              bosh create release --with-tarball --name ducati --dir ducati-release \
+               && bosh create release --with-tarball --name guardian --dir guardian-release \
+               && cp ducati-release/dev_releases/ducati/*.tgz tarballs \
+               && cp guardian-release/dev_releases/guardian/*.tgz tarballs
+      - task: prep-manifest
+        config:
+          image: docker:///c2cnetworking/ducati-deployment
+          platform: linux
+          inputs:
+          - name: ducati-release
+          outputs:
+          - name: manifest
+          run:
+            path: bash
+            args:
+            - -c
+            - |
+              cat ducati-release/manifests/ducati-manifest.yml | grep -v director_uuid > manifest/manifest.yml
+      - put: bosh-lite-environment
+        params:
+          manifest: manifest/manifest.yml
+          stemcells:
+          - bosh-io-stemcell/*.tgz
+          releases:
+          - tarballs/*.tgz
