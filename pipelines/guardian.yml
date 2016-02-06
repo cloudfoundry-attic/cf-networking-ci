@@ -16,7 +16,7 @@ resources:
   - name: bosh-lite-environment
     type: bosh-deployment
     source:
-      target: {{bosh-lite-ip}}
+      target: {{bosh-lite-private-ip}}
       username: admin
       password: {{bosh-lite-password}}
       deployment: ducati-guardian
@@ -58,6 +58,7 @@ jobs:
         - get: bosh-io-stemcell
         - get: ducati-release
           trigger: true
+          passed: [gqt-ducati-tests]
         - get: guardian-release
           trigger: true
       - task: create-release-tarballs
@@ -100,3 +101,15 @@ jobs:
           - bosh-io-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
+
+  - name: remote-acceptance-tests
+    plan:
+      - aggregate:
+        - get: ducati-release
+          trigger: true
+          passed: [deploy-to-bosh-lite]
+      - task: remote-acceptance-tests
+        file: ducati-release/ci/remote-acceptance-tests.yml
+        config:
+          params:
+            GARDEN_SERVER: {{bosh-lite-private-ip}}
