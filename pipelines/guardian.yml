@@ -22,12 +22,12 @@ resources:
       deployment: ducati-guardian
 
 jobs:
-  - name: guardian-tests-unit
+  - name: guardian-tests
     plan:
       - get: guardian-release
         trigger: true
-      - task: guardian-tests-unit
-        file: guardian-release/ci/nested-shed-tests.yml
+      - task: guardian-tests
+        file: guardian-release/ci/guardian.yml
         privileged: true
 
   - name: ducati-tests
@@ -38,29 +38,16 @@ jobs:
         file: ducati-release/ci/ducati-tests.yml
         privileged: true
 
-  - name: gqt-ducati-tests
-    plan:
-      - aggregate:
-        - get: ducati-release
-          trigger: true
-          passed: [ducati-tests]
-        - get: guardian-release
-          trigger: true
-          passed: [guardian-tests-unit]
-      - task: gqt-ducati-tests
-        file: ducati-release/ci/gqt.yml
-        privileged: true
-
-
   - name: deploy-to-bosh-lite
     plan:
       - aggregate:
         - get: bosh-io-stemcell
         - get: ducati-release
           trigger: true
-          passed: [gqt-ducati-tests]
+          passed: [ducati-tests]
         - get: guardian-release
           trigger: true
+          passed: [guardian-tests]
       - task: create-release-tarballs
         config:
           image: docker:///c2cnetworking/ducati-deployment
