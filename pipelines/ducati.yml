@@ -91,12 +91,25 @@ jobs:
 
   - name: remote-acceptance-tests
     plan:
-      - aggregate:
-        - get: ducati-release
-          trigger: true
-          passed: [deploy-to-bosh-lite]
+      - get: ducati-release
+        trigger: true
+        passed: [deploy-to-bosh-lite]
       - task: remote-acceptance-tests
-        file: ducati-release/ci/remote-acceptance-tests.yml
         config:
+          image: docker:///c2cnetworking/ducati-deployment
+          platform: linux
+          run:
+            path: bash
+            args:
+            - -c
+            - |
+              bosh target $BOSH_TARGET && \
+              bosh download manifest $DEPLOYMENT_NAME manifest.yml && \
+              bosh deployment manifest.yml && \
+              bosh run errand $ERRAND
           params:
-            GARDEN_SERVER: {{bosh-lite-private-ip}}
+            BOSH_TARGET: {{bosh-lite-private-ip}}
+            DEPLOYMENT_NAME: ducati-guardian
+            BOSH_USER: admin
+            BOSH_PASSWORD: {{bosh-lite-password}}
+            ERRAND: acceptance-tests
