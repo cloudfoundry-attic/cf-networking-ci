@@ -39,6 +39,7 @@ jobs:
         privileged: true
 
   - name: deploy-to-bosh-lite
+    serial_groups: [bosh-lite]
     plan:
       - aggregate:
         - get: bosh-io-stemcell
@@ -90,6 +91,7 @@ jobs:
           - tarballs/*.tgz
 
   - name: remote-acceptance-tests
+    serial_groups: [bosh-lite]
     plan:
       - get: ducati-release
         trigger: true
