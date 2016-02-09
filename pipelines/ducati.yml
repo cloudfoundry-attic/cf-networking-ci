@@ -23,6 +23,7 @@ resources:
 
 jobs:
   - name: guardian-tests
+    public: true
     plan:
       - get: guardian-release
         trigger: true
@@ -31,6 +32,7 @@ jobs:
         privileged: true
 
   - name: ducati-tests
+    public: true
     plan:
       - get: ducati-release
         trigger: true
