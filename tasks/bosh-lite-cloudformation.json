@@ -44,6 +44,9 @@
         "LaunchConfigurationName": {"Ref": "LaunchConfig"},
         "MaxSize": {"Ref": "InstanceCount"},
         "MinSize": {"Ref": "InstanceCount"},
+        "Tags": [
+          {"Key": "Name", "PropagateAtLaunch": "true", "Value": "bosh-lite"}
+        ],
         "VPCZoneIdentifier": [{"Ref": "Subnet"}]
       },
       "Type": "AWS::AutoScaling::AutoScalingGroup"
@@ -53,7 +56,7 @@
         "AssociatePublicIpAddress": "true",
         "BlockDeviceMappings": [
           {
-            "DeviceName": "/dev/sdc",
+            "DeviceName": "/dev/sda1",
             "Ebs": {"VolumeSize": "100", "VolumeType": "gp2"}
           }
         ],
