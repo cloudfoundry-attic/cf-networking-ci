@@ -98,6 +98,9 @@ jobs:
       - get: ducati-release
         trigger: true
         passed: [deploy-to-bosh-lite]
+      - get: guardian-release
+        trigger: true
+        passed: [deploy-to-bosh-lite]
       - task: remote-acceptance-tests
         config:
           image: docker:///c2cnetworking/ducati-deployment
