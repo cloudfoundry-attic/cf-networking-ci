@@ -2,20 +2,12 @@ resources:
 - name: ducati-dev-dockerfile
   type: git
   source:
-    uri: git://github.com/cloudfoundry-incubator/ducati-release
+    uri: git://github.com/cloudfoundry-incubator/container-networking-ci
     branch: master
     paths:
-      - Dockerfile
+      - images/ducati-dev
 
-- name: ducati-deployment-dockerfile
-  type: git
-  source:
-    uri: git://github.com/cloudfoundry-incubator/ducati-release
-    branch: master
-    paths:
-      - ci/Dockerfile
-
-- name: dockerhub-dev-image
+- name: ducati-dev-image
   type: docker-image
   source:
     username: {{dockerhub_username}}
@@ -23,7 +15,15 @@ resources:
     email: {{dockerhub_email}}
     repository: c2cnetworking/ducati-dev
 
-- name: dockerhub-deployment-image
+- name: ducati-deploy-dockerfile
+  type: git
+  source:
+    uri: git://github.com/cloudfoundry-incubator/container-networking-ci
+    branch: master
+    paths:
+      - images/ducati-deploy
+
+- name: ducati-deploy-image
   type: docker-image
   source:
     username: {{dockerhub_username}}
@@ -31,19 +31,43 @@ resources:
     email: {{dockerhub_email}}
     repository: c2cnetworking/ducati-deployment
 
+- name: aws-ops-dockerfile
+  type: git
+  source:
+    uri: git://github.com/cloudfoundry-incubator/container-networking-ci
+    branch: master
+    paths:
+      - images/aws-ops
+
+- name: aws-ops-image
+  type: docker-image
+  source:
+    username: {{dockerhub_username}}
+    password: {{dockerhub_password}}
+    email: {{dockerhub_email}}
+    repository: c2cnetworking/aws-ops
+
 jobs:
 - name: build-ducati-dev-image
   plan:
   - get: ducati-dev-dockerfile
-    params: {submodules: all}
     trigger: true
-  - put: dockerhub-dev-image
-    params: {build: ducati-dev-dockerfile}
+  - put: ducati-dev-image
+    params:
+      build: ducati-dev-dockerfile/images/ducati-dev
 
-- name: build-ducati-deployment-image
+- name: build-ducati-deploy-image
   plan:
-  - get: ducati-deployment-dockerfile
-    params: {submodules: none}
+  - get: ducati-deploy-dockerfile
     trigger: true
-  - put: dockerhub-deployment-image
-    params: {build: ducati-deployment-dockerfile/ci}
+  - put: ducati-deploy-image
+    params:
+      build: ducati-deploy-dockerfile/images/ducati-deploy
+
+- name: build-aws-ops-image
+  plan:
+  - get: aws-ops-dockerfile
+    trigger: true
+  - put: aws-ops-image
+    params:
+      build: aws-ops-dockerfile/images/aws-ops
