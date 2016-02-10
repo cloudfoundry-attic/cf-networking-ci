@@ -15,8 +15,8 @@ ENV GOBIN /gopath/bin
 ENV PATH $PATH:$GOROOT/bin:$GOPATH/bin
 
 RUN go get github.com/tools/godep
+RUN go get github.com/onsi/ginkgo
 
-ADD src/github.com/onsi /gopath/src/github.com/onsi
 RUN go install github.com/onsi/ginkgo/ginkgo
 
 CMD /bin/bash
