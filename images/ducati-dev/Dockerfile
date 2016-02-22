@@ -1,18 +1,20 @@
-FROM gliderlabs/alpine
+FROM postgres
 
-RUN apk --update add \
-  ca-certificates \
-  bash \
+RUN apt-get update -y && apt-get install -y \
   jq \
-  iproute2 \
-  go \
-  alpine-sdk \
-  && rm -rf /var/cache/apk/*
+  curl \
+  git \
+  &&  apt-get autoremove -yqq \
+  &&  apt-get clean \
+  &&  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENV GOROOT /usr/lib/go
+RUN curl -o /tmp/golang.tgz https://storage.googleapis.com/golang/go1.6.linux-amd64.tar.gz \
+    && tar -C /usr/local -xzf /tmp/golang.tgz \
+    && rm /tmp/golang.tgz
+
 ENV GOPATH /gopath
 ENV GOBIN /gopath/bin
-ENV PATH $PATH:$GOROOT/bin:$GOPATH/bin
+ENV PATH $PATH:/usr/local/go/bin:$GOPATH/bin
 
 RUN go get github.com/tools/godep
 RUN go get github.com/onsi/ginkgo
