@@ -144,7 +144,7 @@ jobs:
               bosh target $BOSH_TARGET && \
               bosh download manifest $DEPLOYMENT_NAME manifest.yml && \
               bosh deployment manifest.yml && \
-              bosh delete deployment $DEPLOYMENT_NAME
+              bosh -n delete deployment $DEPLOYMENT_NAME
           params:
             BOSH_TARGET: {{bosh-lite-private-ip}}
             DEPLOYMENT_NAME: ducati-guardian
