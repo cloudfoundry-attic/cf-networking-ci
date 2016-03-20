@@ -41,6 +41,7 @@ jobs:
         privileged: true
 
   - name: deploy-to-bosh-lite
+    public: true
     serial_groups: [bosh-lite]
     plan:
       - aggregate:
@@ -97,6 +98,7 @@ jobs:
           - tarballs/*.tgz
 
   - name: remote-acceptance-tests
+    public: true
     serial_groups: [bosh-lite]
     plan:
       - get: ducati-release
@@ -128,6 +130,7 @@ jobs:
             ERRAND: acceptance-tests
 
   - name: delete-deployment-bosh-lite
+    public: true
     serial_groups: [bosh-lite]
     plan:
       - task: delete-deployment
