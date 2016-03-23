@@ -1,18 +1,5 @@
 resources:
-  - name: guardian-release
-    type: git
-    source:
-      uri: git://github.com/cloudfoundry-incubator/guardian-release
-      branch: master
-  - name: ducati-release
-    type: git
-    source:
-      uri: git://github.com/cloudfoundry-incubator/ducati-release
-      branch: master
-  - name: bosh-io-stemcell
-    type: bosh-io-stemcell
-    source:
-      name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  ###### Deployments
   - name: bosh-lite-environment
     type: bosh-deployment
     source:
@@ -20,6 +7,82 @@ resources:
       username: admin
       password: {{bosh-lite-password}}
       deployment: ducati-guardian
+  - name: pickelhelm-cf
+    type: bosh-deployment
+    source:
+      target: {{pickelhelm-bosh-host}}
+      username: admin
+      password: {{pickelhelm-bosh-password}}
+      deployment: cf-diego
+  - name: pickelhelm-diego
+    type: bosh-deployment
+    source:
+      target: {{pickelhelm-bosh-host}}
+      username: admin
+      password: {{pickelhelm-bosh-password}}
+      deployment: cf-diego-diego
+  ###### Control plane
+  - name: diego-ci
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry-incubator/diego-ci
+  - name: container-networking-deployments
+    type: git
+    source:
+      uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
+      branch: master
+      private_key: {{container-networking-deployments-deploy-key}}
+  ###### BOSH stemcells
+  - name: aws-stemcell
+    type: bosh-io-stemcell
+    source:
+      name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+  - name: boshlite-stemcell
+    type: bosh-io-stemcell
+    source:
+      name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  ###### BOSH releases
+  - name: cf-release
+    type: git
+    source:
+      branch: master
+      uri: https://github.com/cloudfoundry/cf-release.git
+  - name: cf-release-tarball
+    type: bosh-io-release
+    source:
+      repository: cloudfoundry/cf-release
+  - name: diego-release-tarball
+    type: bosh-io-release
+    source:
+      repository: cloudfoundry-incubator/diego-release
+  - name: diego-release
+    type: git
+    source:
+      branch: master
+      ignore_paths:
+        - dev_releases
+        - git-hooks
+        - releases
+        - .final_builds
+      uri: https://github.com/cloudfoundry-incubator/diego-release.git
+  - name: ducati-release
+    type: git
+    source:
+      uri: git://github.com/cloudfoundry-incubator/ducati-release
+      branch: master
+  - name: etcd-release-tarball
+    type: bosh-io-release
+    source:
+      repository: cloudfoundry-incubator/etcd-release
+  - name: garden-linux-release-tarball
+    type: bosh-io-release
+    source:
+      repository: cloudfoundry-incubator/garden-linux-release
+  - name: guardian-release
+    type: git
+    source:
+      uri: git://github.com/cloudfoundry-incubator/guardian-release
+      branch: master
 
 jobs:
   - name: guardian-tests
@@ -45,7 +108,7 @@ jobs:
     serial_groups: [bosh-lite]
     plan:
       - aggregate:
-        - get: bosh-io-stemcell
+        - get: boshlite-stemcell
         - get: ducati-release
           trigger: true
           passed: [ducati-tests]
@@ -93,7 +156,7 @@ jobs:
           cleanup: true
           manifest: manifest/manifest.yml
           stemcells:
-          - bosh-io-stemcell/*.tgz
+          - boshlite-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
 
@@ -129,6 +192,41 @@ jobs:
             BOSH_PASSWORD: {{bosh-lite-password}}
             ERRAND: acceptance-tests
 
+  - name: pickelhelm-diego-deploy
+    plan:
+      - aggregate:
+        - get: container-networking-deployments
+          trigger: false
+        - get: aws-stemcell
+          trigger: false
+        - get: cf-release-tarball
+          trigger: false
+        - get: diego-release-tarball
+          trigger: false
+        - get: etcd-release-tarball
+          trigger: false
+        - get: garden-linux-release-tarball
+          trigger: false
+      - put: pickelhelm-cf
+        params:
+          cleanup: true
+          manifest: container-networking-deployments/environments/pickelhelm/deployments/cf.yml
+          stemcells:
+          - aws-stemcell/*.tgz
+          releases:
+          - cf-release-tarball/*.tgz
+      - put: pickelhelm-diego
+        params:
+          cleanup: true
+          manifest: container-networking-deployments/environments/pickelhelm/deployments/diego.yml
+          stemcells:
+          - aws-stemcell/*.tgz
+          releases:
+          - garden-linux-release-tarball/*.tgz
+          - etcd-release-tarball/*.tgz
+          - diego-release-tarball/*.tgz
+
+##### Human-triggered utilities
   - name: delete-deployment-bosh-lite
     public: true
     serial_groups: [bosh-lite]
