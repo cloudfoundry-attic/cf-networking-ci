@@ -26,12 +26,13 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry-incubator/container-networking-ci
-  - name: container-networking-deployments
+  - name: pickelhelm-config
     type: git
     source:
       uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
       branch: master
       private_key: {{container-networking-deployments-deploy-key}}
+      paths: environments/pickelhelm
   ###### BOSH stemcells
   - name: aws-stemcell
     type: bosh-io-stemcell
@@ -197,30 +198,30 @@ jobs:
       - aggregate:
         - get: container-networking-ci
           trigger: false
-        - get: container-networking-deployments
-          trigger: false
-        - get: aws-stemcell
+        - get: deployments-repo
+          resource: pickelhelm-config
           trigger: false
         - get: cf-release
           trigger: false
           params:
             submodules: [src/loggregator] # needed for cf-lamb template
-        - get: cf-release-tarball
-          trigger: false
         - get: diego-release
           trigger: false
           params:
             submodules: none
+        - get: aws-stemcell
+          trigger: true
+        - get: cf-release-tarball
+          trigger: true
         - get: diego-release-tarball
-          trigger: false
+          trigger: true
         - get: etcd-release-tarball
-          trigger: false
+          trigger: true
         - get: garden-linux-release-tarball
-          trigger: false
+          trigger: true
       - task: generate-pickelhelm-manifests
         file: container-networking-ci/tasks/generate-deployment-manifests.yml
         params:
-          DEPLOYMENTS_DIR: container-networking-deployments/environments
           ENVIRONMENT_NAME: pickelhelm
       - put: pickelhelm-cf
         params:

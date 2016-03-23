@@ -6,7 +6,7 @@ image_resource:
   source: { repository: c2cnetworking/ducati-deploy }
 
 inputs:
-  - name: container-networking-deployments
+  - name: deployments-repo
   - name: container-networking-ci
   - name: cf-release
   - name: diego-release
@@ -15,7 +15,6 @@ outputs:
   - name: generated-manifest
 
 params:
-  DEPLOYMENTS_DIR: ~
   ENVIRONMENT_NAME: ~
 
 run:

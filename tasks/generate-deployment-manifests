@@ -2,7 +2,7 @@
 
 set -e -x -u
 
-environment_path="${PWD}/${DEPLOYMENTS_DIR}/${ENVIRONMENT_NAME}"
+environment_path="${PWD}/deployments-repo/environments/${ENVIRONMENT_NAME}"
 output_path=${PWD}/generated-manifest
 diego_release_path=${PWD}/diego-release
 
