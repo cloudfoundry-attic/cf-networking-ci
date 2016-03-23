@@ -119,7 +119,7 @@ jobs:
         config:
           image_resource:
             type: docker-image
-            source: { repository: c2cnetworking/ducati-deployment }
+            source: { repository: c2cnetworking/ducati-deploy }
           platform: linux
           inputs:
           - name: ducati-release
@@ -139,7 +139,7 @@ jobs:
         config:
           image_resource:
             type: docker-image
-            source: { repository: c2cnetworking/ducati-deployment }
+            source: { repository: c2cnetworking/ducati-deploy }
           platform: linux
           inputs:
           - name: ducati-release
@@ -174,7 +174,7 @@ jobs:
         config:
           image_resource:
             type: docker-image
-            source: { repository: c2cnetworking/ducati-deployment }
+            source: { repository: c2cnetworking/ducati-deploy }
           platform: linux
           run:
             path: bash
@@ -235,7 +235,7 @@ jobs:
         config:
           image_resource:
             type: docker-image
-            source: { repository: c2cnetworking/ducati-deployment }
+            source: { repository: c2cnetworking/ducati-deploy }
           platform: linux
           run:
             path: bash

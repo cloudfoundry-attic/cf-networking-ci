@@ -29,7 +29,7 @@ resources:
     username: {{dockerhub_username}}
     password: {{dockerhub_password}}
     email: {{dockerhub_email}}
-    repository: c2cnetworking/ducati-deployment
+    repository: c2cnetworking/ducati-deploy
 
 - name: aws-ops-dockerfile
   type: git
