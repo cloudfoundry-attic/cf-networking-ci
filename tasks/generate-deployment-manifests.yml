@@ -15,8 +15,8 @@ outputs:
   - name: generated-manifest
 
 params:
-  DEPLOYMENTS_DIR: container-networking-deployments/environments
-  ENVIRONMENT_NAME: pickelhelm
+  DEPLOYMENTS_DIR: ~
+  ENVIRONMENT_NAME: ~
 
 run:
   path: container-networking-ci/tasks/generate-deployment-manifests
