@@ -18,7 +18,7 @@ popd
 
 pushd diego-release
   ./scripts/generate-deployment-manifest \
-    -c ${environment_path}/deployments/cf.yml \
+    -c ${output_path}/cf.yml \
     -i ${environment_path}/stubs/diego/iaas-settings.yml \
     -p ${environment_path}/stubs/diego/property-overrides.yml \
     -n ${environment_path}/stubs/diego/instance-count-overrides.yml \
