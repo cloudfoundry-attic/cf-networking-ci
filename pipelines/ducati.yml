@@ -238,11 +238,14 @@ jobs:
 
   - name: pickelhelm-acceptance-tests
     plan:
-    - get: diego-release
-      trigger: true
-      passed: [pickelhelm-diego-deploy]
-      params:
-        submodules: none
+    - aggregate:
+      - get: diego-release
+        trigger: true
+        passed: [pickelhelm-diego-deploy]
+        params:
+          submodules: none
+      - get: container-networking-ci
+        trigger: false
     - task: pickelhelm-acceptance-tests
       file: container-networking-ci/tasks/run-errand.yml
       params:
