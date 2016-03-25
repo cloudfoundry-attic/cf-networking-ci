@@ -165,12 +165,19 @@ jobs:
     public: true
     serial_groups: [bosh-lite]
     plan:
-      - get: ducati-release
-        trigger: true
-        passed: [deploy-to-bosh-lite]
-      - get: guardian-release
-        trigger: true
-        passed: [deploy-to-bosh-lite]
+      - aggregate:
+        - get: ducati-release
+          trigger: true
+          passed: [deploy-to-bosh-lite]
+          params:
+            submodules: none
+        - get: guardian-release
+          trigger: true
+          passed: [deploy-to-bosh-lite]
+          params:
+            submodules: none
+        - get: container-networking-ci
+          trigger: false
       - task: remote-acceptance-tests
         file: container-networking-ci/tasks/run-errand.yml
         params:
