@@ -172,26 +172,13 @@ jobs:
         trigger: true
         passed: [deploy-to-bosh-lite]
       - task: remote-acceptance-tests
-        config:
-          image_resource:
-            type: docker-image
-            source: { repository: c2cnetworking/ducati-deploy }
-          platform: linux
-          run:
-            path: bash
-            args:
-            - -c
-            - |
-              bosh target $BOSH_TARGET && \
-              bosh download manifest $DEPLOYMENT_NAME manifest.yml && \
-              bosh deployment manifest.yml && \
-              bosh run errand $ERRAND
-          params:
-            BOSH_TARGET: {{bosh-lite-private-ip}}
-            DEPLOYMENT_NAME: ducati-guardian
-            BOSH_USER: admin
-            BOSH_PASSWORD: {{bosh-lite-password}}
-            ERRAND: acceptance-tests
+        file: container-networking-ci/tasks/run-errand.yml
+        params:
+          BOSH_TARGET: {{bosh-lite-private-ip}}
+          DEPLOYMENT_NAME: ducati-guardian
+          BOSH_USER: admin
+          BOSH_PASSWORD: {{bosh-lite-password}}
+          ERRAND: acceptance-tests
 
   - name: pickelhelm-diego-deploy
     plan:
@@ -241,6 +228,22 @@ jobs:
           - garden-linux-release-tarball/*.tgz
           - etcd-release-tarball/*.tgz
           - diego-release-tarball/*.tgz
+
+  - name: pickelhelm-acceptance-tests
+    plan:
+    - get: diego-release
+      trigger: true
+      passed: [pickelhelm-diego-deploy]
+      params:
+        submodules: none
+    - task: pickelhelm-acceptance-tests
+      file: container-networking-ci/tasks/run-errand.yml
+      params:
+        BOSH_TARGET: {{pickelhelm-bosh-host}}
+        DEPLOYMENT_NAME: cf-diego
+        BOSH_USER: admin
+        BOSH_PASSWORD: {{pickelhelm-bosh-password}}
+        ERRAND: acceptance_tests
 
 ##### Human-triggered utilities
   - name: delete-deployment-bosh-lite

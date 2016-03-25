@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -e -x -u
+
+bosh target $BOSH_TARGET
+bosh download manifest $DEPLOYMENT_NAME manifest.yml
+bosh deployment manifest.yml
+bosh run errand $ERRAND
