@@ -2,12 +2,6 @@
 
 set -e -u -x
 
-pwd
-
-ls -la
-
-ls -la environment/
-
 bosh target $(cat environment/target)
 bosh deployment environment/manifest.yml
 bosh run errand "${ERRAND}"
