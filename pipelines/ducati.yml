@@ -75,10 +75,6 @@ resources:
     type: bosh-io-release
     source:
       repository: cloudfoundry-incubator/etcd-release
-  - name: garden-linux-release-tarball
-    type: bosh-io-release
-    source:
-      repository: cloudfoundry-incubator/garden-linux-release
   - name: guardian-release
     type: git
     source:
@@ -211,12 +207,31 @@ jobs:
           trigger: true
         - get: etcd-release-tarball
           trigger: true
-        - get: garden-linux-release-tarball
+        - get: guardian-release
           trigger: true
       - task: generate-pickelhelm-manifests
         file: container-networking-ci/tasks/generate-deployment-manifests.yml
         params:
           ENVIRONMENT_NAME: pickelhelm
+      - task: inject-guardian
+        file: container-networking-ci/tasks/inject-guardian.yml
+      - task: create-release-tarballs
+        config:
+          image_resource:
+            type: docker-image
+            source: { repository: c2cnetworking/ducati-deploy }
+          platform: linux
+          inputs:
+          - name: guardian-release
+          outputs:
+          - name: tarballs
+          run:
+            path: bash
+            args:
+            - -c
+            - |
+               bosh create release --version $(date "+%s") --with-tarball --name guardian --dir guardian-release \
+               && cp guardian-release/dev_releases/guardian/*.tgz tarballs
       - put: pickelhelm-cf
         params:
           cleanup: true
@@ -228,11 +243,11 @@ jobs:
       - put: pickelhelm-diego
         params:
           cleanup: true
-          manifest: generated-manifest/diego.yml
+          manifest: guardian-generated-manifest/diego.yml
           stemcells:
           - aws-stemcell/*.tgz
           releases:
-          - garden-linux-release-tarball/*.tgz
+          - tarballs/*.tgz
           - etcd-release-tarball/*.tgz
           - diego-release-tarball/*.tgz
 
