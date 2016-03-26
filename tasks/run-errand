@@ -1,7 +1,13 @@
 #!/bin/bash
 
-set -e -u
+set -e -u -x
 
-bosh target $(cat "${ENVIRONMENT_DIR}/target")
-bosh deployment "${ENVIRONMENT_DIR}/manifest.yml"
+pwd
+
+ls -la
+
+ls -la environment/
+
+bosh target $(cat environment/target)
+bosh deployment environment/manifest.yml
 bosh run errand "${ERRAND}"

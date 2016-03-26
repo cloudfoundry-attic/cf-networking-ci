@@ -7,13 +7,12 @@ image_resource:
 
 inputs:
   - name: container-networking-ci
+  - name: environment
 
 params:
-  ENVIRONMENT_DIR: environment
   BOSH_USER: admin
   BOSH_PASSWORD: ~
   ERRAND: ~
 
 run:
   path: container-networking-ci/tasks/run-errand
-
