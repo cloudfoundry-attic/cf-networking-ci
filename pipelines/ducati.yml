@@ -163,23 +163,22 @@ jobs:
     plan:
       - aggregate:
         - get: ducati-release
-          trigger: true
           passed: [deploy-to-bosh-lite]
           params:
             submodules: none
         - get: guardian-release
-          trigger: true
           passed: [deploy-to-bosh-lite]
           params:
             submodules: none
         - get: container-networking-ci
           trigger: false
+        - get: environment
+          resource: bosh-lite-environment
+          passed: [deploy-to-bosh-lite]
+          trigger: true
       - task: remote-acceptance-tests
         file: container-networking-ci/tasks/run-errand.yml
         params:
-          BOSH_TARGET: {{bosh-lite-private-ip}}
-          DEPLOYMENT_NAME: ducati-guardian
-          BOSH_USER: admin
           BOSH_PASSWORD: {{bosh-lite-password}}
           ERRAND: acceptance-tests
 
@@ -256,18 +255,17 @@ jobs:
     plan:
     - aggregate:
       - get: diego-release
-        trigger: true
         passed: [pickelhelm-diego-deploy]
         params:
           submodules: none
       - get: container-networking-ci
-        trigger: false
-    - task: pickelhelm-acceptance-tests
+      - get: environment
+        resource: pickelhelm-cf
+        passed: [pickelhelm-diego-deploy]
+        trigger: true
+    - task: cats
       file: container-networking-ci/tasks/run-errand.yml
       params:
-        BOSH_TARGET: {{pickelhelm-bosh-host}}
-        DEPLOYMENT_NAME: cf-diego
-        BOSH_USER: admin
         BOSH_PASSWORD: {{pickelhelm-bosh-password}}
         ERRAND: acceptance_tests
 
