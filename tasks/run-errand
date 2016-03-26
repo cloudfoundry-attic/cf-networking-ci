@@ -1,8 +1,7 @@
 #!/bin/bash
 
-set -e -x -u
+set -e -u
 
-bosh target $BOSH_TARGET
-bosh download manifest $DEPLOYMENT_NAME manifest.yml
-bosh deployment manifest.yml
-bosh run errand $ERRAND
+bosh target $(cat "${ENVIRONMENT_DIR}/target")
+bosh deployment "${ENVIRONMENT_DIR}/manifest.yml"
+bosh run errand "${ERRAND}"

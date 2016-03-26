@@ -9,9 +9,8 @@ inputs:
   - name: container-networking-ci
 
 params:
-  BOSH_TARGET: ~
-  DEPLOYMENT_NAME: ~
-  BOSH_USER: ~
+  ENVIRONMENT_DIR: environment
+  BOSH_USER: admin
   BOSH_PASSWORD: ~
   ERRAND: ~
 
