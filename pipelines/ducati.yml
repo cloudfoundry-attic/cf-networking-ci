@@ -253,21 +253,21 @@ jobs:
 
   - name: pickelhelm-acceptance-tests
     plan:
-    - aggregate:
-      - get: diego-release
-        passed: [pickelhelm-diego-deploy]
+      - aggregate:
+        - get: diego-release
+          passed: [pickelhelm-diego-deploy]
+          params:
+            submodules: none
+        - get: container-networking-ci
+        - get: environment
+          resource: pickelhelm-cf
+          passed: [pickelhelm-diego-deploy]
+          trigger: true
+      - task: cats
+        file: container-networking-ci/tasks/run-errand.yml
         params:
-          submodules: none
-      - get: container-networking-ci
-      - get: environment
-        resource: pickelhelm-cf
-        passed: [pickelhelm-diego-deploy]
-        trigger: true
-    - task: cats
-      file: container-networking-ci/tasks/run-errand.yml
-      params:
-        BOSH_PASSWORD: {{pickelhelm-bosh-password}}
-        ERRAND: acceptance_tests
+          BOSH_PASSWORD: {{pickelhelm-bosh-password}}
+          ERRAND: acceptance_tests
 
 ##### Human-triggered utilities
   - name: delete-deployment-bosh-lite
