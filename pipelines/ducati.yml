@@ -80,6 +80,11 @@ resources:
     source:
       uri: git://github.com/cloudfoundry-incubator/guardian-release
       branch: master
+  - name: guardian-release-dev
+    type: git
+    source:
+      uri: git://github.com/dbellotti/guardian-release
+      branch: gqt-dns-retries
 
 jobs:
   - name: guardian-tests
@@ -100,6 +105,16 @@ jobs:
         file: ducati-release/ci/ducati-tests.yml
         privileged: true
 
+  - name: guardian-tests-dev
+    public: true
+    plan:
+      - get: guardian-release
+        trigger: true
+        resource: guardian-release-dev
+      - task: guardian-tests-dev
+        file: guardian-release/ci/guardian.yml
+        privileged: true
+
   - name: deploy-to-bosh-lite
     public: true
     serial_groups: [bosh-lite]
@@ -112,7 +127,10 @@ jobs:
         - get: guardian-release
           trigger: true
           passed: [guardian-tests]
+        - get: container-networking-ci
       - task: create-release-tarballs
+        file: container-networking-ci/tasks/create-release-tarballs.yml
+      - task: prep-manifest
         config:
           image_resource:
             type: docker-image
@@ -120,18 +138,39 @@ jobs:
           platform: linux
           inputs:
           - name: ducati-release
-          - name: guardian-release
           outputs:
-          - name: tarballs
+          - name: manifest
           run:
             path: bash
             args:
             - -c
             - |
-              bosh create release --version $(date "+%s") --with-tarball --name ducati --dir ducati-release \
-               && bosh create release --version $(date "+%s") --with-tarball --name guardian --dir guardian-release \
-               && cp ducati-release/dev_releases/ducati/*.tgz tarballs \
-               && cp guardian-release/dev_releases/guardian/*.tgz tarballs
+              cat ducati-release/manifests/ducati-manifest.yml | grep -v director_uuid > manifest/manifest.yml
+      - put: bosh-lite-environment
+        params:
+          cleanup: true
+          manifest: manifest/manifest.yml
+          stemcells:
+          - boshlite-stemcell/*.tgz
+          releases:
+          - tarballs/*.tgz
+
+  - name: deploy-to-bosh-lite-dev
+    public: true
+    serial_groups: [bosh-lite]
+    plan:
+      - aggregate:
+        - get: boshlite-stemcell
+        - get: ducati-release
+          trigger: true
+          passed: [ducati-tests]
+        - get: guardian-release
+          resource: guardian-release-dev
+          trigger: true
+          passed: [guardian-tests-dev]
+        - get: container-networking-ci
+      - task: create-release-tarballs
+        file: container-networking-ci/tasks/create-release-tarballs.yml
       - task: prep-manifest
         config:
           image_resource:
@@ -175,6 +214,31 @@ jobs:
         - get: environment
           resource: bosh-lite-environment
           passed: [deploy-to-bosh-lite]
+          trigger: true
+      - task: remote-acceptance-tests
+        file: container-networking-ci/tasks/run-errand.yml
+        params:
+          BOSH_PASSWORD: {{bosh-lite-password}}
+          ERRAND: acceptance-tests
+
+  - name: remote-acceptance-tests-dev
+    public: true
+    serial_groups: [bosh-lite]
+    plan:
+      - aggregate:
+        - get: ducati-release
+          passed: [deploy-to-bosh-lite-dev]
+          params:
+            submodules: none
+        - get: guardian-release-dev
+          passed: [deploy-to-bosh-lite-dev]
+          params:
+            submodules: none
+        - get: container-networking-ci
+          trigger: false
+        - get: environment
+          resource: bosh-lite-environment
+          passed: [deploy-to-bosh-lite-dev]
           trigger: true
       - task: remote-acceptance-tests
         file: container-networking-ci/tasks/run-errand.yml
