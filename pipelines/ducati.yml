@@ -322,6 +322,10 @@ jobs:
           resource: pickelhelm-cf
           passed: [pickelhelm-diego-deploy]
           trigger: true
+        - get: environment
+          resource: pickelhelm-diego
+          passed: [pickelhelm-diego-deploy]
+          trigger: true
       - task: cats
         file: container-networking-ci/tasks/run-errand.yml
         params:
