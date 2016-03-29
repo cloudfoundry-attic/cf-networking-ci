@@ -1,0 +1,23 @@
+---
+image_resource:
+  type: docker-image
+  source: { repository: c2cnetworking/ducati-deploy }
+
+platform: linux
+
+inputs:
+  - name: ducati-release
+  - name: guardian-release
+
+outputs:
+  - name: tarballs
+
+run:
+  path: bash
+  args:
+    - -c
+    - |
+      bosh create release --version $(date "+%s") --with-tarball --name ducati --dir ducati-release \
+       && bosh create release --version $(date "+%s") --with-tarball --name guardian --dir guardian-release \
+       && cp ducati-release/dev_releases/ducati/*.tgz tarballs \
+       && cp guardian-release/dev_releases/guardian/*.tgz tarballs
