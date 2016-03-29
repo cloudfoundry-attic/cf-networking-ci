@@ -63,18 +63,15 @@ resources:
         - .final_builds
       uri: https://github.com/cloudfoundry-incubator/diego-release.git
   - name: diego-release-tarball
-    type: bosh-io-release
+    type: github-release
     source:
-      repository: cloudfoundry-incubator/diego-release
+      user: cloudfoundry-incubator
+      repository: diego-release
   - name: ducati-release
     type: git
     source:
       uri: git://github.com/cloudfoundry-incubator/ducati-release
       branch: master
-  - name: etcd-release-tarball
-    type: bosh-io-release
-    source:
-      repository: cloudfoundry-incubator/etcd-release
   - name: guardian-release
     type: git
     source:
@@ -268,8 +265,6 @@ jobs:
           trigger: true
         - get: diego-release-tarball
           trigger: true
-        - get: etcd-release-tarball
-          trigger: true
         - get: guardian-release
           trigger: true
           passed: [remote-acceptance-tests]
@@ -312,8 +307,8 @@ jobs:
           - aws-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
-          - etcd-release-tarball/*.tgz
-          - diego-release-tarball/*.tgz
+          - diego-release-tarball/diego-*.tgz
+          - diego-release-tarball/etcd-*.tgz
 
   - name: pickelhelm-acceptance-tests
     plan:
