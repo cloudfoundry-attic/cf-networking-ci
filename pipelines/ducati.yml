@@ -7,6 +7,13 @@ resources:
       username: admin
       password: {{bosh-lite-password}}
       deployment: ducati-guardian
+  - name: bosh-lite-environment-dev
+    type: bosh-deployment
+    source:
+      target: {{bosh-lite-private-ip}}
+      username: admin
+      password: {{bosh-lite-password}}
+      deployment: ducati-guardian-dev
   - name: pickelhelm-cf
     type: bosh-deployment
     source:
@@ -154,7 +161,7 @@ jobs:
 
   - name: deploy-to-bosh-lite-dev
     public: true
-    serial_groups: [bosh-lite]
+    serial_groups: [bosh-lite-dev]
     plan:
       - aggregate:
         - get: boshlite-stemcell
@@ -168,6 +175,8 @@ jobs:
         - get: container-networking-ci
       - task: create-release-tarballs
         file: container-networking-ci/tasks/create-release-tarballs.yml
+        params:
+          guardian_release_name: guardian-dev
       - task: prep-manifest
         config:
           image_resource:
@@ -183,8 +192,8 @@ jobs:
             args:
             - -c
             - |
-              cat ducati-release/manifests/ducati-manifest.yml | grep -v director_uuid > manifest/manifest.yml
-      - put: bosh-lite-environment
+              cat ducati-release/manifests/ducati-manifest-dev.yml | grep -v director_uuid > manifest/manifest.yml
+      - put: bosh-lite-environment-dev
         params:
           cleanup: true
           manifest: manifest/manifest.yml
@@ -220,7 +229,7 @@ jobs:
 
   - name: remote-acceptance-tests-dev
     public: true
-    serial_groups: [bosh-lite]
+    serial_groups: [bosh-lite-dev]
     plan:
       - aggregate:
         - get: ducati-release
@@ -234,7 +243,7 @@ jobs:
         - get: container-networking-ci
           trigger: false
         - get: environment
-          resource: bosh-lite-environment
+          resource: bosh-lite-environment-dev
           passed: [deploy-to-bosh-lite-dev]
           trigger: true
       - task: remote-acceptance-tests
