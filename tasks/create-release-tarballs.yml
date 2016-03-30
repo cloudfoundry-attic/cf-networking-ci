@@ -23,4 +23,4 @@ run:
       bosh create release --version $(date "+%s") --with-tarball --name ducati --dir ducati-release \
        && bosh create release --version $(date "+%s") --with-tarball --name ${guardian_release_name} --dir guardian-release \
        && cp ducati-release/dev_releases/ducati/*.tgz tarballs \
-       && cp guardian-release/dev_releases/guardian/*.tgz tarballs
+       && cp guardian-release/dev_releases/${guardian_release_name}/*.tgz tarballs
