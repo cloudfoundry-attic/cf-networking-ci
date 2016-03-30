@@ -1,9 +1,11 @@
 FROM postgres
 
-RUN apt-get update -y && apt-get install -y \
-  jq \
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+  ca-certificates \
   curl \
+  dnsutils \
   git \
+  jq \
   &&  apt-get autoremove -yqq \
   &&  apt-get clean \
   &&  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
