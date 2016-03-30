@@ -5,6 +5,9 @@ image_resource:
 
 platform: linux
 
+params:
+  guardian_release_name: guardian
+
 inputs:
   - name: ducati-release
   - name: guardian-release
@@ -18,6 +21,6 @@ run:
     - -c
     - |
       bosh create release --version $(date "+%s") --with-tarball --name ducati --dir ducati-release \
-       && bosh create release --version $(date "+%s") --with-tarball --name guardian --dir guardian-release \
+       && bosh create release --version $(date "+%s") --with-tarball --name ${guardian_release_name} --dir guardian-release \
        && cp ducati-release/dev_releases/ducati/*.tgz tarballs \
        && cp guardian-release/dev_releases/guardian/*.tgz tarballs
