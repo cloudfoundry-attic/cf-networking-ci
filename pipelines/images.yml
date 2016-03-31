@@ -47,12 +47,6 @@ resources:
     email: {{dockerhub_email}}
     repository: c2cnetworking/aws-ops
 
-- name: container-networking-ci
-  type: git
-  source:
-    uri: git://github.com/cloudfoundry-incubator/container-networking-ci
-    branch: master
-
 jobs:
 - name: build-ducati-dev-image
   plan:
@@ -66,11 +60,6 @@ jobs:
   plan:
   - get: ducati-deploy-dockerfile
     trigger: true
-  - get: container-networking-ci
-    trigger: false
-  - task: build-ducatify
-    file: container-networking-ci/tasks/build-ducatify.yml
-
   - put: ducati-deploy-image
     params:
       build: ducati-deploy-dockerfile/images/ducati-deploy

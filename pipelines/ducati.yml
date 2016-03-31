@@ -294,8 +294,6 @@ jobs:
           ENVIRONMENT_NAME: pickelhelm
       - task: inject-guardian
         file: container-networking-ci/tasks/inject-guardian.yml
-      - task: ducatify
-        file: container-networking-ci/tasks/ducatify.yml
       - task: create-release-tarballs
         config:
           image_resource:
