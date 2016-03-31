@@ -267,7 +267,7 @@ jobs:
         - get: container-networking-ci
           trigger: false
           params:
-            submodules: none
+            submodules: [ src/github.com/cloudfoundry-incubator/ducatify ]
         - get: deployments-repo
           resource: pickelhelm-config
           trigger: false
@@ -294,6 +294,26 @@ jobs:
           ENVIRONMENT_NAME: pickelhelm
       - task: inject-guardian
         file: container-networking-ci/tasks/inject-guardian.yml
+      - task: build-ducatify
+        file: container-networking-ci/tasks/build-ducatify.yml
+      - task: ducatify
+        config:
+          image_resource:
+            type: docker-image
+            source: { repository: c2cnetworking/ducati-deploy }
+          platform: linux
+          inputs:
+          - name: guardian-generated-manifest
+          - name: ducatify-bin
+          outputs:
+          - name: ducatified-manifest
+          run:
+            path: bash
+            args:
+            - -c
+            - |
+               ducatify-bin/ducatify --diego guardian-generated-manifest > ducatified-manifest/diego.yml
+
       - task: create-release-tarballs
         config:
           image_resource:
@@ -322,7 +342,7 @@ jobs:
       - put: pickelhelm-diego
         params:
           cleanup: true
-          manifest: guardian-generated-manifest/diego.yml
+          manifest: ducatified-manifest/diego.yml
           stemcells:
           - aws-stemcell/*.tgz
           releases:
