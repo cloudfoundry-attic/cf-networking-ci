@@ -132,6 +132,8 @@ jobs:
           trigger: true
           passed: [guardian-tests]
         - get: container-networking-ci
+          params:
+            submodules: none
       - task: create-release-tarballs
         file: container-networking-ci/tasks/create-release-tarballs.yml
       - task: prep-manifest
@@ -173,6 +175,8 @@ jobs:
           trigger: true
           passed: [guardian-tests-dev]
         - get: container-networking-ci
+          params:
+            submodules: none
       - task: create-release-tarballs
         file: container-networking-ci/tasks/create-release-tarballs.yml
         params:
@@ -217,6 +221,8 @@ jobs:
             submodules: none
         - get: container-networking-ci
           trigger: false
+          params:
+            submodules: none
         - get: environment
           resource: bosh-lite-environment
           passed: [deploy-to-bosh-lite]
@@ -242,6 +248,8 @@ jobs:
             submodules: none
         - get: container-networking-ci
           trigger: false
+          params:
+            submodules: none
         - get: environment
           resource: bosh-lite-environment-dev
           passed: [deploy-to-bosh-lite-dev]
@@ -258,6 +266,8 @@ jobs:
       - aggregate:
         - get: container-networking-ci
           trigger: false
+          params:
+            submodules: none
         - get: deployments-repo
           resource: pickelhelm-config
           trigger: false
@@ -329,6 +339,8 @@ jobs:
           params:
             submodules: none
         - get: container-networking-ci
+          params:
+            submodules: none
         - get: environment
           resource: pickelhelm-cf
           passed: [pickelhelm-diego-deploy]
