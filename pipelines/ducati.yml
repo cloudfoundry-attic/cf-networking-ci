@@ -74,6 +74,7 @@ resources:
     source:
       user: cloudfoundry-incubator
       repository: diego-release
+      access_token: {{github-access-token}}
   - name: ducati-release
     type: git
     source:
