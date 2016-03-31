@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -e
+set -x
+set -u
+
+export GOPATH=$PWD/container-networking-ci
+go build -o ducatify-bin/ducatify github.com/cloudfoundry-incubator/ducatify/cmd/ducatify
