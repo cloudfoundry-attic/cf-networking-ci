@@ -268,7 +268,7 @@ jobs:
         - get: container-networking-ci
           trigger: false
           params:
-            submodules: [ src/github.com/cloudfoundry-incubator/ducatify ]
+            submodules: all
         - get: deployments-repo
           resource: pickelhelm-config
           trigger: false
@@ -312,8 +312,7 @@ jobs:
             path: bash
             args:
             - -c
-            - |
-               ducatify-bin/ducatify --diego guardian-generated-manifest > ducatified-manifest/diego.yml
+            - ducatify-bin/ducatify --diego guardian-generated-manifest/diego.yml > ducatified-manifest/diego.yml
 
       - task: create-release-tarballs
         config:
