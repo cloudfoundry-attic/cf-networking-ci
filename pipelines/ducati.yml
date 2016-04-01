@@ -296,6 +296,9 @@ jobs:
         - get: guardian-release
           trigger: true
           passed: [remote-acceptance-tests]
+        - get: ducati-release
+          trigger: true
+          passed: [remote-acceptance-tests]
       - task: generate-pickelhelm-manifests
         file: container-networking-ci/tasks/generate-deployment-manifests.yml
         params:
@@ -320,24 +323,8 @@ jobs:
             args:
             - -c
             - ducatify-bin/ducatify --diego guardian-generated-manifest/diego.yml > ducatified-manifest/diego.yml
-
       - task: create-release-tarballs
-        config:
-          image_resource:
-            type: docker-image
-            source: { repository: c2cnetworking/ducati-deploy }
-          platform: linux
-          inputs:
-          - name: guardian-release
-          outputs:
-          - name: tarballs
-          run:
-            path: bash
-            args:
-            - -c
-            - |
-               bosh create release --version $(date "+%s") --with-tarball --name guardian --dir guardian-release \
-               && cp guardian-release/dev_releases/guardian/*.tgz tarballs
+        file: container-networking-ci/tasks/create-release-tarballs.yml
       - put: pickelhelm-cf
         params:
           cleanup: true
