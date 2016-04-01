@@ -80,7 +80,7 @@ resources:
     source:
       user: cloudfoundry-incubator
       repository: diego-release
-      access_token: {{github-access-token}}
+      access_token: {{github_access_token}}
   - name: ducati-release
     type: git
     source:
