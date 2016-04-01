@@ -132,6 +132,7 @@ jobs:
     plan:
       - aggregate:
         - get: boshlite-stemcell
+          trigger: true
         - get: ducati-release
           trigger: true
           passed: [ducati-tests]
@@ -172,6 +173,7 @@ jobs:
     plan:
       - aggregate:
         - get: boshlite-stemcell
+          trigger: true
         - get: ducati-release
           trigger: true
           passed: [ducati-tests]
