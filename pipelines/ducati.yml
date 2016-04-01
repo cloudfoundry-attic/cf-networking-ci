@@ -139,8 +139,6 @@ jobs:
           trigger: true
           passed: [guardian-tests]
         - get: container-networking-ci
-          params:
-            submodules: none
       - task: create-release-tarballs
         file: container-networking-ci/tasks/create-release-tarballs.yml
       - task: prep-manifest
@@ -182,8 +180,6 @@ jobs:
           trigger: true
           passed: [guardian-tests-dev]
         - get: container-networking-ci
-          params:
-            submodules: none
       - task: create-release-tarballs
         file: container-networking-ci/tasks/create-release-tarballs.yml
         params:
@@ -228,8 +224,6 @@ jobs:
             submodules: none
         - get: container-networking-ci
           trigger: false
-          params:
-            submodules: none
         - get: environment
           resource: bosh-lite-environment
           passed: [deploy-to-bosh-lite]
@@ -255,8 +249,6 @@ jobs:
             submodules: none
         - get: container-networking-ci
           trigger: false
-          params:
-            submodules: none
         - get: environment
           resource: bosh-lite-environment-dev
           passed: [deploy-to-bosh-lite-dev]
@@ -273,8 +265,6 @@ jobs:
       - aggregate:
         - get: container-networking-ci
           trigger: false
-          params:
-            submodules: none
         - get: deployments-repo
           resource: pickelhelm-config
           trigger: false
@@ -339,8 +329,6 @@ jobs:
           params:
             submodules: none
         - get: container-networking-ci
-          params:
-            submodules: none
         - get: environment
           resource: pickelhelm-cf
           passed: [pickelhelm-diego-deploy]
@@ -359,43 +347,24 @@ jobs:
     public: true
     serial_groups: [bosh-lite]
     plan:
+      - get: container-networking-ci
       - task: delete-deployment
-        config:
-          image_resource:
-            type: docker-image
-            source: { repository: c2cnetworking/ducati-deploy }
-          platform: linux
-          run:
-            path: bash
-            args:
-            - -c
-            - |
-              bosh target $BOSH_TARGET && \
-              bosh -n delete deployment $DEPLOYMENT_NAME
-          params:
-            BOSH_TARGET: {{bosh-lite-private-ip}}
-            DEPLOYMENT_NAME: ducati-guardian
-            BOSH_USER: admin
-            BOSH_PASSWORD: {{bosh-lite-password}}
+        file: container-networking-ci/tasks/delete-deployment.yml
+        params:
+          BOSH_TARGET: {{bosh-lite-private-ip}}
+          BOSH_USER: admin
+          BOSH_PASSWORD: {{bosh-lite-password}}
+          DEPLOYMENT_NAME: ducati-guardian
   - name: delete-deployment-bosh-lite-dev
     public: true
     serial_groups: [bosh-lite-dev]
     plan:
+    plan:
+      - get: container-networking-ci
       - task: delete-deployment
-        config:
-          image_resource:
-            type: docker-image
-            source: { repository: c2cnetworking/ducati-deploy }
-          platform: linux
-          run:
-            path: bash
-            args:
-            - -c
-            - |
-              bosh target $BOSH_TARGET && \
-              bosh -n delete deployment $DEPLOYMENT_NAME
-          params:
-            BOSH_TARGET: {{bosh-lite-private-ip}}
-            DEPLOYMENT_NAME: ducati-guardian-dev
-            BOSH_USER: admin
-            BOSH_PASSWORD: {{bosh-lite-password}}
+        file: container-networking-ci/tasks/delete-deployment.yml
+        params:
+          BOSH_TARGET: {{bosh-lite-private-ip}}
+          BOSH_USER: admin
+          BOSH_PASSWORD: {{bosh-lite-password}}
+          DEPLOYMENT_NAME: ducati-guardian-dev
