@@ -1,3 +1,0 @@
-#!/bin/bash
-
-git ci -t <($(dirname $0)/submodule-log "$@" )

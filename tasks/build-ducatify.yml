@@ -6,10 +6,19 @@ image_resource:
   source: { repository: golang }
 
 inputs:
-  - name: container-networking-ci
+  - name: ducatify
 
 outputs:
   - name: ducatify-bin
 
 run:
-  path: container-networking-ci/tasks/build-ducatify
+  path: /bin/bash
+  args:
+    - -c
+    - |
+      set -e
+      set -x
+      set -u
+      mkdir -p $GOPATH/src/github.com/cloudfoundry-incubator/
+      cp -R $PWD/ducatify $GOPATH/src/github.com/cloudfoundry-incubator/
+      go build -o ducatify-bin/ducatify github.com/cloudfoundry-incubator/ducatify/cmd/ducatify
