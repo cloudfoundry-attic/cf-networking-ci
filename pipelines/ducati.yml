@@ -40,6 +40,12 @@ resources:
       branch: master
       private_key: {{container-networking-deployments-deploy-key}}
       paths: environments/pickelhelm
+  ###### Tools
+  - name: ducatify
+    type: git
+    source:
+      branch: master
+      uri: git://github.com/cloudfoundry-incubator/ducatify.git
   ###### BOSH stemcells
   - name: aws-stemcell
     type: bosh-io-stemcell
@@ -268,7 +274,7 @@ jobs:
         - get: container-networking-ci
           trigger: false
           params:
-            submodules: all
+            submodules: none
         - get: deployments-repo
           resource: pickelhelm-config
           trigger: false
@@ -286,6 +292,7 @@ jobs:
           trigger: true
         - get: diego-release-tarball
           trigger: true
+        - get: ducatify
         - get: guardian-release
           trigger: true
           passed: [remote-acceptance-tests]
