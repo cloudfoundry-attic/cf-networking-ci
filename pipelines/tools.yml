@@ -35,6 +35,7 @@ jobs:
       - aggregate:
         - get: ducatify-source
           passed: [test]
+          trigger: true
         - get: version
           params: {bump: minor}
       - task: prep-release
