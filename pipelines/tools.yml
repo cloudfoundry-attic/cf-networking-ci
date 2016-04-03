@@ -23,18 +23,18 @@ resources:
       drafts: false
 
 jobs:
-  - name: test
+  - name: ducatify-test
     plan:
       - get: ducatify-source
         trigger: true
       - task: test
         file: ducatify-source/ci/test.yml
 
-  - name: shipit
+  - name: ducatify-shipit
     plan:
       - aggregate:
         - get: ducatify-source
-          passed: [test]
+          passed: [ducatify-test]
           trigger: true
         - get: version
           params: {bump: minor}
