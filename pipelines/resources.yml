@@ -1,0 +1,58 @@
+resource_types:
+- name: bosh-lite-ami
+  type: docker-image
+  source:
+    repository: c2cnetworking/bosh-lite-ami-resource
+    tag: latest
+
+resources:
+  - name: bosh-lite-ami-resource-source
+    type: git
+    source:
+      uri: git://github.com/rosenhouse/bosh-lite-ami-resource
+      branch: master
+
+  - name: bosh-lite-ami-resource-image
+    type: docker-image
+    source:
+      username: {{dockerhub_username}}
+      password: {{dockerhub_password}}
+      email: {{dockerhub_email}}
+      repository: c2cnetworking/bosh-lite-ami-resource
+
+  - name: latest-us-west-2-bosh-lite-ami
+    type: bosh-lite-ami
+    source:
+      region: us-west-2
+
+jobs:
+  - name: bosh-lite-ami-resource-build
+    public: true
+    plan:
+    - get: bosh-lite-ami-resource
+      resource: bosh-lite-ami-resource-source
+      trigger: true
+    - task: prep-materials
+      file: bosh-lite-ami-resource/ci/prep-materials.yml
+    - put: bosh-lite-ami-resource-image
+      params:
+        build: image-materials
+  - name: test-resource
+    public: true
+    plan:
+    - get: latest-ami
+      resource: latest-us-west-2-bosh-lite-ami
+    - task: check-ami
+      config:
+        image_resource:
+          type: docker-image
+          source: { repository: golang }
+        platform: linux
+        inputs:
+        - name: latest-ami
+        run:
+          path: bash
+          args:
+          - -c
+          - |
+            cat latest-ami/ami
