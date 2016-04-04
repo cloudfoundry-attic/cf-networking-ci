@@ -12,7 +12,7 @@ params:
   DEPLOYMENT_NAME: ~
 
 run:
-  path: bin/bash
+  path: /bin/bash
   args:
     - c
     - |
