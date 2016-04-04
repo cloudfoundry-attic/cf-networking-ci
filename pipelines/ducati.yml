@@ -94,8 +94,8 @@ resources:
   - name: guardian-release-dev
     type: git
     source:
-      uri: git://github.com/dbellotti/guardian-release
-      branch: gqt-dns-retries
+      uri: git://github.com/cloudfoundry-incubator/guardian-release
+      branch: develop
 
 jobs:
   - name: guardian-tests
