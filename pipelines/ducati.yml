@@ -65,6 +65,10 @@ resources:
     type: bosh-io-release
     source:
       repository: cloudfoundry/cf-release
+  - name: consul-release-tarball
+    type: bosh-io-release
+    source:
+      repository: cloudfoundry-incubator/consul-release
   - name: diego-release
     type: git
     source:
@@ -133,6 +137,8 @@ jobs:
       - aggregate:
         - get: boshlite-stemcell
           trigger: true
+        - get: consul-release-tarball
+          trigger: true
         - get: ducati-release
           trigger: true
           passed: [ducati-tests]
@@ -165,6 +171,7 @@ jobs:
           stemcells:
           - boshlite-stemcell/*.tgz
           releases:
+          - consul-release-tarball/*.tgz
           - tarballs/*.tgz
 
   - name: deploy-to-bosh-lite-dev
