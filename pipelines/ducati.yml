@@ -293,11 +293,12 @@ jobs:
           trigger: true
         - get: ducatify
         - get: guardian-release
+          resource: guardian-release-dev
           trigger: true
-          passed: [remote-acceptance-tests]
+          passed: [remote-acceptance-tests-dev]
         - get: ducati-release
           trigger: true
-          passed: [remote-acceptance-tests]
+          passed: [remote-acceptance-tests-dev]
       - task: generate-pickelhelm-manifests
         file: container-networking-ci/tasks/generate-deployment-manifests.yml
         params:
