@@ -234,6 +234,7 @@ jobs:
   - name: deploy-uberzug
     public: true
     serial: true
+    serial_groups: [uberzug]
     plan:
       - aggregate:
         - get: container-networking-ci
@@ -262,6 +263,23 @@ jobs:
           - tarballs/*.tgz
           stemcells:
           - aws-stemcell/*.tgz
+
+  - name: remote-gits-uberzug
+    public: true
+    serial: true
+    serial_groups: [uberzug]
+    plan:
+      - aggregate:
+        - get: guardian-release
+          resource: guardian-release-dev
+          passed: [deploy-to-bosh-lite-dev]
+          trigger: true
+          params:
+            submodules: all
+      - task: remote-gits
+        file: guardian-release/ci/non-nested-gits.yml
+        params:
+          GARDEN_ADDRESS: 10.0.1.12:7777
 
   - name: remote-acceptance-tests
     public: true
