@@ -1,0 +1,25 @@
+---
+image_resource:
+  type: docker-image
+  source: { repository: c2cnetworking/ducati-deploy }
+
+platform: linux
+
+params: {}
+
+inputs:
+  - name: etcd-release
+  - name: diego-release
+
+outputs:
+  - name: diego-etcd-tarballs
+
+run:
+  path: bash
+  args:
+    - -c
+    - |
+      bosh create release --version $(date "+%s") --with-tarball --name etcd --dir etcd-release \
+       && bosh create release --version $(date "+%s") --with-tarball --name diego --dir diego-release \
+       && cp etcd-release/dev_releases/etcd/*.tgz diego-etcd-tarballs \
+       && cp diego-release/dev_releases/diego/*.tgz diego-etcd-tarballs

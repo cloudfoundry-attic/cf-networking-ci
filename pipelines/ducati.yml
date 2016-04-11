@@ -72,19 +72,13 @@ resources:
   - name: diego-release
     type: git
     source:
-      branch: master
+      branch: ducati-dev
       ignore_paths:
         - dev_releases
         - git-hooks
         - releases
         - .final_builds
-      uri: https://github.com/cloudfoundry-incubator/diego-release.git
-  - name: diego-release-tarball
-    type: github-release
-    source:
-      user: cloudfoundry-incubator
-      repository: diego-release
-      access_token: {{github_access_token}}
+      uri: https://github.com/sykesm/diego-release.git
   - name: ducati-release
     type: git
     source:
@@ -100,6 +94,11 @@ resources:
     source:
       uri: git://github.com/cloudfoundry-incubator/guardian-release
       branch: develop
+  - name: etcd-release
+    type: git
+    source:
+      uri: git://github.com/cloudfoundry-incubator/etcd-release
+      branch: master
 
 jobs:
   - name: guardian-tests
@@ -289,8 +288,6 @@ jobs:
           trigger: true
         - get: cf-release-tarball
           trigger: true
-        - get: diego-release-tarball
-          trigger: true
         - get: ducatify
         - get: guardian-release
           resource: guardian-release-dev
@@ -299,6 +296,7 @@ jobs:
         - get: ducati-release
           trigger: true
           passed: [remote-acceptance-tests-dev]
+        - get: etcd-release
       - task: generate-pickelhelm-manifests
         file: container-networking-ci/tasks/generate-deployment-manifests.yml
         params:
@@ -311,6 +309,8 @@ jobs:
         file: container-networking-ci/tasks/ducatify.yml
       - task: create-release-tarballs
         file: container-networking-ci/tasks/create-release-tarballs.yml
+      - task: create-diego-etcd-release-tarballs
+        file: container-networking-ci/tasks/create-diego-etcd-release-tarballs.yml
       - put: pickelhelm-cf
         params:
           cleanup: true
@@ -327,8 +327,7 @@ jobs:
           - aws-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
-          - diego-release-tarball/diego-*.tgz
-          - diego-release-tarball/etcd-*.tgz
+          - diego-etcd-tarballs/*.tgz
 
   - name: pickelhelm-acceptance-tests
     serial_groups: [pickelhelm]
