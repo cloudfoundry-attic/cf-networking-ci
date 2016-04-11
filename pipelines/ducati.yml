@@ -283,7 +283,7 @@ jobs:
         - get: diego-release
           trigger: false
           params:
-            submodules: none
+            submodules: all
         - get: aws-stemcell
           trigger: true
         - get: cf-release-tarball
