@@ -14,6 +14,13 @@ resources:
       username: admin
       password: {{bosh-lite-password}}
       deployment: ducati-guardian-dev
+  - name: uberzug
+    type: bosh-deployment
+    source:
+      target: {{uberzug-bosh-host}}
+      username: admin
+      password: {{uberzug-password}}
+      deployment: ducati-guardian
   - name: pickelhelm-cf
     type: bosh-deployment
     source:
@@ -40,6 +47,13 @@ resources:
       branch: master
       private_key: {{container-networking-deployments-deploy-key}}
       paths: environments/pickelhelm
+  - name: uberzug-config
+    type: git
+    source:
+      uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
+      branch: master
+      private_key: {{container-networking-deployments-deploy-key}}
+      paths: environments/uberzug
   ###### Tools
   - name: ducatify
     type: git
@@ -216,6 +230,38 @@ jobs:
           - boshlite-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
+
+  - name: deploy-uberzug
+    public: true
+    serial: true
+    plan:
+      - aggregate:
+        - get: container-networking-ci
+          trigger: false
+        - get: uberzug-config
+          trigger: false
+        - get: aws-stemcell
+          trigger: true
+        - get: guardian-release
+          resource: guardian-release-dev
+          passed: [deploy-to-bosh-lite-dev]
+          trigger: true
+          params:
+            submodules: all
+        - get: ducati-release
+          passed: [deploy-to-bosh-lite-dev]
+          params:
+            submodules: all
+          trigger: true
+      - task: create-release-tarballs
+        file: container-networking-ci/tasks/create-release-tarballs.yml
+      - put: uberzug
+        params:
+          manifest: uberzug-config/environments/uberzug/uberzug.yml
+          releases:
+          - tarballs/*.tgz
+          stemcells:
+          - aws-stemcell/*.tgz
 
   - name: remote-acceptance-tests
     public: true
