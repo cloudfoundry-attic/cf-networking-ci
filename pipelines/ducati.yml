@@ -459,3 +459,16 @@ jobs:
           BOSH_USER: admin
           BOSH_PASSWORD: {{uberzug-password}}
           DEPLOYMENT_NAME: ducati-guardian
+  - name: delete-deployment-pickelhelm-diego
+    public: true
+    serial_groups: [pickelhelm]
+    plan:
+    plan:
+      - get: container-networking-ci
+      - task: delete-deployment
+        file: container-networking-ci/tasks/delete-deployment.yml
+        params:
+          BOSH_TARGET: {{pickelhelm-bosh-host}}
+          BOSH_USER: admin
+          BOSH_PASSWORD: {{pickelhelm-bosh-password}}
+          DEPLOYMENT_NAME: cf-diego-diego
