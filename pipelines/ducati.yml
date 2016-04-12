@@ -272,7 +272,7 @@ jobs:
       - aggregate:
         - get: guardian-release
           resource: guardian-release-dev
-          passed: [deploy-to-bosh-lite-dev]
+          passed: [deploy-uberzug]
           trigger: true
           params:
             submodules: all
