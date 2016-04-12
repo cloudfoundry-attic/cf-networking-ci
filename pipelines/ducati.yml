@@ -444,3 +444,16 @@ jobs:
           BOSH_USER: admin
           BOSH_PASSWORD: {{bosh-lite-password}}
           DEPLOYMENT_NAME: ducati-guardian-dev
+  - name: delete-deployment-uberzug
+    public: true
+    serial_groups: [uberzug]
+    plan:
+    plan:
+      - get: container-networking-ci
+      - task: delete-deployment
+        file: container-networking-ci/tasks/delete-deployment.yml
+        params:
+          BOSH_TARGET: {{uberzug-bosh-host}}
+          BOSH_USER: admin
+          BOSH_PASSWORD: {{uberzug-password}}
+          DEPLOYMENT_NAME: ducati-guardian
