@@ -258,6 +258,7 @@ jobs:
         file: container-networking-ci/tasks/create-release-tarballs.yml
       - put: uberzug
         params:
+          cleanup: true
           manifest: uberzug-config/environments/uberzug/uberzug.yml
           releases:
           - tarballs/*.tgz
