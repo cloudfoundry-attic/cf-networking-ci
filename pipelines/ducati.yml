@@ -270,6 +270,9 @@ jobs:
     serial_groups: [uberzug]
     plan:
       - aggregate:
+        - get: uberzug
+          passed: [deploy-uberzug]
+          trigger: true
         - get: guardian-release
           resource: guardian-release-dev
           passed: [deploy-uberzug]
