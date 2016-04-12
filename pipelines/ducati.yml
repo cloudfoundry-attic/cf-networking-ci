@@ -245,15 +245,15 @@ jobs:
           trigger: true
         - get: guardian-release
           resource: guardian-release-dev
-          passed: [deploy-to-bosh-lite-dev]
           trigger: true
+          passed: [ guardian-tests-dev ]
           params:
             submodules: all
         - get: ducati-release
-          passed: [deploy-to-bosh-lite-dev]
           params:
             submodules: all
           trigger: true
+          passed: [ ducati-tests ]
       - task: create-release-tarballs
         file: container-networking-ci/tasks/create-release-tarballs.yml
       - put: uberzug
@@ -278,8 +278,9 @@ jobs:
           resource: guardian-release-dev
           passed: [deploy-uberzug]
           trigger: true
-          params:
-            submodules: all
+        - get: ducati-release
+          passed: [deploy-uberzug]
+          trigger: true
       - task: remote-gits
         file: guardian-release/ci/non-nested-gits.yml
         params:
@@ -360,10 +361,10 @@ jobs:
         - get: guardian-release
           resource: guardian-release-dev
           trigger: true
-          passed: [remote-acceptance-tests-dev]
+          passed: [remote-acceptance-tests-dev, remote-gits-uberzug]
         - get: ducati-release
           trigger: true
-          passed: [remote-acceptance-tests-dev]
+          passed: [remote-acceptance-tests-dev, remote-gits-uberzug]
         - get: etcd-release
       - task: generate-pickelhelm-manifests
         file: container-networking-ci/tasks/generate-deployment-manifests.yml
