@@ -240,7 +240,7 @@ jobs:
         - get: container-networking-ci
           trigger: false
         - get: uberzug-config
-          trigger: false
+          trigger: true
         - get: aws-stemcell
           trigger: true
         - get: guardian-release
