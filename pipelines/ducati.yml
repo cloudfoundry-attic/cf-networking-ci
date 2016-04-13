@@ -106,8 +106,8 @@ resources:
   - name: guardian-release-dev
     type: git
     source:
-      uri: git://github.com/sykesm/guardian-release
-      branch: ducati-dev
+      uri: git://github.com/cloudfoundry-incubator/guardian-release
+      branch: develop
   - name: etcd-release
     type: git
     source:
