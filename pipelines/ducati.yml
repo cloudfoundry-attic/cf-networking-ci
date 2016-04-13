@@ -98,11 +98,6 @@ resources:
     source:
       uri: git://github.com/cloudfoundry-incubator/ducati-release
       branch: master
-  - name: guardian-release
-    type: git
-    source:
-      uri: git://github.com/cloudfoundry-incubator/guardian-release
-      branch: master
   - name: guardian-release-dev
     type: git
     source:
@@ -115,15 +110,6 @@ resources:
       branch: master
 
 jobs:
-  - name: guardian-tests
-    public: true
-    plan:
-      - get: guardian-release
-        trigger: true
-      - task: guardian-tests
-        file: guardian-release/ci/guardian.yml
-        privileged: true
-
   - name: ducati-tests
     public: true
     plan:
@@ -142,50 +128,6 @@ jobs:
       - task: guardian-tests-dev
         file: guardian-release/ci/guardian.yml
         privileged: true
-
-  - name: deploy-to-bosh-lite
-    public: true
-    serial_groups: [bosh-lite]
-    plan:
-      - aggregate:
-        - get: boshlite-stemcell
-          trigger: true
-        - get: consul-release-tarball
-          trigger: true
-        - get: ducati-release
-          trigger: true
-          passed: [ducati-tests]
-        - get: guardian-release
-          trigger: true
-          passed: [guardian-tests]
-        - get: container-networking-ci
-      - task: create-release-tarballs
-        file: container-networking-ci/tasks/create-release-tarballs.yml
-      - task: prep-manifest
-        config:
-          image_resource:
-            type: docker-image
-            source: { repository: c2cnetworking/ducati-deploy }
-          platform: linux
-          inputs:
-          - name: ducati-release
-          outputs:
-          - name: manifest
-          run:
-            path: bash
-            args:
-            - -c
-            - |
-              cat ducati-release/manifests/ducati-manifest.yml | grep -v director_uuid > manifest/manifest.yml
-      - put: bosh-lite-environment
-        params:
-          cleanup: true
-          manifest: manifest/manifest.yml
-          stemcells:
-          - boshlite-stemcell/*.tgz
-          releases:
-          - consul-release-tarball/*.tgz
-          - tarballs/*.tgz
 
   - name: deploy-to-bosh-lite-dev
     public: true
@@ -285,31 +227,6 @@ jobs:
         file: guardian-release/ci/non-nested-gits.yml
         params:
           GARDEN_ADDRESS: 10.0.1.12:7777
-
-  - name: remote-acceptance-tests
-    public: true
-    serial_groups: [bosh-lite]
-    plan:
-      - aggregate:
-        - get: ducati-release
-          passed: [deploy-to-bosh-lite]
-          params:
-            submodules: none
-        - get: guardian-release
-          passed: [deploy-to-bosh-lite]
-          params:
-            submodules: none
-        - get: container-networking-ci
-          trigger: false
-        - get: environment
-          resource: bosh-lite-environment
-          passed: [deploy-to-bosh-lite]
-          trigger: true
-      - task: remote-acceptance-tests
-        file: container-networking-ci/tasks/run-errand.yml
-        params:
-          BOSH_PASSWORD: {{bosh-lite-password}}
-          ERRAND: acceptance-tests
 
   - name: remote-acceptance-tests-dev
     public: true
@@ -421,18 +338,6 @@ jobs:
           ERRAND: acceptance_tests
 
 ##### Human-triggered utilities
-  - name: delete-deployment-bosh-lite
-    public: true
-    serial_groups: [bosh-lite]
-    plan:
-      - get: container-networking-ci
-      - task: delete-deployment
-        file: container-networking-ci/tasks/delete-deployment.yml
-        params:
-          BOSH_TARGET: {{bosh-lite-private-ip}}
-          BOSH_USER: admin
-          BOSH_PASSWORD: {{bosh-lite-password}}
-          DEPLOYMENT_NAME: ducati-guardian
   - name: delete-deployment-bosh-lite-dev
     public: true
     serial_groups: [bosh-lite-dev]
