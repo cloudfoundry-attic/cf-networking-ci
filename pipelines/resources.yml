@@ -42,6 +42,7 @@ jobs:
     plan:
     - get: latest-ami
       resource: latest-us-west-2-bosh-lite-ami
+      trigger: true
     - task: check-ami
       config:
         image_resource:
