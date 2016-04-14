@@ -207,6 +207,31 @@ jobs:
           stemcells:
           - aws-stemcell/*.tgz
 
+  - name: remote-ducati-tests-uberzug
+    public: true
+    serial_groups: [uberzug]
+    plan:
+      - aggregate:
+        - get: ducati-release
+          passed: [deploy-uberzug]
+          params:
+            submodules: none
+        - get: guardian-release-dev
+          passed: [deploy-uberzug]
+          params:
+            submodules: none
+        - get: container-networking-ci
+          trigger: false
+        - get: environment
+          resource: uberzug
+          passed: [deploy-uberzug]
+          trigger: true
+      - task: remote-acceptance-tests
+        file: container-networking-ci/tasks/run-errand.yml
+        params:
+          bosh_password: {{uberzug-password}}
+          errand: acceptance-tests
+
   - name: remote-gits-uberzug
     public: true
     serial: true
@@ -214,14 +239,14 @@ jobs:
     plan:
       - aggregate:
         - get: uberzug
-          passed: [deploy-uberzug]
+          passed: [remote-ducati-tests-uberzug]
           trigger: true
         - get: guardian-release
           resource: guardian-release-dev
-          passed: [deploy-uberzug]
+          passed: [remote-ducati-tests-uberzug]
           trigger: true
         - get: ducati-release
-          passed: [deploy-uberzug]
+          passed: [remote-ducati-tests-uberzug]
           trigger: true
       - task: remote-gits
         file: guardian-release/ci/non-nested-gits.yml
