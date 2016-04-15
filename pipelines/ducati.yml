@@ -229,8 +229,8 @@ jobs:
       - task: remote-acceptance-tests
         file: container-networking-ci/tasks/run-errand.yml
         params:
-          bosh_password: {{uberzug-password}}
-          errand: acceptance-tests
+          BOSH_PASSWORD: {{uberzug-password}}
+          ERRAND: acceptance-tests
 
   - name: remote-gits-uberzug
     public: true
