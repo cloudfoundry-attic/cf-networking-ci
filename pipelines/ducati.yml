@@ -292,7 +292,7 @@ jobs:
           params:
             submodules: [src/loggregator] # needed for cf-lamb template
         - get: diego-release
-          trigger: false
+          trigger: true
           params:
             submodules: all
         - get: aws-stemcell
