@@ -101,7 +101,7 @@ resources:
   - name: guardian-release-dev
     type: git
     source:
-      uri: git://github.com/cloudfoundry-incubator/guardian-release
+      uri: git://github.com/cloudfoundry-incubator/garden-runc-release
       branch: develop
   - name: etcd-release
     type: git
@@ -122,11 +122,11 @@ jobs:
   - name: guardian-tests-dev
     public: true
     plan:
-      - get: guardian-release
+      - get: garden-runc-release
         trigger: true
         resource: guardian-release-dev
       - task: guardian-tests-dev
-        file: guardian-release/ci/guardian.yml
+        file: garden-runc-release/ci/guardian.yml
         privileged: true
 
   - name: deploy-to-bosh-lite-dev
