@@ -241,7 +241,7 @@ jobs:
         - get: uberzug
           passed: [remote-ducati-tests-uberzug]
           trigger: true
-        - get: guardian-release
+        - get: garden-runc-release
           resource: guardian-release-dev
           passed: [remote-ducati-tests-uberzug]
           trigger: true
@@ -249,7 +249,7 @@ jobs:
           passed: [remote-ducati-tests-uberzug]
           trigger: true
       - task: remote-gits
-        file: guardian-release/ci/non-nested-gits.yml
+        file: garden-runc-release/ci/non-nested-gits.yml
         params:
           GARDEN_ADDRESS: 10.0.1.12:7777
 
