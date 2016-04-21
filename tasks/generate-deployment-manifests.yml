@@ -10,6 +10,7 @@ inputs:
   - name: container-networking-ci
   - name: cf-release
   - name: diego-release
+  - name: ducatify-bin
 
 outputs:
   - name: generated-manifest

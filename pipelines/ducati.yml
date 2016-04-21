@@ -308,16 +308,12 @@ jobs:
           trigger: true
           passed: [remote-acceptance-tests-dev, remote-gits-uberzug]
         - get: etcd-release
+      - task: build-ducatify
+        file: container-networking-ci/tasks/build-ducatify.yml
       - task: generate-pickelhelm-manifests
         file: container-networking-ci/tasks/generate-deployment-manifests.yml
         params:
           ENVIRONMENT_NAME: pickelhelm
-      - task: inject-guardian
-        file: container-networking-ci/tasks/inject-guardian.yml
-      - task: build-ducatify
-        file: container-networking-ci/tasks/build-ducatify.yml
-      - task: ducatify
-        file: container-networking-ci/tasks/ducatify.yml
       - task: create-release-tarballs
         file: container-networking-ci/tasks/create-release-tarballs.yml
       - task: create-diego-etcd-release-tarballs
@@ -333,7 +329,7 @@ jobs:
       - put: pickelhelm-diego
         params:
           cleanup: true
-          manifest: ducatified-manifest/diego.yml
+          manifest: generate-manifest/diego_with_ducati.yml
           stemcells:
           - aws-stemcell/*.tgz
           releases:

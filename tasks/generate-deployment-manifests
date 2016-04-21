@@ -18,6 +18,7 @@ popd
 
 pushd diego-release
   ./scripts/generate-deployment-manifest \
+    -g \
     -c ${output_path}/cf.yml \
     -i ${environment_path}/stubs/diego/iaas-settings.yml \
     -p ${environment_path}/stubs/diego/property-overrides.yml \
@@ -25,3 +26,8 @@ pushd diego-release
     -v ${environment_path}/stubs/diego/release-versions.yml \
     > ${output_path}/diego.yml
 popd
+
+ducatify-bin/ducatify \
+  --diego ${output_path}/diego.yml \
+  --cfCreds ${environment_path}/stubs/ducati/cf_creds_stub.yml \
+  > ${output_path}/diego_with_ducati.yml

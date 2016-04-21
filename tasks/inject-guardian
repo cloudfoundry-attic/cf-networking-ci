@@ -1,9 +1,0 @@
-#!/bin/bash
-
-set -e
-set -x
-set -u
-
-mkdir -p guardian-generated-manifest
-cp generated-manifest/diego.yml guardian-generated-manifest/diego.yml
-sed -i -e 's/garden-linux/guardian/g' guardian-generated-manifest/diego.yml
