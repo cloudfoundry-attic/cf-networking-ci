@@ -303,10 +303,11 @@ jobs:
         - get: guardian-release
           resource: guardian-release-dev
           trigger: true
-          passed: [remote-acceptance-tests-dev, remote-gits-uberzug]
+          # passed: [remote-acceptance-tests-dev, remote-gits-uberzug]
+          passed: [remote-acceptance-tests-dev]
         - get: ducati-release
           trigger: true
-          passed: [remote-acceptance-tests-dev, remote-gits-uberzug]
+          passed: [remote-acceptance-tests-dev]
         - get: etcd-release
       - task: build-ducatify
         file: container-networking-ci/tasks/build-ducatify.yml
