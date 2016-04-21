@@ -329,7 +329,7 @@ jobs:
       - put: pickelhelm-diego
         params:
           cleanup: true
-          manifest: generate-manifest/diego_with_ducati.yml
+          manifest: generated-manifest/diego_with_ducati.yml
           stemcells:
           - aws-stemcell/*.tgz
           releases:
