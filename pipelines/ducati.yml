@@ -339,19 +339,20 @@ jobs:
   - name: pickelhelm-acceptance-tests
     serial_groups: [pickelhelm]
     plan:
-      - aggregate:
-        - get: diego-release
-          passed: [pickelhelm-diego-deploy]
-          params:
-            submodules: none
-        - get: container-networking-ci
-        - get: environment
-          resource: pickelhelm-cf
-          passed: [pickelhelm-diego-deploy]
-          trigger: true
-        - get: pickelhelm-diego
-          passed: [pickelhelm-diego-deploy]
-          trigger: true
+      - get: container-networking-ci
+      - get: environment
+        resource: pickelhelm-diego
+        passed: [pickelhelm-diego-deploy]
+        trigger: true
+      - task: ducati-cf-acceptance
+        file: container-networking-ci/tasks/run-errand.yml
+        params:
+          BOSH_PASSWORD: {{pickelhelm-bosh-password}}
+          ERRAND: ducati-acceptance
+      - get: environment
+        resource: pickelhelm-cf
+        passed: [pickelhelm-diego-deploy]
+        trigger: true
       - task: cats
         file: container-networking-ci/tasks/run-errand.yml
         params:
