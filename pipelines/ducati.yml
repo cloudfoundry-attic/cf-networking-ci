@@ -7,13 +7,6 @@ resources:
       username: admin
       password: {{bosh-lite-password}}
       deployment: ducati-guardian
-  - name: bosh-lite-environment-dev
-    type: bosh-deployment
-    source:
-      target: {{bosh-lite-private-ip}}
-      username: admin
-      password: {{bosh-lite-password}}
-      deployment: ducati-guardian-dev
   - name: uberzug
     type: bosh-deployment
     source:
@@ -98,11 +91,11 @@ resources:
     source:
       uri: git://github.com/cloudfoundry-incubator/ducati-release
       branch: master
-  - name: guardian-release-dev
+  - name: garden-runc-release
     type: git
     source:
       uri: git://github.com/cloudfoundry-incubator/garden-runc-release
-      branch: develop
+      branch: master
   - name: etcd-release
     type: git
     source:
@@ -119,19 +112,19 @@ jobs:
         file: ducati-release/ci/ducati-tests.yml
         privileged: true
 
-  - name: guardian-tests-dev
+  - name: garden-runc-tests
     public: true
     plan:
-      - get: garden-runc-release
+      - get: guardian-release
         trigger: true
-        resource: guardian-release-dev
-      - task: guardian-tests-dev
-        file: garden-runc-release/ci/guardian.yml
+        resource: garden-runc-release
+      - task: garden-runc-tests
+        file: guardian-release/ci/guardian.yml
         privileged: true
 
-  - name: deploy-to-bosh-lite-dev
+  - name: boshlite-deploy
     public: true
-    serial_groups: [bosh-lite-dev]
+    serial_groups: [bosh-lite]
     plan:
       - aggregate:
         - get: boshlite-stemcell
@@ -140,14 +133,15 @@ jobs:
           trigger: true
           passed: [ducati-tests]
         - get: guardian-release
-          resource: guardian-release-dev
+          resource: garden-runc-release
           trigger: true
-          passed: [guardian-tests-dev]
+          passed: [garden-runc-tests]
+        - get: consul-release-tarball
         - get: container-networking-ci
       - task: create-release-tarballs
         file: container-networking-ci/tasks/create-release-tarballs.yml
         params:
-          guardian_release_name: guardian-dev
+          guardian_release_name: guardian
       - task: prep-manifest
         config:
           image_resource:
@@ -163,8 +157,8 @@ jobs:
             args:
             - -c
             - |
-              cat ducati-release/manifests/ducati-manifest-dev.yml | grep -v director_uuid > manifest/manifest.yml
-      - put: bosh-lite-environment-dev
+              cat ducati-release/manifests/ducati-manifest.yml | grep -v director_uuid > manifest/manifest.yml
+      - put: bosh-lite-environment
         params:
           cleanup: true
           manifest: manifest/manifest.yml
@@ -172,8 +166,9 @@ jobs:
           - boshlite-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
+          - consul-release-tarball/*.tgz
 
-  - name: deploy-uberzug
+  - name: uberzug-deploy
     public: true
     serial: true
     serial_groups: [uberzug]
@@ -185,10 +180,11 @@ jobs:
           trigger: true
         - get: aws-stemcell
           trigger: true
+        - get: consul-release-tarball
         - get: guardian-release
-          resource: guardian-release-dev
+          resource: garden-runc-release
           trigger: true
-          passed: [ guardian-tests-dev ]
+          passed: [ garden-runc-tests ]
           params:
             submodules: all
         - get: ducati-release
@@ -202,83 +198,68 @@ jobs:
         params:
           cleanup: true
           manifest: uberzug-config/environments/uberzug/uberzug.yml
-          releases:
-          - tarballs/*.tgz
           stemcells:
           - aws-stemcell/*.tgz
+          releases:
+          - tarballs/*.tgz
+          - consul-release-tarball/*.tgz
 
-  - name: remote-ducati-tests-uberzug
+  - name: uberzug-test
     public: true
     serial_groups: [uberzug]
     plan:
       - aggregate:
         - get: ducati-release
-          passed: [deploy-uberzug]
+          passed: [uberzug-deploy]
           params:
             submodules: none
-        - get: guardian-release-dev
-          passed: [deploy-uberzug]
+        - get: guardian-release
+          resource: garden-runc-release
+          passed: [uberzug-deploy]
           params:
-            submodules: none
+            submodules: all
         - get: container-networking-ci
           trigger: false
         - get: environment
           resource: uberzug
-          passed: [deploy-uberzug]
+          passed: [uberzug-deploy]
           trigger: true
-      - task: remote-acceptance-tests
+      - task: ducati-acceptance-tests
         file: container-networking-ci/tasks/run-errand.yml
         params:
           BOSH_PASSWORD: {{uberzug-password}}
           ERRAND: acceptance-tests
-
-  - name: remote-gits-uberzug
-    public: true
-    serial: true
-    serial_groups: [uberzug]
-    plan:
-      - aggregate:
-        - get: uberzug
-          passed: [remote-ducati-tests-uberzug]
-          trigger: true
-        - get: garden-runc-release
-          resource: guardian-release-dev
-          passed: [remote-ducati-tests-uberzug]
-          trigger: true
-        - get: ducati-release
-          passed: [remote-ducati-tests-uberzug]
-          trigger: true
-      - task: remote-gits
-        file: garden-runc-release/ci/non-nested-gits.yml
+      - task: garden-integration-tests
+        file: guardian-release/ci/non-nested-gits.yml
         params:
           GARDEN_ADDRESS: 10.0.1.12:7777
 
-  - name: remote-acceptance-tests-dev
+  - name: boshlite-test
     public: true
-    serial_groups: [bosh-lite-dev]
+    serial_groups: [bosh-lite]
     plan:
       - aggregate:
         - get: ducati-release
-          passed: [deploy-to-bosh-lite-dev]
+          passed: [boshlite-deploy]
           params:
             submodules: none
-        - get: guardian-release-dev
-          passed: [deploy-to-bosh-lite-dev]
+        - get: garden-runc-release
+          passed: [boshlite-deploy]
           params:
             submodules: none
         - get: container-networking-ci
           trigger: false
         - get: environment
-          resource: bosh-lite-environment-dev
-          passed: [deploy-to-bosh-lite-dev]
+          resource: bosh-lite-environment
+          passed: [boshlite-deploy]
           trigger: true
-      - task: remote-acceptance-tests
+      - task: ducati-acceptance-tests
         file: container-networking-ci/tasks/run-errand.yml
         params:
           BOSH_PASSWORD: {{bosh-lite-password}}
           ERRAND: acceptance-tests
 
-  - name: pickelhelm-diego-deploy
+  - name: pickelhelm-deploy
     serial_groups: [pickelhelm]
     plan:
       - aggregate:
@@ -300,13 +281,13 @@ jobs:
         - get: cf-release-tarball
           trigger: true
         - get: ducatify
-        - get: guardian-release
-          resource: guardian-release-dev
+        - get: garden-runc-release
+          resource: garden-runc-release
           trigger: true
-          passed: [remote-acceptance-tests-dev, remote-gits-uberzug]
+          passed: [boshlite-test, uberzug-test]
         - get: ducati-release
           trigger: true
-          passed: [remote-acceptance-tests-dev]
+          passed: [boshlite-test]
         - get: etcd-release
       - task: build-ducatify
         file: container-networking-ci/tasks/build-ducatify.yml
@@ -342,7 +323,7 @@ jobs:
       - get: container-networking-ci
       - get: environment
         resource: pickelhelm-diego
-        passed: [pickelhelm-diego-deploy]
+        passed: [pickelhelm-deploy]
         trigger: true
       - task: ducati-cf-acceptance
         file: container-networking-ci/tasks/run-errand.yml
@@ -351,7 +332,7 @@ jobs:
           ERRAND: ducati-acceptance
       - get: environment
         resource: pickelhelm-cf
-        passed: [pickelhelm-diego-deploy]
+        passed: [pickelhelm-deploy]
         trigger: true
       - task: cats
         file: container-networking-ci/tasks/run-errand.yml
@@ -360,9 +341,9 @@ jobs:
           ERRAND: acceptance_tests
 
 ##### Human-triggered utilities
-  - name: delete-deployment-bosh-lite-dev
+  - name: delete-deployment-bosh-lite
     public: true
-    serial_groups: [bosh-lite-dev]
+    serial_groups: [bosh-lite]
     plan:
     plan:
       - get: container-networking-ci
@@ -372,7 +353,7 @@ jobs:
           BOSH_TARGET: {{bosh-lite-private-ip}}
           BOSH_USER: admin
           BOSH_PASSWORD: {{bosh-lite-password}}
-          DEPLOYMENT_NAME: ducati-guardian-dev
+          DEPLOYMENT_NAME: ducati-guardian
   - name: delete-deployment-uberzug
     public: true
     serial_groups: [uberzug]
@@ -399,3 +380,16 @@ jobs:
           BOSH_USER: admin
           BOSH_PASSWORD: {{pickelhelm-bosh-password}}
           DEPLOYMENT_NAME: cf-diego-diego
+  - name: delete-deployment-pickelhelm-cf
+    public: true
+    serial_groups: [pickelhelm]
+    plan:
+    plan:
+      - get: container-networking-ci
+      - task: delete-deployment
+        file: container-networking-ci/tasks/delete-deployment.yml
+        params:
+          BOSH_TARGET: {{pickelhelm-bosh-host}}
+          BOSH_USER: admin
+          BOSH_PASSWORD: {{pickelhelm-bosh-password}}
+          DEPLOYMENT_NAME: cf-diego
