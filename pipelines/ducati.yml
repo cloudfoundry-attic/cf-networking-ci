@@ -180,7 +180,6 @@ jobs:
           trigger: true
         - get: aws-stemcell
           trigger: true
-        - get: consul-release-tarball
         - get: guardian-release
           resource: garden-runc-release
           trigger: true
@@ -202,7 +201,6 @@ jobs:
           - aws-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
-          - consul-release-tarball/*.tgz
 
   - name: uberzug-test
     public: true
@@ -287,7 +285,7 @@ jobs:
           passed: [boshlite-test, uberzug-test]
         - get: ducati-release
           trigger: true
-          passed: [boshlite-test]
+          passed: [boshlite-test, uberzug-test]
         - get: etcd-release
       - task: build-ducatify
         file: container-networking-ci/tasks/build-ducatify.yml
