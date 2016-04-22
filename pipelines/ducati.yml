@@ -320,6 +320,16 @@ jobs:
   - name: pickelhelm-acceptance-tests
     serial_groups: [pickelhelm]
     plan:
+      - aggregate:
+        - get: diego-release
+          params:
+            submodules: none
+          passed: [pickelhelm-deploy]
+        - get: guardian-release
+          resource: garden-runc-release
+          passed: [pickelhelm-deploy]
+        - get: ducati-release
+          passed: [pickelhelm-deploy]
       - get: container-networking-ci
       - get: environment
         resource: pickelhelm-diego
