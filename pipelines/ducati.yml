@@ -281,7 +281,7 @@ jobs:
         - get: cf-release-tarball
           trigger: true
         - get: ducatify
-        - get: garden-runc-release
+        - get: guardian-release
           resource: garden-runc-release
           trigger: true
           passed: [boshlite-test, uberzug-test]
