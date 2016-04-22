@@ -1,6 +1,6 @@
 resources:
   ###### Deployments
-  - name: bosh-lite-environment
+  - name: boshlite
     type: bosh-deployment
     source:
       target: {{bosh-lite-private-ip}}
@@ -124,7 +124,7 @@ jobs:
 
   - name: boshlite-deploy
     public: true
-    serial_groups: [bosh-lite]
+    serial_groups: [boshlite]
     plan:
       - aggregate:
         - get: boshlite-stemcell
@@ -158,7 +158,7 @@ jobs:
             - -c
             - |
               cat ducati-release/manifests/ducati-manifest.yml | grep -v director_uuid > manifest/manifest.yml
-      - put: bosh-lite-environment
+      - put: boshlite
         params:
           cleanup: true
           manifest: manifest/manifest.yml
@@ -236,7 +236,7 @@ jobs:
 
   - name: boshlite-test
     public: true
-    serial_groups: [bosh-lite]
+    serial_groups: [boshlite]
     plan:
       - aggregate:
         - get: ducati-release
@@ -250,7 +250,7 @@ jobs:
         - get: container-networking-ci
           trigger: false
         - get: environment
-          resource: bosh-lite-environment
+          resource: boshlite
           passed: [boshlite-deploy]
           trigger: true
       - task: ducati-acceptance-tests
@@ -317,7 +317,7 @@ jobs:
           - tarballs/*.tgz
           - diego-etcd-tarballs/*.tgz
 
-  - name: pickelhelm-acceptance-tests
+  - name: pickelhelm-test
     serial_groups: [pickelhelm]
     plan:
       - aggregate:
@@ -351,9 +351,9 @@ jobs:
           ERRAND: acceptance_tests
 
 ##### Human-triggered utilities
-  - name: delete-deployment-bosh-lite
+  - name: delete-deployment-boshlite
     public: true
-    serial_groups: [bosh-lite]
+    serial_groups: [boshlite]
     plan:
     plan:
       - get: container-networking-ci
