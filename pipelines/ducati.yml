@@ -227,11 +227,10 @@ jobs:
         params:
           BOSH_PASSWORD: {{uberzug-password}}
           ERRAND: acceptance-tests
-      - try:
-          task: garden-integration-tests
-          file: gr-release-develop/ci/non-nested-gits.yml
-          params:
-            GARDEN_ADDRESS: 10.0.1.12:7777
+      - task: garden-integration-tests
+        file: gr-release-develop/ci/non-nested-gits.yml
+        params:
+          GARDEN_ADDRESS: 10.0.1.12:7777
 
   - name: boshlite-test
     public: true
