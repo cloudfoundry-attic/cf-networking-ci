@@ -24,10 +24,12 @@ pushd diego-release
     -p ${environment_path}/stubs/diego/property-overrides.yml \
     -n ${environment_path}/stubs/diego/instance-count-overrides.yml \
     -v ${environment_path}/stubs/diego/release-versions.yml \
-    > ${output_path}/diego.yml
+    > ${output_path}/diego0.yml
 popd
 
+sed 's/guardian-release/garden-runc-release/' < ${output_path}/diego0.yml > ${output_path}/diego1.yml
+
 ducatify-bin/ducatify \
-  --diego ${output_path}/diego.yml \
+  --diego ${output_path}/diego1.yml \
   --cfCreds ${environment_path}/stubs/ducati/cf_creds_stub.yml \
-  > ${output_path}/diego_with_ducati.yml
+  > ${output_path}/diego.yml

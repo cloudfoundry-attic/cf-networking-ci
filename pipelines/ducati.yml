@@ -6,14 +6,14 @@ resources:
       target: {{bosh-lite-private-ip}}
       username: admin
       password: {{bosh-lite-password}}
-      deployment: ducati-guardian
+      deployment: ducati
   - name: uberzug
     type: bosh-deployment
     source:
       target: {{uberzug-bosh-host}}
       username: admin
       password: {{uberzug-password}}
-      deployment: ducati-guardian
+      deployment: ducati
   - name: pickelhelm-cf
     type: bosh-deployment
     source:
@@ -132,7 +132,7 @@ jobs:
         - get: ducati-release
           trigger: true
           passed: [ducati-tests]
-        - get: guardian-release
+        - get: garden-runc-release
           resource: garden-runc-release
           trigger: true
           passed: [garden-runc-tests]
@@ -141,7 +141,7 @@ jobs:
       - task: create-release-tarballs
         file: container-networking-ci/tasks/create-release-tarballs.yml
         params:
-          guardian_release_name: guardian
+          guardian_release_name: garden-runc
       - task: prep-manifest
         config:
           image_resource:
@@ -180,7 +180,7 @@ jobs:
           trigger: true
         - get: aws-stemcell
           trigger: true
-        - get: guardian-release
+        - get: garden-runc-release
           resource: garden-runc-release
           trigger: true
           passed: [ garden-runc-tests ]
@@ -280,7 +280,7 @@ jobs:
         - get: cf-release-tarball
           trigger: true
         - get: ducatify
-        - get: guardian-release
+        - get: garden-runc-release
           resource: garden-runc-release
           trigger: true
           passed: [boshlite-test, uberzug-test]
@@ -324,7 +324,7 @@ jobs:
           params:
             submodules: none
           passed: [pickelhelm-deploy]
-        - get: guardian-release
+        - get: garden-runc-release
           resource: garden-runc-release
           passed: [pickelhelm-deploy]
         - get: ducati-release
@@ -362,7 +362,7 @@ jobs:
           BOSH_TARGET: {{bosh-lite-private-ip}}
           BOSH_USER: admin
           BOSH_PASSWORD: {{bosh-lite-password}}
-          DEPLOYMENT_NAME: ducati-guardian
+          DEPLOYMENT_NAME: ducati
   - name: delete-deployment-uberzug
     public: true
     serial_groups: [uberzug]
@@ -375,7 +375,7 @@ jobs:
           BOSH_TARGET: {{uberzug-bosh-host}}
           BOSH_USER: admin
           BOSH_PASSWORD: {{uberzug-password}}
-          DEPLOYMENT_NAME: ducati-guardian
+          DEPLOYMENT_NAME: ducati
   - name: delete-deployment-pickelhelm-diego
     public: true
     serial_groups: [pickelhelm]
