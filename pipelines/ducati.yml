@@ -94,8 +94,8 @@ resources:
   - name: garden-runc-release
     type: git
     source:
-      uri: git://github.com/cloudfoundry-incubator/garden-runc-release
-      branch: develop
+      uri: git://github.com/sykesm/guardian-release
+      branch: ducati-dev
   - name: etcd-release
     type: git
     source:
