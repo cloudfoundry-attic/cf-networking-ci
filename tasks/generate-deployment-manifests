@@ -27,7 +27,7 @@ pushd diego-release
     > ${output_path}/diego0.yml
 popd
 
-sed 's/guardian-release/garden-runc-release/' < ${output_path}/diego0.yml > ${output_path}/diego1.yml
+sed 's/\ guardian/\ garden-runc/' < ${output_path}/diego0.yml > ${output_path}/diego1.yml
 
 ducatify-bin/ducatify \
   --diego ${output_path}/diego1.yml \
