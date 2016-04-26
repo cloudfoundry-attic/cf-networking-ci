@@ -95,7 +95,7 @@ resources:
     type: git
     source:
       uri: git://github.com/cloudfoundry-incubator/garden-runc-release
-      branch: master
+      branch: develop
   - name: etcd-release
     type: git
     source:
@@ -115,11 +115,11 @@ jobs:
   - name: garden-runc-tests
     public: true
     plan:
-      - get: guardian-release
+      - get: gr-release-develop
         trigger: true
         resource: garden-runc-release
       - task: garden-runc-tests
-        file: guardian-release/ci/guardian.yml
+        file: gr-release-develop/ci/guardian.yml
         privileged: true
 
   - name: boshlite-deploy
@@ -211,7 +211,7 @@ jobs:
           passed: [uberzug-deploy]
           params:
             submodules: none
-        - get: guardian-release
+        - get: gr-release-develop
           resource: garden-runc-release
           passed: [uberzug-deploy]
           params:
@@ -227,10 +227,11 @@ jobs:
         params:
           BOSH_PASSWORD: {{uberzug-password}}
           ERRAND: acceptance-tests
-      - task: garden-integration-tests
-        file: guardian-release/ci/non-nested-gits.yml
-        params:
-          GARDEN_ADDRESS: 10.0.1.12:7777
+      - try:
+          task: garden-integration-tests
+          file: gr-release-develop/ci/non-nested-gits.yml
+          params:
+            GARDEN_ADDRESS: 10.0.1.12:7777
 
   - name: boshlite-test
     public: true
