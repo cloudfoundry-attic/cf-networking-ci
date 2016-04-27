@@ -72,6 +72,10 @@ resources:
     type: bosh-io-release
     source:
       repository: cloudfoundry/cf-release
+  - name: rootfs-release
+    type: bosh-io-release
+    source:
+      repository: cloudfoundry/cflinuxfs2-rootfs-release
   - name: consul-release-tarball
     type: bosh-io-release
     source:
@@ -280,6 +284,7 @@ jobs:
           trigger: true
         - get: cf-release-tarball
           trigger: true
+        - get: rootfs-release
         - get: ducatify
         - get: garden-runc-release
           resource: garden-runc-release
@@ -316,6 +321,7 @@ jobs:
           releases:
           - tarballs/*.tgz
           - diego-etcd-tarballs/*.tgz
+          # - rootfs-release/*.tgz  # uncomment once diego requires this
 
   - name: pickelhelm-test
     serial_groups: [pickelhelm]
