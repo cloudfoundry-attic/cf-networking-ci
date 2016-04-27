@@ -325,11 +325,13 @@ jobs:
           params:
             submodules: none
           passed: [pickelhelm-deploy]
+          trigger: true
         - get: garden-runc-release
           resource: garden-runc-release
           passed: [pickelhelm-deploy]
         - get: ducati-release
           passed: [pickelhelm-deploy]
+          trigger: true
       - get: container-networking-ci
       - get: environment
         resource: pickelhelm-diego
