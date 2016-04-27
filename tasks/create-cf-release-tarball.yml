@@ -19,5 +19,5 @@ run:
     - -c
     - |
       ( cd cf-release && for i in {1..5}; do bosh -n --parallel 5 sync blobs && break; done ) \
-       && bosh create release --version $(date "+%s") --with-tarball --name cf-release --dir ducati-release \
-       && cp cf-release/dev_releases/ducati/*.tgz tarballs
+       && bosh create release --version $(date "+%s") --with-tarball --name cf-release --dir cf-release \
+       && cp cf-release/dev_releases/cf/*.tgz tarballs
