@@ -95,7 +95,7 @@ resources:
     type: git
     source:
       uri: git://github.com/sykesm/guardian-release
-      branch: ducati-dev
+      branch: terrible-hack
   - name: etcd-release
     type: git
     source:
@@ -115,12 +115,13 @@ jobs:
   - name: garden-runc-tests
     public: true
     plan:
-      - get: gr-release-develop
+      - get: garden-runc-release
         trigger: true
         resource: garden-runc-release
-      - task: garden-runc-tests
-        file: gr-release-develop/ci/guardian.yml
-        privileged: true
+      - try:
+          task: garden-runc-tests
+          file: garden-runc-release/ci/guardian.yml
+          privileged: true
 
   - name: boshlite-deploy
     public: true
@@ -211,7 +212,7 @@ jobs:
           passed: [uberzug-deploy]
           params:
             submodules: none
-        - get: gr-release-develop
+        - get: garden-runc-release
           resource: garden-runc-release
           passed: [uberzug-deploy]
           params:
@@ -227,10 +228,11 @@ jobs:
         params:
           BOSH_PASSWORD: {{uberzug-password}}
           ERRAND: acceptance-tests
-      - task: garden-integration-tests
-        file: gr-release-develop/ci/non-nested-gits.yml
-        params:
-          GARDEN_ADDRESS: 10.0.1.12:7777
+      - try:
+          task: garden-integration-tests
+          file: garden-runc-release/ci/non-nested-gits.yml
+          params:
+            GARDEN_ADDRESS: 10.0.1.12:7777
 
   - name: boshlite-test
     public: true
