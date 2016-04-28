@@ -66,12 +66,13 @@ resources:
   - name: cf-release
     type: git
     source:
-      branch: master
+      branch: runtime-passed
+      ignore_paths:
+        - dev_releases
+        - git_hooks
+        - releases
+        - .final_builds
       uri: https://github.com/cloudfoundry/cf-release.git
-  - name: cf-release-tarball
-    type: bosh-io-release
-    source:
-      repository: cloudfoundry/cf-release
   - name: rootfs-release
     type: bosh-io-release
     source:
@@ -80,16 +81,20 @@ resources:
     type: bosh-io-release
     source:
       repository: cloudfoundry-incubator/consul-release
+  - name: etcd-release-tarball
+    type: bosh-io-release
+    source:
+      repository: cloudfoundry-incubator/etcd-release
   - name: diego-release
     type: git
     source:
-      branch: ducati-dev
+      branch: release-candidate
       ignore_paths:
         - dev_releases
         - git-hooks
         - releases
         - .final_builds
-      uri: https://github.com/sykesm/diego-release.git
+      uri: https://github.com/cloudfoundry-incubator/diego-release.git
   - name: ducati-release
     type: git
     source:
@@ -98,12 +103,7 @@ resources:
   - name: garden-runc-release
     type: git
     source:
-      uri: git://github.com/sykesm/guardian-release
-      branch: terrible-hack
-  - name: etcd-release
-    type: git
-    source:
-      uri: git://github.com/cloudfoundry-incubator/etcd-release
+      uri: git://github.com/cloudfoundry-incubator/garden-runc-release
       branch: master
 
 jobs:
@@ -122,10 +122,10 @@ jobs:
       - get: garden-runc-release
         trigger: true
         resource: garden-runc-release
-      - try:
-          task: garden-runc-tests
-          file: garden-runc-release/ci/guardian.yml
-          privileged: true
+      - task: garden-runc-tests
+        file: garden-runc-release/ci/guardian.yml
+        input_mapping: {gr-release-develop: garden-runc-release}
+        privileged: true
 
   - name: boshlite-deploy
     public: true
@@ -232,11 +232,11 @@ jobs:
         params:
           BOSH_PASSWORD: {{uberzug-password}}
           ERRAND: acceptance-tests
-      - try:
-          task: garden-integration-tests
-          file: garden-runc-release/ci/non-nested-gits.yml
-          params:
-            GARDEN_ADDRESS: 10.0.1.12:7777
+      - task: garden-integration-tests
+        file: garden-runc-release/ci/non-nested-gits.yml
+        input_mapping: {gr-release-develop: garden-runc-release}
+        params:
+          GARDEN_ADDRESS: 10.0.1.12:7777
 
   - name: boshlite-test
     public: true
@@ -273,16 +273,14 @@ jobs:
           resource: pickelhelm-config
           trigger: false
         - get: cf-release
-          trigger: false
+          trigger: true
           params:
-            submodules: [src/loggregator] # needed for cf-lamb template
+            submodules: all
         - get: diego-release
           trigger: true
           params:
             submodules: all
         - get: aws-stemcell
-          trigger: true
-        - get: cf-release-tarball
           trigger: true
         - get: rootfs-release
         - get: ducatify
@@ -293,17 +291,20 @@ jobs:
         - get: ducati-release
           trigger: true
           passed: [boshlite-test, uberzug-test]
-        - get: etcd-release
-      - task: build-ducatify
-        file: container-networking-ci/tasks/build-ducatify.yml
+        - get: etcd-release-tarball
+      - aggregate:
+        - task: build-ducatify
+          file: container-networking-ci/tasks/build-ducatify.yml
+        - task: create-cf-release-tarball
+          file: container-networking-ci/tasks/create-cf-release-tarball.yml
+        - task: create-release-tarballs
+          file: container-networking-ci/tasks/create-release-tarballs.yml
+        - task: create-diego-release-tarball
+          file: container-networking-ci/tasks/create-diego-release-tarball.yml
       - task: generate-pickelhelm-manifests
         file: container-networking-ci/tasks/generate-deployment-manifests.yml
         params:
           ENVIRONMENT_NAME: pickelhelm
-      - task: create-release-tarballs
-        file: container-networking-ci/tasks/create-release-tarballs.yml
-      - task: create-diego-etcd-release-tarballs
-        file: container-networking-ci/tasks/create-diego-etcd-release-tarballs.yml
       - put: pickelhelm-cf
         params:
           cleanup: true
@@ -320,8 +321,9 @@ jobs:
           - aws-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
-          - diego-etcd-tarballs/*.tgz
-          # - rootfs-release/*.tgz  # uncomment once diego requires this
+          - etcd-release-tarball/*.tgz
+          - rootfs-release/*.tgz
+          - diego-release-tarball/*.tgz
 
   - name: pickelhelm-test
     serial_groups: [pickelhelm]
