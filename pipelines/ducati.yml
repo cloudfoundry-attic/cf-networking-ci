@@ -103,8 +103,8 @@ resources:
   - name: garden-runc-release
     type: git
     source:
-      uri: git://github.com/cloudfoundry-incubator/garden-runc-release
-      branch: master
+      uri: git://github.com/sykesm/garden-runc-release
+      branch: another-terrible-hack
 
 jobs:
   - name: ducati-tests
