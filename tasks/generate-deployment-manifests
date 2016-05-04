@@ -29,7 +29,9 @@ popd
 
 sed 's/\ guardian/\ garden-runc/' < ${output_path}/diego0.yml > ${output_path}/diego1.yml
 
-ducatify-bin/ducatify \
-  --diego ${output_path}/diego1.yml \
-  --cfCreds ${environment_path}/stubs/ducati/cf_creds_stub.yml \
-  > ${output_path}/diego.yml
+pushd ducati-release
+  ./scripts/ducatify \
+    ${output_path}/diego1.yml \
+    ${environment_path}/stubs/ducati/cf_creds_stub.yml \
+    > ${output_path}/diego.yml
+popd

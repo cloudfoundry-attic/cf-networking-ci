@@ -47,12 +47,6 @@ resources:
       branch: master
       private_key: {{container-networking-deployments-deploy-key}}
       paths: environments/uberzug
-  ###### Tools
-  - name: ducatify
-    type: git
-    source:
-      branch: master
-      uri: git://github.com/cloudfoundry-incubator/ducatify.git
   ###### BOSH stemcells
   - name: aws-stemcell
     type: bosh-io-stemcell
@@ -283,7 +277,6 @@ jobs:
         - get: aws-stemcell
           trigger: true
         - get: rootfs-release
-        - get: ducatify
         - get: garden-runc-release
           resource: garden-runc-release
           trigger: true
@@ -293,8 +286,6 @@ jobs:
           passed: [boshlite-test, uberzug-test]
         - get: etcd-release-tarball
       - aggregate:
-        - task: build-ducatify
-          file: container-networking-ci/tasks/build-ducatify.yml
         - task: create-cf-release-tarball
           file: container-networking-ci/tasks/create-cf-release-tarball.yml
         - task: create-release-tarballs
