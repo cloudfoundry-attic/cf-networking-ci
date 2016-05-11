@@ -10,6 +10,7 @@ params:
 
 inputs:
   - name: ducati-release
+  - name: garden-runc-release
 
 outputs:
   - name: tarballs
@@ -20,4 +21,6 @@ run:
     - -c
     - |
       bosh create release --version $(date "+%s") --with-tarball --name ducati --dir ducati-release \
+       && bosh create release --version $(date "+%s") --with-tarball --name ${guardian_release_name} --dir garden-runc-release \
        && cp ducati-release/dev_releases/ducati/*.tgz tarballs \
+       && cp garden-runc-release/dev_releases/${guardian_release_name}/*.tgz tarballs
