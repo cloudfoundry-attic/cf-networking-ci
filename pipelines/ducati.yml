@@ -94,11 +94,10 @@ resources:
     source:
       uri: git://github.com/cloudfoundry-incubator/ducati-release
       branch: master
-  - name: garden-runc-release
-    type: git
+  - name: garden-runc-release-tarball
+    type: bosh-io-release
     source:
-      uri: git://github.com/sykesm/garden-runc-release
-      branch: another-terrible-hack
+      repository: cloudfoundry-incubator/garden-runc-release
 
 jobs:
   - name: ducati-tests
@@ -108,17 +107,6 @@ jobs:
         trigger: true
       - task: ducati-tests
         file: ducati-release/ci/ducati-tests.yml
-        privileged: true
-
-  - name: garden-runc-tests
-    public: true
-    plan:
-      - get: garden-runc-release
-        trigger: true
-        resource: garden-runc-release
-      - task: garden-runc-tests
-        file: garden-runc-release/ci/guardian.yml
-        input_mapping: {gr-release-develop: garden-runc-release}
         privileged: true
 
   - name: boshlite-deploy
@@ -131,10 +119,9 @@ jobs:
         - get: ducati-release
           trigger: true
           passed: [ducati-tests]
-        - get: garden-runc-release
-          resource: garden-runc-release
+        - get: garden-runc-release-tarball
+          resource: garden-runc-release-tarball
           trigger: true
-          passed: [garden-runc-tests]
         - get: consul-release-tarball
         - get: container-networking-ci
       - task: create-release-tarballs
@@ -179,10 +166,9 @@ jobs:
           trigger: true
         - get: aws-stemcell
           trigger: true
-        - get: garden-runc-release
-          resource: garden-runc-release
+        - get: garden-runc-release-tarball
+          resource: garden-runc-release-tarball
           trigger: true
-          passed: [ garden-runc-tests ]
           params:
             submodules: all
         - get: ducati-release
@@ -210,8 +196,8 @@ jobs:
           passed: [uberzug-deploy]
           params:
             submodules: none
-        - get: garden-runc-release
-          resource: garden-runc-release
+        - get: garden-runc-release-tarball
+          resource: garden-runc-release-tarball
           passed: [uberzug-deploy]
           params:
             submodules: all
@@ -227,8 +213,8 @@ jobs:
           BOSH_PASSWORD: {{uberzug-password}}
           ERRAND: acceptance-tests
       - task: garden-integration-tests
-        file: garden-runc-release/ci/non-nested-gits.yml
-        input_mapping: {gr-release-develop: garden-runc-release}
+        file: garden-runc-release-tarball/ci/non-nested-gits.yml
+        input_mapping: {gr-release-develop: garden-runc-release-tarball}
         params:
           GARDEN_ADDRESS: 10.0.1.12:7777
 
@@ -241,7 +227,7 @@ jobs:
           passed: [boshlite-deploy]
           params:
             submodules: none
-        - get: garden-runc-release
+        - get: garden-runc-release-tarball
           passed: [boshlite-deploy]
           params:
             submodules: none
@@ -270,15 +256,15 @@ jobs:
           trigger: true
           params:
             submodules: all
-        - get: diego-release
+        - get: diego-release-tarball
           trigger: true
           params:
             submodules: all
         - get: aws-stemcell
           trigger: true
         - get: rootfs-release
-        - get: garden-runc-release
-          resource: garden-runc-release
+        - get: garden-runc-release-tarball
+          resource: garden-runc-release-tarball
           trigger: true
           passed: [boshlite-test, uberzug-test]
         - get: ducati-release
@@ -325,8 +311,8 @@ jobs:
             submodules: none
           passed: [pickelhelm-deploy]
           trigger: true
-        - get: garden-runc-release
-          resource: garden-runc-release
+        - get: garden-runc-release-tarball
+          resource: garden-runc-release-tarball
           passed: [pickelhelm-deploy]
         - get: ducati-release
           passed: [pickelhelm-deploy]
