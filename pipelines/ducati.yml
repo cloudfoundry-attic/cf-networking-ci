@@ -82,7 +82,7 @@ resources:
   - name: diego-release
     type: git
     source:
-      branch: release-candidate
+      branch: master
       ignore_paths:
         - dev_releases
         - git-hooks
@@ -97,8 +97,8 @@ resources:
   - name: garden-runc-release
     type: git
     source:
-      uri: git://github.com/sykesm/garden-runc-release
-      branch: another-terrible-hack
+      uri: git://github.com/cloudfoundry-incubator/garden-runc-release
+      branch: master
 
 jobs:
   - name: ducati-tests
@@ -108,17 +108,6 @@ jobs:
         trigger: true
       - task: ducati-tests
         file: ducati-release/ci/ducati-tests.yml
-        privileged: true
-
-  - name: garden-runc-tests
-    public: true
-    plan:
-      - get: garden-runc-release
-        trigger: true
-        resource: garden-runc-release
-      - task: garden-runc-tests
-        file: garden-runc-release/ci/guardian.yml
-        input_mapping: {gr-release-develop: garden-runc-release}
         privileged: true
 
   - name: boshlite-deploy
@@ -134,7 +123,6 @@ jobs:
         - get: garden-runc-release
           resource: garden-runc-release
           trigger: true
-          passed: [garden-runc-tests]
         - get: consul-release-tarball
         - get: container-networking-ci
       - task: create-release-tarballs
@@ -182,7 +170,6 @@ jobs:
         - get: garden-runc-release
           resource: garden-runc-release
           trigger: true
-          passed: [ garden-runc-tests ]
           params:
             submodules: all
         - get: ducati-release
