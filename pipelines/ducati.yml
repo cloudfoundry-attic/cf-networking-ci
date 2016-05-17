@@ -39,14 +39,14 @@ resources:
       uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
       branch: master
       private_key: {{container-networking-deployments-deploy-key}}
-      paths: environments/pickelhelm
+      paths: [ environments/pickelhelm ]
   - name: uberzug-config
     type: git
     source:
       uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
       branch: master
       private_key: {{container-networking-deployments-deploy-key}}
-      paths: environments/uberzug
+      paths: [ environments/uberzug ]
   ###### BOSH stemcells
   - name: aws-stemcell
     type: bosh-io-stemcell
