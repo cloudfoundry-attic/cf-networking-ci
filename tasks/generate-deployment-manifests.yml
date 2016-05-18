@@ -10,7 +10,7 @@ inputs:
   - name: container-networking-ci
   - name: cf-release
   - name: diego-release
-  - name: ducati-release
+  - name: netman-release
 
 outputs:
   - name: generated-manifest
