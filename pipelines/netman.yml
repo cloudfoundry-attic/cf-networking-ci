@@ -199,7 +199,6 @@ jobs:
         - get: garden-runc-release-tarball
           passed: [uberzug-deploy]
         - get: garden-runc-release
-          trigger: false
         - get: container-networking-ci
           trigger: false
         - get: environment
