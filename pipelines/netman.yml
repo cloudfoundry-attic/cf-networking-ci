@@ -28,6 +28,20 @@ resources:
       username: admin
       password: {{pickelhelm-bosh-password}}
       deployment: cf-diego-diego
+  - name: mitre-cf
+    type: bosh-deployment
+    source:
+      target: {{mitre-bosh-host}}
+      username: admin
+      password: {{mitre-bosh-password}}
+      deployment: mitre
+  - name: mitre-diego
+    type: bosh-deployment
+    source:
+      target: {{mitre-bosh-host}}
+      username: admin
+      password: {{mitre-bosh-password}}
+      deployment: mitre-diego
   ###### Control plane
   - name: container-networking-ci
     type: git
@@ -40,6 +54,13 @@ resources:
       branch: master
       private_key: {{container-networking-deployments-deploy-key}}
       paths: [ environments/pickelhelm ]
+  - name: mitre-config
+    type: git
+    source:
+      uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
+      branch: master
+      private_key: {{container-networking-deployments-deploy-key}}
+      paths: [ environments/mitre ]
   - name: uberzug-config
     type: git
     source:
@@ -332,6 +353,90 @@ jobs:
           BOSH_PASSWORD: {{pickelhelm-bosh-password}}
           ERRAND: acceptance_tests
 
+  - name: mitre-deploy
+    serial_groups: [mitre]
+    plan:
+      - aggregate:
+        - get: container-networking-ci
+          trigger: false
+        - get: deployments-repo
+          resource: mitre-config
+          trigger: false
+        - get: cf-release
+          params: { submodules: none }
+        - get: diego-release
+          params: { submodules: none }
+        - get: aws-stemcell
+          trigger: false
+        - get: rootfs-release-tarball
+        - get: cf-release-tarball
+          trigger: false
+        - get: diego-release-tarball
+          trigger: false
+        - get: garden-runc-release-tarball
+          trigger: false
+          passed: [pickelhelm-test]
+        - get: netman-release
+          trigger: false
+          passed: [pickelhelm-test]
+        - get: etcd-release-tarball
+      - aggregate:
+        - task: create-release-tarball
+          file: netman-release/ci/create-release-tarball.yml
+      - task: generate-mitre-manifests
+        file: container-networking-ci/tasks/generate-deployment-manifests.yml
+        params:
+          ENVIRONMENT_NAME: mitre
+      - put: mitre-cf
+        params:
+          cleanup: true
+          manifest: generated-manifest/cf.yml
+          stemcells:
+          - aws-stemcell/*.tgz
+          releases:
+          - cf-release-tarball/*.tgz
+      - put: mitre-diego
+        params:
+          cleanup: true
+          manifest: generated-manifest/diego.yml
+          stemcells:
+          - aws-stemcell/*.tgz
+          releases:
+          - tarballs/*.tgz
+          - garden-runc-release-tarball/*.tgz
+          - etcd-release-tarball/*.tgz
+          - rootfs-release-tarball/*.tgz
+          - diego-release-tarball/*.tgz
+
+  - name: mitre-test
+    serial_groups: [mitre]
+    plan:
+      - aggregate:
+        - get: diego-release
+          params: { submodules: none }
+          passed: [mitre-deploy]
+          trigger: true
+        - get: cf-release
+          params: { submodules: none }
+          passed: [mitre-deploy]
+          trigger: true
+        - get: garden-runc-release-tarball
+          passed: [mitre-deploy]
+          trigger: true
+        - get: netman-release
+          passed: [mitre-deploy]
+          trigger: true
+      - get: container-networking-ci
+      - get: environment
+        resource: mitre-diego
+        passed: [mitre-deploy]
+        trigger: true
+      - task: netman-cf-acceptance
+        file: container-networking-ci/tasks/run-errand.yml
+        params:
+          BOSH_PASSWORD: {{mitre-bosh-password}}
+          ERRAND: netman-cf-acceptance
+
 ##### Human-triggered utilities
   - name: delete-deployment-boshlite
     public: true
@@ -385,3 +490,29 @@ jobs:
           BOSH_USER: admin
           BOSH_PASSWORD: {{pickelhelm-bosh-password}}
           DEPLOYMENT_NAME: cf-diego
+  - name: delete-deployment-mitre-diego
+    public: true
+    serial_groups: [mitre]
+    plan:
+    plan:
+      - get: container-networking-ci
+      - task: delete-deployment
+        file: container-networking-ci/tasks/delete-deployment.yml
+        params:
+          BOSH_TARGET: {{mitre-bosh-host}}
+          BOSH_USER: admin
+          BOSH_PASSWORD: {{mitre-bosh-password}}
+          DEPLOYMENT_NAME: mitre-diego
+  - name: delete-deployment-mitre-cf
+    public: true
+    serial_groups: [mitre]
+    plan:
+    plan:
+      - get: container-networking-ci
+      - task: delete-deployment
+        file: container-networking-ci/tasks/delete-deployment.yml
+        params:
+          BOSH_TARGET: {{mitre-bosh-host}}
+          BOSH_USER: admin
+          BOSH_PASSWORD: {{mitre-bosh-password}}
+          DEPLOYMENT_NAME: mitre
