@@ -1,35 +1,35 @@
 resources:
-- name: ducati-dev-dockerfile
+- name: dev-dockerfile
   type: git
   source:
     uri: git://github.com/cloudfoundry-incubator/container-networking-ci
     branch: master
     paths:
-      - images/ducati-dev
+      - dockerfiles/dev
 
-- name: ducati-dev-image
+- name: dev-image
   type: docker-image
   source:
     username: {{dockerhub_username}}
     password: {{dockerhub_password}}
     email: {{dockerhub_email}}
-    repository: c2cnetworking/ducati-dev
+    repository: c2cnetworking/dev
 
-- name: ducati-deploy-dockerfile
+- name: deploy-dockerfile
   type: git
   source:
     uri: git://github.com/cloudfoundry-incubator/container-networking-ci
     branch: master
     paths:
-      - images/ducati-deploy
+      - dockerfiles/deploy
 
-- name: ducati-deploy-image
+- name: deploy-image
   type: docker-image
   source:
     username: {{dockerhub_username}}
     password: {{dockerhub_password}}
     email: {{dockerhub_email}}
-    repository: c2cnetworking/ducati-deploy
+    repository: c2cnetworking/deploy
 
 - name: aws-ops-dockerfile
   type: git
@@ -37,7 +37,7 @@ resources:
     uri: git://github.com/cloudfoundry-incubator/container-networking-ci
     branch: master
     paths:
-      - images/aws-ops
+      - dockerfiles/aws-ops
 
 - name: aws-ops-image
   type: docker-image
@@ -48,21 +48,21 @@ resources:
     repository: c2cnetworking/aws-ops
 
 jobs:
-- name: build-ducati-dev-image
+- name: build-dev-image
   plan:
-  - get: ducati-dev-dockerfile
+  - get: dev-dockerfile
     trigger: true
-  - put: ducati-dev-image
+  - put: dev-image
     params:
-      build: ducati-dev-dockerfile/images/ducati-dev
+      build: dev-dockerfile/dockerfiles/dev
 
-- name: build-ducati-deploy-image
+- name: build-deploy-image
   plan:
-  - get: ducati-deploy-dockerfile
+  - get: deploy-dockerfile
     trigger: true
-  - put: ducati-deploy-image
+  - put: deploy-image
     params:
-      build: ducati-deploy-dockerfile/images/ducati-deploy
+      build: deploy-dockerfile/dockerfiles/deploy
 
 - name: build-aws-ops-image
   plan:
@@ -70,4 +70,4 @@ jobs:
     trigger: true
   - put: aws-ops-image
     params:
-      build: aws-ops-dockerfile/images/aws-ops
+      build: aws-ops-dockerfile/dockerfiles/aws-ops

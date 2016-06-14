@@ -9,7 +9,7 @@ View the pipeline [here](http://htmlpreview.github.io/?https://github.com/cloudf
 ```bash
 ./reconfigure $PIPELINE_NAME
 ```
-where `$PIPELINE_NAME` might be `ducati`, `images`, etc.
+where `$PIPELINE_NAME` might be `netman`, `images`, etc.
 
 ## running tests locally
 create a docker machine called `rock-solid`:

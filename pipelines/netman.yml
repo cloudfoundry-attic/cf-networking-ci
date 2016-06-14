@@ -154,7 +154,7 @@ jobs:
         config:
           image_resource:
             type: docker-image
-            source: { repository: c2cnetworking/ducati-deploy }
+            source: { repository: c2cnetworking/deploy }
           platform: linux
           inputs:
           - name: netman-release
