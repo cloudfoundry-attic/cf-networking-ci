@@ -10,7 +10,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
   &&  apt-get clean \
   &&  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN curl -o /tmp/golang.tgz https://storage.googleapis.com/golang/go1.6.linux-amd64.tar.gz \
+RUN curl -o /tmp/golang.tgz https://storage.googleapis.com/golang/go1.6.2.linux-amd64.tar.gz \
     && tar -C /usr/local -xzf /tmp/golang.tgz \
     && rm /tmp/golang.tgz
 
