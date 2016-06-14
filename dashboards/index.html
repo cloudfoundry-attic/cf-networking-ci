@@ -1,0 +1,47 @@
+<html>
+  <head>
+    <style>
+      html, body {
+        margin: 0px;
+        padding: 0px;
+        background-color: #273747;
+      }
+
+      iframe {
+        height: 100%;
+        width: 100%;
+        border: 0px;
+      }
+
+      .row--tall  { height: 60%; }
+      .row--short { height: 40%; }
+
+      .col--half {
+        width: 50%;
+        float: left;
+        border-right: 5px solid #1A252F;
+        box-sizing: border-box;
+      }
+
+      .col--full {
+        width: 100%;
+        float: left;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="row--tall">
+      <div class="col--full">
+        <iframe src="https://c2c.ci.cf-app.com/pipelines/netman"></iframe>
+      </div>
+    </div>
+    <div class="row--short">
+      <div class="col--half">
+        <iframe src="https://c2c.ci.cf-app.com/pipelines/images"></iframe>
+      </div>
+      <div class="col--half">
+        <iframe src="https://c2c.ci.cf-app.com/pipelines/resources"></iframe>
+      </div>
+    </div>
+  </body>
+</html>
