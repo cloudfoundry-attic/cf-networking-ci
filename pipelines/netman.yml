@@ -226,17 +226,18 @@ jobs:
           resource: uberzug
           passed: [uberzug-deploy]
           trigger: true
-      - task: netman-acceptance-tests
-        file: container-networking-ci/tasks/run-errand.yml
-        params:
-          BOSH_PASSWORD: {{uberzug-password}}
-          ERRAND: acceptance-tests
       - try:
-          task: garden-integration-tests
-          file: garden-runc-release/ci/non-nested-gits.yml
-          input_mapping: {gr-release-develop: garden-runc-release}
-          params:
-            GARDEN_ADDRESS: 10.0.1.12:7777
+          aggregate:
+          - task: netman-acceptance-tests
+            file: container-networking-ci/tasks/run-errand.yml
+            params:
+              BOSH_PASSWORD: {{uberzug-password}}
+              ERRAND: acceptance-tests
+          - task: garden-integration-tests
+            file: garden-runc-release/ci/non-nested-gits.yml
+            input_mapping: {gr-release-develop: garden-runc-release}
+            params:
+              GARDEN_ADDRESS: 10.0.1.12:7777
 
   - name: boshlite-test
     public: true
