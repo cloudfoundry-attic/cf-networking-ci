@@ -228,11 +228,11 @@ jobs:
           trigger: true
       - try:
           aggregate:
-          - task: netman-acceptance-tests
+          - task: netman-garden-integration-tests
             file: container-networking-ci/tasks/run-errand.yml
             params:
               BOSH_PASSWORD: {{uberzug-password}}
-              ERRAND: acceptance-tests
+              ERRAND: netman-garden-integration-tests
           - task: garden-integration-tests
             file: garden-runc-release/ci/non-nested-gits.yml
             input_mapping: {gr-release-develop: garden-runc-release}
