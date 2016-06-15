@@ -255,11 +255,11 @@ jobs:
           resource: boshlite
           passed: [boshlite-deploy]
           trigger: true
-      - task: netman-acceptance-tests
+      - task: netman-garden-integration-tests
         file: container-networking-ci/tasks/run-errand.yml
         params:
           BOSH_PASSWORD: {{bosh-lite-password}}
-          ERRAND: acceptance-tests
+          ERRAND: netman-garden-integration-tests
 
   - name: pickelhelm-deploy
     serial_groups: [pickelhelm]
