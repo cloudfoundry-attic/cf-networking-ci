@@ -226,18 +226,11 @@ jobs:
           resource: uberzug
           passed: [uberzug-deploy]
           trigger: true
-      - try:
-          aggregate:
-          - task: netman-garden-integration-tests
-            file: container-networking-ci/tasks/run-errand.yml
-            params:
-              BOSH_PASSWORD: {{uberzug-password}}
-              ERRAND: netman-garden-integration-tests
-          - task: garden-integration-tests
-            file: garden-runc-release/ci/non-nested-gits.yml
-            input_mapping: {gr-release-develop: garden-runc-release}
-            params:
-              GARDEN_ADDRESS: 10.0.1.12:7777
+        - task: netman-garden-integration-tests
+          file: container-networking-ci/tasks/run-errand.yml
+          params:
+            BOSH_PASSWORD: {{uberzug-password}}
+            ERRAND: netman-garden-integration-tests
 
   - name: boshlite-test
     public: true
@@ -341,21 +334,11 @@ jobs:
         resource: pickelhelm-diego
         passed: [pickelhelm-deploy]
         trigger: true
-      - try:
-          task: netman-cf-acceptance
-          file: container-networking-ci/tasks/run-errand.yml
-          params:
-            BOSH_PASSWORD: {{pickelhelm-bosh-password}}
-            ERRAND: netman-cf-acceptance
-      - get: environment
-        resource: pickelhelm-cf
-        passed: [pickelhelm-deploy]
-        trigger: true
-      - task: cats
+      - task: netman-cf-acceptance
         file: container-networking-ci/tasks/run-errand.yml
         params:
           BOSH_PASSWORD: {{pickelhelm-bosh-password}}
-          ERRAND: acceptance_tests
+          ERRAND: netman-cf-acceptance
 
   - name: mitre-deploy
     serial_groups: [mitre]
