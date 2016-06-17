@@ -226,11 +226,11 @@ jobs:
           resource: uberzug
           passed: [uberzug-deploy]
           trigger: true
-        - task: netman-garden-integration-tests
-          file: container-networking-ci/tasks/run-errand.yml
-          params:
-            BOSH_PASSWORD: {{uberzug-password}}
-            ERRAND: netman-garden-integration-tests
+      - task: netman-garden-integration-tests
+        file: container-networking-ci/tasks/run-errand.yml
+        params:
+          BOSH_PASSWORD: {{uberzug-password}}
+          ERRAND: netman-garden-integration-tests
 
   - name: boshlite-test
     public: true
