@@ -127,7 +127,7 @@ resources:
   - name: deliver-story
     type: tracker
     source:
-      token: 0eb5674acebfaa2cd8e8b6e7360e1a68
+      token: {{tracker_api_token}}
       project_id: "1498342"
       tracker_url: https://www.pivotaltracker.com
 
