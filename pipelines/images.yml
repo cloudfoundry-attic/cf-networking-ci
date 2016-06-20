@@ -1,19 +1,19 @@
 resources:
-- name: dev-dockerfile
+- name: dev-postgres-dockerfile
   type: git
   source:
     uri: git://github.com/cloudfoundry-incubator/container-networking-ci
     branch: master
     paths:
-      - dockerfiles/dev
+      - dockerfiles/dev-postgres
 
-- name: dev-image
+- name: dev-postgres-image
   type: docker-image
   source:
     username: {{dockerhub_username}}
     password: {{dockerhub_password}}
     email: {{dockerhub_email}}
-    repository: c2cnetworking/dev
+    repository: c2cnetworking/dev-postgres
 
 - name: deploy-dockerfile
   type: git
@@ -48,13 +48,13 @@ resources:
     repository: c2cnetworking/aws-ops
 
 jobs:
-- name: build-dev-image
+- name: build-dev-postgres-image
   plan:
-  - get: dev-dockerfile
+  - get: dev-postgres-dockerfile
     trigger: true
-  - put: dev-image
+  - put: dev-postgres-image
     params:
-      build: dev-dockerfile/dockerfiles/dev
+      build: dev-postgres-dockerfile/dockerfiles/dev-postgres
 
 - name: build-deploy-image
   plan:
