@@ -125,13 +125,22 @@ resources:
       repository: cloudfoundry-incubator/garden-runc-release
 
 jobs:
-  - name: netman-tests
+  - name: netman-tests-postgres
     public: true
     plan:
       - get: netman-release
         trigger: true
       - task: netman-tests
-        file: netman-release/ci/netman-tests.yml
+        file: netman-release/ci/netman-tests-postgres.yml
+        privileged: true
+
+  - name: netman-tests-mysql
+    public: true
+    plan:
+      - get: netman-release
+        trigger: true
+      - task: netman-tests
+        file: netman-release/ci/netman-tests-mysql.yml
         privileged: true
 
   - name: boshlite-deploy
@@ -143,7 +152,7 @@ jobs:
           trigger: true
         - get: netman-release
           trigger: true
-          passed: [netman-tests]
+          passed: [netman-tests-postgres, netman-tests-mysql]
         - get: garden-runc-release-tarball
           trigger: true
         - get: etcd-release-tarball
@@ -195,7 +204,7 @@ jobs:
         - get: netman-release
           params: { submodules: all }
           trigger: true
-          passed: [ netman-tests ]
+          passed: [netman-tests-postgres, netman-tests-mysql]
       - task: create-release-tarball
         file: netman-release/ci/create-release-tarball.yml
       - put: uberzug
@@ -276,12 +285,10 @@ jobs:
           trigger: true
         - get: garden-runc-release-tarball
           trigger: true
-          # passed: [boshlite-test, uberzug-test]
-          passed: [boshlite-test ]
+          passed: [boshlite-test, uberzug-test]
         - get: netman-release
           trigger: true
-          # passed: [boshlite-test, uberzug-test]
-          passed: [boshlite-test ]
+          passed: [boshlite-test, uberzug-test]
         - get: etcd-release-tarball
       - aggregate:
         - task: create-release-tarball
