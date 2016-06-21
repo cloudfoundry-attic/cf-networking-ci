@@ -69,14 +69,16 @@ resources:
       private_key: {{container-networking-deployments-deploy-key}}
       paths: [ environments/uberzug ]
   ###### BOSH stemcells
-  - name: aws-stemcell
-    type: bosh-io-stemcell
-    source:
-      name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
   - name: boshlite-stemcell
     type: bosh-io-stemcell
     source:
       name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  - name: aws-4-4-stemcell
+    type: s3
+    source:
+      bucket: c2c-stemcells
+      region_name: us-west-2
+      versioned_file: bosh-stemcell-3232.kernel-4.4-aws-xen-ubuntu-trusty-go_agent.tgz
   ###### BOSH release repos
   - name: cf-release
     type: git
@@ -204,7 +206,7 @@ jobs:
           trigger: false
         - get: uberzug-config
           trigger: true
-        - get: aws-stemcell
+        - get: aws-4-4-stemcell
           trigger: true
         - get: garden-runc-release-tarball
           trigger: true
@@ -220,7 +222,7 @@ jobs:
           cleanup: true
           manifest: uberzug-config/environments/uberzug/uberzug.yml
           stemcells:
-          - aws-stemcell/*.tgz
+          - aws-4-4-stemcell/*.tgz
           releases:
           - garden-runc-release-tarball/*.tgz
           - etcd-release-tarball/*.tgz
@@ -271,6 +273,29 @@ jobs:
           BOSH_PASSWORD: {{bosh-lite-password}}
           ERRAND: netman-garden-integration-tests
 
+  - name: uberzug-gits
+    public: true
+    serial_groups: [uberzug]
+    plan:
+      - aggregate:
+        - get: netman-release
+          passed: [uberzug-test]
+          params: { submodules: none }
+        - get: garden-runc-release-tarball
+          passed: [uberzug-test]
+        - get: garden-runc-release
+        - get: container-networking-ci
+          trigger: false
+        - get: environment
+          resource: uberzug
+          passed: [uberzug-test]
+          trigger: true
+      - task: garden-integration-tests
+        file: garden-runc-release/ci/non-nested-gits.yml
+        input_mapping: {gr-release-develop: garden-runc-release}
+        params:
+          GARDEN_ADDRESS: 10.0.1.12:7777
+
   - name: pickelhelm-deploy
     serial_groups: [pickelhelm]
     plan:
@@ -284,7 +309,7 @@ jobs:
           params: { submodules: none }
         - get: diego-release
           params: { submodules: none }
-        - get: aws-stemcell
+        - get: aws-4-4-stemcell
           trigger: true
         - get: rootfs-release-tarball
         - get: cf-release-tarball
@@ -310,7 +335,7 @@ jobs:
           cleanup: true
           manifest: generated-manifest/cf.yml
           stemcells:
-          - aws-stemcell/*.tgz
+          - aws-4-4-stemcell/*.tgz
           releases:
           - cf-release-tarball/*.tgz
       - put: pickelhelm-diego
@@ -318,7 +343,7 @@ jobs:
           cleanup: true
           manifest: generated-manifest/diego.yml
           stemcells:
-          - aws-stemcell/*.tgz
+          - aws-4-4-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
           - garden-runc-release-tarball/*.tgz
@@ -368,7 +393,7 @@ jobs:
           params: { submodules: none }
         - get: diego-release
           params: { submodules: none }
-        - get: aws-stemcell
+        - get: aws-4-4-stemcell
           trigger: false
         - get: rootfs-release-tarball
         - get: cf-release-tarball
@@ -394,7 +419,7 @@ jobs:
           cleanup: true
           manifest: generated-manifest/cf.yml
           stemcells:
-          - aws-stemcell/*.tgz
+          - aws-4-4-stemcell/*.tgz
           releases:
           - cf-release-tarball/*.tgz
       - put: mitre-diego
@@ -402,7 +427,7 @@ jobs:
           cleanup: true
           manifest: generated-manifest/diego.yml
           stemcells:
-          - aws-stemcell/*.tgz
+          - aws-4-4-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
           - garden-runc-release-tarball/*.tgz
