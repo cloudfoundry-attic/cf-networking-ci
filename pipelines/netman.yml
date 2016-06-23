@@ -163,10 +163,12 @@ jobs:
         - get: netman-release
           trigger: true
           passed: [netman-tests-postgres, netman-tests-mysql]
-        - get: garden-runc-release-tarball
+        - get: garden-runc-release
           trigger: true
         - get: etcd-release-tarball
         - get: container-networking-ci
+      - task: create-garden-runc-release-tarball
+        file: container-networking-ci/tasks/create-garden-runc-release-tarball.yml
       - task: create-release-tarball
         file: netman-release/ci/create-release-tarball.yml
       - task: prep-manifest
@@ -208,13 +210,15 @@ jobs:
           trigger: true
         - get: aws-4-4-stemcell
           trigger: true
-        - get: garden-runc-release-tarball
+        - get: garden-runc-release
           trigger: true
         - get: etcd-release-tarball
         - get: netman-release
           params: { submodules: all }
           trigger: true
           passed: [netman-tests-postgres, netman-tests-mysql]
+      - task: create-garden-runc-release-tarball
+        file: container-networking-ci/tasks/create-garden-runc-release-tarball.yml
       - task: create-release-tarball
         file: netman-release/ci/create-release-tarball.yml
       - put: uberzug
@@ -236,9 +240,8 @@ jobs:
         - get: netman-release
           passed: [uberzug-deploy]
           params: { submodules: none }
-        - get: garden-runc-release-tarball
-          passed: [uberzug-deploy]
         - get: garden-runc-release
+          passed: [uberzug-deploy]
         - get: container-networking-ci
           trigger: false
         - get: environment
@@ -259,7 +262,7 @@ jobs:
         - get: netman-release
           passed: [boshlite-deploy]
           params: { submodules: none }
-        - get: garden-runc-release-tarball
+        - get: garden-runc-release
           passed: [boshlite-deploy]
         - get: container-networking-ci
           trigger: false
@@ -281,9 +284,8 @@ jobs:
         - get: netman-release
           passed: [uberzug-test]
           params: { submodules: none }
-        - get: garden-runc-release-tarball
-          passed: [uberzug-test]
         - get: garden-runc-release
+          passed: [uberzug-test]
         - get: container-networking-ci
           trigger: false
         - get: environment
@@ -316,7 +318,7 @@ jobs:
           trigger: true
         - get: diego-release-tarball
           trigger: true
-        - get: garden-runc-release-tarball
+        - get: garden-runc-release
           trigger: true
           # passed: [boshlite-test, uberzug-test]
           passed: [boshlite-test]
@@ -328,6 +330,8 @@ jobs:
       - aggregate:
         - task: create-release-tarball
           file: netman-release/ci/create-release-tarball.yml
+      - task: create-garden-runc-release-tarball
+        file: container-networking-ci/tasks/create-garden-runc-release-tarball.yml
       - task: generate-pickelhelm-manifests
         file: container-networking-ci/tasks/generate-deployment-manifests.yml
         params:
@@ -365,7 +369,7 @@ jobs:
           params: { submodules: none }
           passed: [pickelhelm-deploy]
           trigger: true
-        - get: garden-runc-release-tarball
+        - get: garden-runc-release
           passed: [pickelhelm-deploy]
           trigger: true
         - get: netman-release
@@ -402,7 +406,7 @@ jobs:
           trigger: false
         - get: diego-release-tarball
           trigger: false
-        - get: garden-runc-release-tarball
+        - get: garden-runc-release
           trigger: false
           passed: [pickelhelm-test]
         - get: netman-release
@@ -412,6 +416,8 @@ jobs:
       - aggregate:
         - task: create-release-tarball
           file: netman-release/ci/create-release-tarball.yml
+      - task: create-garden-runc-release-tarball
+        file: container-networking-ci/tasks/create-garden-runc-release-tarball.yml
       - task: generate-mitre-manifests
         file: container-networking-ci/tasks/generate-deployment-manifests.yml
         params:
@@ -449,7 +455,7 @@ jobs:
           params: { submodules: none }
           passed: [mitre-deploy]
           trigger: true
-        - get: garden-runc-release-tarball
+        - get: garden-runc-release
           passed: [mitre-deploy]
           trigger: true
         - get: netman-release
