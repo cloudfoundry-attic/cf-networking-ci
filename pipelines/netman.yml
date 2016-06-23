@@ -98,8 +98,8 @@ resources:
   - name: garden-runc-release
     type: git
     source:
-      uri: git://github.com/cloudfoundry-incubator/garden-runc-release
-      branch: master
+      uri: git://github.com/evanfarrar/garden-runc-release
+      branch: patch-kernel44
   ###### BOSH release tarballs
   - name: rootfs-release-tarball
     type: bosh-io-release
