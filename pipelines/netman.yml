@@ -320,12 +320,10 @@ jobs:
           trigger: true
         - get: garden-runc-release
           trigger: true
-          # passed: [boshlite-test, uberzug-test]
-          passed: [boshlite-test]
+          passed: [boshlite-test, uberzug-test]
         - get: netman-release
           trigger: true
-          # passed: [boshlite-test, uberzug-test]
-          passed: [boshlite-test]
+          passed: [boshlite-test, uberzug-test]
         - get: etcd-release-tarball
       - aggregate:
         - task: create-release-tarball
