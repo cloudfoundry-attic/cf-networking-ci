@@ -17,4 +17,4 @@ run:
     - -c
     - |
       bosh target $BOSH_TARGET
-      bosh -n delete deployment $DEPLOYMENT_NAME
+      bosh -n delete deployment $DEPLOYMENT_NAME --force
