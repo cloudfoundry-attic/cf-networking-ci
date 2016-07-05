@@ -1,19 +1,5 @@
 resources:
   ###### Deployments
-  - name: boshlite
-    type: bosh-deployment
-    source:
-      target: {{bosh-lite-private-ip}}
-      username: admin
-      password: {{bosh-lite-password}}
-      deployment: netman
-  - name: uberzug
-    type: bosh-deployment
-    source:
-      target: {{uberzug-bosh-host}}
-      username: admin
-      password: {{uberzug-password}}
-      deployment: netman
   - name: pickelhelm-cf
     type: bosh-deployment
     source:
@@ -69,10 +55,6 @@ resources:
       private_key: {{container-networking-deployments-deploy-key}}
       paths: [ environments/uberzug ]
   ###### BOSH stemcells
-  - name: boshlite-stemcell
-    type: bosh-io-stemcell
-    source:
-      name: bosh-warden-boshlite-ubuntu-trusty-go_agent
   - name: aws-4-4-stemcell
     type: s3
     source:
@@ -153,151 +135,6 @@ jobs:
         file: netman-release/ci/netman-tests-mysql.yml
         privileged: true
 
-  - name: boshlite-deploy
-    public: true
-    serial_groups: [boshlite]
-    plan:
-      - aggregate:
-        - get: boshlite-stemcell
-          trigger: true
-        - get: netman-release
-          trigger: true
-          passed: [netman-tests-postgres, netman-tests-mysql]
-        - get: garden-runc-release
-          trigger: true
-        - get: etcd-release-tarball
-        - get: container-networking-ci
-      - task: create-garden-runc-release-tarball
-        file: container-networking-ci/tasks/create-garden-runc-release-tarball.yml
-      - task: create-release-tarball
-        file: netman-release/ci/create-release-tarball.yml
-      - task: prep-manifest
-        config:
-          image_resource:
-            type: docker-image
-            source: { repository: c2cnetworking/deploy }
-          platform: linux
-          inputs:
-          - name: netman-release
-          outputs:
-          - name: manifest
-          run:
-            path: bash
-            args:
-            - -c
-            - |
-              cat netman-release/bosh-lite/deployments/netman-bare.yml | grep -v director_uuid > manifest/manifest.yml
-      - put: boshlite
-        params:
-          cleanup: true
-          manifest: manifest/manifest.yml
-          stemcells:
-          - boshlite-stemcell/*.tgz
-          releases:
-          - tarballs/*.tgz
-          - garden-runc-release-tarball/*.tgz
-          - etcd-release-tarball/*.tgz
-
-  - name: uberzug-deploy
-    public: true
-    serial: true
-    serial_groups: [uberzug]
-    plan:
-      - aggregate:
-        - get: container-networking-ci
-          trigger: false
-        - get: uberzug-config
-          trigger: true
-        - get: aws-4-4-stemcell
-          trigger: true
-        - get: garden-runc-release
-          trigger: true
-        - get: etcd-release-tarball
-        - get: netman-release
-          params: { submodules: all }
-          trigger: true
-          passed: [netman-tests-postgres, netman-tests-mysql]
-      - task: create-garden-runc-release-tarball
-        file: container-networking-ci/tasks/create-garden-runc-release-tarball.yml
-      - task: create-release-tarball
-        file: netman-release/ci/create-release-tarball.yml
-      - put: uberzug
-        params:
-          cleanup: true
-          manifest: uberzug-config/environments/uberzug/uberzug.yml
-          stemcells:
-          - aws-4-4-stemcell/*.tgz
-          releases:
-          - garden-runc-release-tarball/*.tgz
-          - etcd-release-tarball/*.tgz
-          - tarballs/*.tgz
-
-  - name: uberzug-test
-    public: true
-    serial_groups: [uberzug]
-    plan:
-      - aggregate:
-        - get: netman-release
-          passed: [uberzug-deploy]
-          params: { submodules: none }
-        - get: garden-runc-release
-          passed: [uberzug-deploy]
-        - get: container-networking-ci
-          trigger: false
-        - get: environment
-          resource: uberzug
-          passed: [uberzug-deploy]
-          trigger: true
-      - task: netman-garden-integration-tests
-        file: container-networking-ci/tasks/run-errand.yml
-        params:
-          BOSH_PASSWORD: {{uberzug-password}}
-          ERRAND: netman-garden-integration-tests
-
-  - name: boshlite-test
-    public: true
-    serial_groups: [boshlite]
-    plan:
-      - aggregate:
-        - get: netman-release
-          passed: [boshlite-deploy]
-          params: { submodules: none }
-        - get: garden-runc-release
-          passed: [boshlite-deploy]
-        - get: container-networking-ci
-          trigger: false
-        - get: environment
-          resource: boshlite
-          passed: [boshlite-deploy]
-          trigger: true
-      - task: netman-garden-integration-tests
-        file: container-networking-ci/tasks/run-errand.yml
-        params:
-          BOSH_PASSWORD: {{bosh-lite-password}}
-          ERRAND: netman-garden-integration-tests
-
-  - name: uberzug-gits
-    public: true
-    serial_groups: [uberzug]
-    plan:
-      - aggregate:
-        - get: netman-release
-          passed: [uberzug-test]
-          params: { submodules: none }
-        - get: garden-runc-release
-          passed: [uberzug-test]
-        - get: container-networking-ci
-          trigger: false
-        - get: environment
-          resource: uberzug
-          passed: [uberzug-test]
-          trigger: true
-      - task: garden-integration-tests
-        file: garden-runc-release/ci/non-nested-gits.yml
-        input_mapping: {gr-release-develop: garden-runc-release}
-        params:
-          GARDEN_ADDRESS: 10.0.1.12:7777
-
   - name: pickelhelm-deploy
     serial_groups: [pickelhelm]
     plan:
@@ -320,10 +157,9 @@ jobs:
           trigger: true
         - get: garden-runc-release
           trigger: true
-          passed: [boshlite-test, uberzug-test]
         - get: netman-release
           trigger: true
-          passed: [boshlite-test, uberzug-test]
+          passed: [netman-tests-postgres, netman-tests-mysql]
         - get: etcd-release-tarball
       - aggregate:
         - task: create-release-tarball
@@ -476,32 +312,6 @@ jobs:
             - container-networking-ci
 
 ##### Human-triggered utilities
-  - name: delete-deployment-boshlite
-    public: true
-    serial_groups: [boshlite]
-    plan:
-    plan:
-      - get: container-networking-ci
-      - task: delete-deployment
-        file: container-networking-ci/tasks/delete-deployment.yml
-        params:
-          BOSH_TARGET: {{bosh-lite-private-ip}}
-          BOSH_USER: admin
-          BOSH_PASSWORD: {{bosh-lite-password}}
-          DEPLOYMENT_NAME: netman
-  - name: delete-deployment-uberzug
-    public: true
-    serial_groups: [uberzug]
-    plan:
-    plan:
-      - get: container-networking-ci
-      - task: delete-deployment
-        file: container-networking-ci/tasks/delete-deployment.yml
-        params:
-          BOSH_TARGET: {{uberzug-bosh-host}}
-          BOSH_USER: admin
-          BOSH_PASSWORD: {{uberzug-password}}
-          DEPLOYMENT_NAME: netman
   - name: delete-deployment-pickelhelm-diego
     public: true
     serial_groups: [pickelhelm]
