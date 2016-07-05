@@ -6,6 +6,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
   dnsutils \
   git \
   jq \
+  iptables \
   &&  apt-get autoremove -yqq \
   &&  apt-get clean \
   &&  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
