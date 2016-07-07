@@ -17,4 +17,4 @@ params:
   USER: ~
 
 run:
-  path: container-networking-ci/tasks/add-space-developers
+  path: container-networking-ci/tasks/add-space-developer
