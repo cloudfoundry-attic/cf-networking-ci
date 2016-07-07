@@ -80,8 +80,8 @@ resources:
   - name: garden-runc-release
     type: git
     source:
-      uri: git://github.com/evanfarrar/garden-runc-release
-      branch: patch-kernel44
+      uri: git://github.com/cloudfoundry-incubator/garden-runc-release
+      branch: master
   ###### BOSH release tarballs
   - name: rootfs-release-tarball
     type: bosh-io-release
@@ -155,7 +155,7 @@ jobs:
           trigger: true
         - get: diego-release-tarball
           trigger: true
-        - get: garden-runc-release
+        - get: garden-runc-release-tarball
           trigger: true
         - get: netman-release
           trigger: true
@@ -164,12 +164,10 @@ jobs:
       - aggregate:
         - task: create-release-tarball
           file: netman-release/ci/create-release-tarball.yml
-      - task: create-garden-runc-release-tarball
-        file: container-networking-ci/tasks/create-garden-runc-release-tarball.yml
-      - task: generate-pickelhelm-manifests
-        file: container-networking-ci/tasks/generate-deployment-manifests.yml
-        params:
-          ENVIRONMENT_NAME: pickelhelm
+        - task: generate-pickelhelm-manifests
+          file: container-networking-ci/tasks/generate-deployment-manifests.yml
+          params:
+            ENVIRONMENT_NAME: pickelhelm
       - put: pickelhelm-cf
         params:
           cleanup: true
@@ -203,7 +201,7 @@ jobs:
           params: { submodules: none }
           passed: [pickelhelm-deploy]
           trigger: true
-        - get: garden-runc-release
+        - get: garden-runc-release-tarball
           passed: [pickelhelm-deploy]
           trigger: true
         - get: netman-release
@@ -240,7 +238,7 @@ jobs:
           trigger: false
         - get: diego-release-tarball
           trigger: false
-        - get: garden-runc-release
+        - get: garden-runc-release-tarball
           trigger: false
           passed: [pickelhelm-test]
         - get: netman-release
@@ -250,12 +248,10 @@ jobs:
       - aggregate:
         - task: create-release-tarball
           file: netman-release/ci/create-release-tarball.yml
-      - task: create-garden-runc-release-tarball
-        file: container-networking-ci/tasks/create-garden-runc-release-tarball.yml
-      - task: generate-mitre-manifests
-        file: container-networking-ci/tasks/generate-deployment-manifests.yml
-        params:
-          ENVIRONMENT_NAME: mitre
+        - task: generate-mitre-manifests
+          file: container-networking-ci/tasks/generate-deployment-manifests.yml
+          params:
+            ENVIRONMENT_NAME: mitre
       - put: mitre-cf
         params:
           cleanup: true
@@ -289,7 +285,7 @@ jobs:
           params: { submodules: none }
           passed: [mitre-deploy]
           trigger: true
-        - get: garden-runc-release
+        - get: garden-runc-release-tarball
           passed: [mitre-deploy]
           trigger: true
         - get: netman-release
