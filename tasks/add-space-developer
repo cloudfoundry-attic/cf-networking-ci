@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e -x -u
+
+cf api --skip-ssl-validation ${API}
+cf auth ${ADMIN_USER} ${ADMIN_PASSWORD}
+
+cf create-org ${ORG_NAME}
+cf target -o ${ORG_NAME}
+
+cf create-space ${SPACE_NAME}
+cf target -s ${SPACE_NAME}
+
+cf set-space-role ${USER} ${ORG_NAME} ${SPACE_NAME} SpaceDeveloper
