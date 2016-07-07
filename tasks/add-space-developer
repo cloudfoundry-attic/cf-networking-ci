@@ -3,7 +3,11 @@
 set -e -x -u
 
 cf api --skip-ssl-validation ${API}
+
+# hide password
+set +x
 cf auth ${ADMIN_USER} ${ADMIN_PASSWORD}
+set -x
 
 cf create-org ${ORG_NAME}
 cf target -o ${ORG_NAME}
