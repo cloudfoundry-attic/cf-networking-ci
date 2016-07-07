@@ -193,6 +193,7 @@ jobs:
     serial_groups: [pickelhelm]
     plan:
       - aggregate:
+        - get: container-networking-ci
         - get: diego-release
           params: { submodules: none }
           passed: [pickelhelm-deploy]
@@ -207,11 +208,13 @@ jobs:
         - get: netman-release
           passed: [pickelhelm-deploy]
           trigger: true
-      - get: container-networking-ci
-      - get: environment
-        resource: pickelhelm-diego
-        passed: [pickelhelm-deploy]
-        trigger: true
+        - get: cf-deployment
+          resource: pickelhelm-cf
+          passed: [pickelhelm-deploy]
+        - get: environment
+          resource: pickelhelm-diego
+          passed: [pickelhelm-deploy]
+          trigger: true
       - task: netman-cf-acceptance
         file: container-networking-ci/tasks/run-errand.yml
         params:
@@ -291,11 +294,14 @@ jobs:
         - get: netman-release
           passed: [mitre-deploy]
           trigger: true
-      - get: container-networking-ci
-      - get: environment
-        resource: mitre-diego
-        passed: [mitre-deploy]
-        trigger: true
+        - get: container-networking-ci
+        - get: cf-deployment
+          resource: mitre-cf
+          passed: [mitre-deploy]
+        - get: environment
+          resource: mitre-diego
+          passed: [mitre-deploy]
+          trigger: true
       - task: netman-cf-acceptance
         file: container-networking-ci/tasks/run-errand.yml
         params:
