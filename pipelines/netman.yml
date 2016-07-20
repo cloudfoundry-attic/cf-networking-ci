@@ -64,7 +64,7 @@ resources:
     type: git
     source:
       branch: master
-      uri: https://github.com/cloudfoundry-incubator/diego-release.git
+      uri: https://github.com/cloudfoundry/diego-release.git
   - name: netman-release
     type: git
     source:
@@ -91,7 +91,7 @@ resources:
   - name: diego-release-tarball
     type: bosh-io-release
     source:
-      repository: cloudfoundry-incubator/diego-release
+      repository: cloudfoundry/diego-release
   - name: cf-release-tarball
     type: bosh-io-release
     source:
