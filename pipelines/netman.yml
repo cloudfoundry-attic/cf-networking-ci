@@ -73,7 +73,7 @@ resources:
   - name: garden-runc-release
     type: git
     source:
-      uri: git://github.com/cloudfoundry-incubator/garden-runc-release
+      uri: git://github.com/cloudfoundry/garden-runc-release
       branch: master
   ###### BOSH release tarballs
   - name: rootfs-release-tarball
@@ -99,7 +99,7 @@ resources:
   - name: garden-runc-release-tarball
     type: bosh-io-release
     source:
-      repository: cloudfoundry-incubator/garden-runc-release
+      repository: cloudfoundry/garden-runc-release
   ###### Integrations
   - name: deliver-story
     type: tracker
