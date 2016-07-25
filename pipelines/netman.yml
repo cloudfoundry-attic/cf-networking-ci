@@ -156,7 +156,7 @@ jobs:
         - get: etcd-release-tarball
       - aggregate:
         - task: create-garden-runc-release-tarball
-          file: netman-release/ci/create-garden-runc-release-tarball.yml
+          file: container-networking-ci/tasks/create-garden-runc-release-tarball.yml
         - task: create-release-tarball
           file: netman-release/ci/create-release-tarball.yml
         - task: generate-pickelhelm-manifests
@@ -245,7 +245,7 @@ jobs:
         - get: etcd-release-tarball
       - aggregate:
         - task: create-garden-runc-release-tarball
-          file: netman-release/ci/create-garden-runc-release-tarball.yml
+          file: container-networking-ci/tasks/create-garden-runc-release-tarball.yml
         - task: create-release-tarball
           file: netman-release/ci/create-release-tarball.yml
         - task: generate-mitre-manifests
