@@ -165,7 +165,7 @@ jobs:
             ENVIRONMENT_NAME: pickelhelm
       - put: pickelhelm-cf
         params:
-          cleanup: true
+          cleanup: false
           manifest: generated-manifest/cf.yml
           stemcells:
           - aws-4-4-stemcell/*.tgz
@@ -173,7 +173,7 @@ jobs:
           - cf-release-tarball/*.tgz
       - put: pickelhelm-diego
         params:
-          cleanup: true
+          cleanup: false
           manifest: generated-manifest/diego.yml
           stemcells:
           - aws-4-4-stemcell/*.tgz
@@ -254,7 +254,7 @@ jobs:
             ENVIRONMENT_NAME: mitre
       - put: mitre-cf
         params:
-          cleanup: true
+          cleanup: false
           manifest: generated-manifest/cf.yml
           stemcells:
           - aws-4-4-stemcell/*.tgz
@@ -262,7 +262,7 @@ jobs:
           - cf-release-tarball/*.tgz
       - put: mitre-diego
         params:
-          cleanup: true
+          cleanup: false
           manifest: generated-manifest/diego.yml
           stemcells:
           - aws-4-4-stemcell/*.tgz
