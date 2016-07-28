@@ -73,8 +73,8 @@ resources:
   - name: garden-runc-release
     type: git
     source:
-      uri: git://github.com/cloudfoundry/garden-runc-release
-      branch: develop
+      uri: git://github.com/jaydunk/garden-runc-release
+      branch: external-networker-hack
   ###### BOSH release tarballs
   - name: rootfs-release-tarball
     type: bosh-io-release
