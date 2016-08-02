@@ -3,7 +3,7 @@ Public config for the Container Networking team's CI
 
 Keep credentials and other private config in our [private repo](https://github.com/cloudfoundry/container-networking-deployments)
 
-View the pipeline [here](http://htmlpreview.github.io/?https://github.com/cloudfoundry-incubator/container-networking-ci/blob/master/dashboards/index.html)
+View our team's [CI & metrics dashboard](http://dashboard.c2c.cf-app.com).
 
 ## to update a pipeline
 ```bash
