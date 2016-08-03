@@ -100,13 +100,6 @@ resources:
     type: bosh-io-release
     source:
       repository: cloudfoundry/garden-runc-release
-  ###### Integrations
-  - name: deliver-story
-    type: tracker
-    source:
-      token: {{tracker_api_token}}
-      project_id: "1498342"
-      tracker_url: https://www.pivotaltracker.com
 
 
 jobs:
@@ -332,11 +325,6 @@ jobs:
         params:
           BOSH_PASSWORD: {{mitre-bosh-password}}
           ERRAND: netman-cf-acceptance
-      - put: deliver-story
-        params:
-          repos:
-            - netman-release
-            - container-networking-ci
 
 ##### Human-triggered utilities
   - name: delete-deployment-pickelhelm-diego
