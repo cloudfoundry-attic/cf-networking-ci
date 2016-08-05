@@ -48,12 +48,10 @@ resources:
       private_key: {{container-networking-deployments-deploy-key}}
       paths: [ environments/mitre ]
   ###### BOSH stemcells
-  - name: aws-4-4-stemcell
-    type: s3
+  - name: aws-stemcell
+    type: bosh-io-stemcell
     source:
-      bucket: c2c-stemcells
-      region_name: us-west-2
-      versioned_file: bosh-stemcell-3232.kernel-4.4-aws-xen-ubuntu-trusty-go_agent.tgz
+      name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
   ###### BOSH release repos
   - name: cf-release
     type: git
@@ -134,7 +132,7 @@ jobs:
           params: { submodules: none }
         - get: diego-release
           params: { submodules: none }
-        - get: aws-4-4-stemcell
+        - get: aws-stemcell
           trigger: true
         - get: rootfs-release-tarball
         - get: cf-release-tarball
@@ -161,7 +159,7 @@ jobs:
           cleanup: false
           manifest: generated-manifest/cf.yml
           stemcells:
-          - aws-4-4-stemcell/*.tgz
+          - aws-stemcell/*.tgz
           releases:
           - cf-release-tarball/*.tgz
       - put: pickelhelm-diego
@@ -169,7 +167,7 @@ jobs:
           cleanup: false
           manifest: generated-manifest/diego.yml
           stemcells:
-          - aws-4-4-stemcell/*.tgz
+          - aws-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
           - garden-runc-release-tarball/*.tgz
@@ -222,7 +220,7 @@ jobs:
           params: { submodules: none }
         - get: diego-release
           params: { submodules: none }
-        - get: aws-4-4-stemcell
+        - get: aws-stemcell
           trigger: false
         - get: rootfs-release-tarball
         - get: cf-release-tarball
@@ -250,7 +248,7 @@ jobs:
           cleanup: false
           manifest: generated-manifest/cf.yml
           stemcells:
-          - aws-4-4-stemcell/*.tgz
+          - aws-stemcell/*.tgz
           releases:
           - cf-release-tarball/*.tgz
       - put: mitre-diego
@@ -258,7 +256,7 @@ jobs:
           cleanup: false
           manifest: generated-manifest/diego.yml
           stemcells:
-          - aws-4-4-stemcell/*.tgz
+          - aws-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
           - garden-runc-release-tarball/*.tgz
