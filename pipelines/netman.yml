@@ -72,7 +72,7 @@ resources:
     type: git
     source:
       uri: git://github.com/jaydunk/garden-runc-release
-      branch: external-networker-hack
+      branch: re-hack
   ###### BOSH release tarballs
   - name: rootfs-release-tarball
     type: bosh-io-release
