@@ -71,7 +71,7 @@ resources:
   - name: garden-runc-release
     type: git
     source:
-      uri: git://github.com/jaydunk/garden-runc-release
+      uri: git://github.com/cf-container-networking/garden-runc-release
       branch: re-hack
   ###### BOSH release tarballs
   - name: rootfs-release-tarball
