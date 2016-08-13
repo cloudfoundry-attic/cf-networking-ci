@@ -201,6 +201,16 @@ jobs:
           resource: pickelhelm-diego
           passed: [pickelhelm-deploy]
           trigger: true
+        - get: aws-stemcell
+          passed: [pickelhelm-deploy]
+        - get: rootfs-release-tarball
+          passed: [pickelhelm-deploy]
+        - get: cf-release-tarball
+          passed: [pickelhelm-deploy]
+        - get: diego-release-tarball
+          passed: [pickelhelm-deploy]
+        - get: etcd-release-tarball
+          passed: [pickelhelm-deploy]
       - task: netman-cf-acceptance
         file: container-networking-ci/tasks/run-errand.yml
         params:
