@@ -72,7 +72,7 @@ resources:
     type: git
     source:
       uri: git://github.com/cf-container-networking/garden-runc-release
-      branch: re-hack
+      branch: external-binary-improvements
   ###### BOSH release tarballs
   - name: rootfs-release-tarball
     type: bosh-io-release
