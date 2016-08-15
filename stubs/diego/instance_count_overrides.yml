@@ -1,0 +1,5 @@
+instance_count_overrides:
+  - name: cell_z1
+    instances: CELL_Z1_COUNT
+  - name: cell_z2
+    instances: 0
