@@ -28,6 +28,20 @@ resources:
       username: admin
       password: {{mitre-bosh-password}}
       deployment: mitre-diego
+  - name: toque-cf
+    type: bosh-deployment
+    source:
+      target: {{toque-bosh-host}}
+      username: admin
+      password: {{toque-bosh-password}}
+      deployment: toque
+  - name: toque-diego
+    type: bosh-deployment
+    source:
+      target: {{toque-bosh-host}}
+      username: admin
+      password: {{toque-bosh-password}}
+      deployment: toque-diego
   ###### Control plane
   - name: container-networking-ci
     type: git
@@ -47,6 +61,13 @@ resources:
       branch: master
       private_key: {{container-networking-deployments-deploy-key}}
       paths: [ environments/mitre ]
+  - name: toque-config
+    type: git
+    source:
+      uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
+      branch: master
+      private_key: {{container-networking-deployments-deploy-key}}
+      paths: [ environments/toque ]
   ###### BOSH stemcells
   - name: aws-stemcell
     type: bosh-io-stemcell
@@ -334,6 +355,64 @@ jobs:
           BOSH_PASSWORD: {{mitre-bosh-password}}
           ERRAND: netman-cf-acceptance
 
+  - name: toque-deploy
+    serial_groups: [toque]
+    plan:
+      - aggregate:
+        - get: container-networking-ci
+          trigger: false
+        - get: deployments-repo
+          resource: toque-config
+          trigger: false
+        - get: cf-release
+          params: { submodules: none }
+        - get: diego-release
+          params: { submodules: none }
+        - get: aws-stemcell
+          trigger: false
+        - get: rootfs-release-tarball
+        - get: cf-release-tarball
+          trigger: false
+        - get: diego-release-tarball
+          trigger: false
+        - get: garden-runc-release
+          trigger: false
+          passed: [pickelhelm-test]
+        - get: netman-release
+          trigger: false
+          passed: [pickelhelm-test]
+        - get: etcd-release-tarball
+      - aggregate:
+        - task: create-garden-runc-release-tarball
+          file: container-networking-ci/tasks/create-garden-runc-release-tarball.yml
+        - task: create-release-tarball
+          file: netman-release/ci/create-release-tarball.yml
+        - task: generate-toque-manifests
+          file: container-networking-ci/tasks/generate-deployment-manifests.yml
+          params:
+            ENVIRONMENT_NAME: toque
+            CELL_COUNT: 4
+      - put: toque-cf
+        params:
+          cleanup: false
+          manifest: generated-manifest/cf.yml
+          stemcells:
+          - aws-stemcell/*.tgz
+          releases:
+          - cf-release-tarball/*.tgz
+      - put: toque-diego
+        params:
+          cleanup: false
+          manifest: generated-manifest/diego.yml
+          stemcells:
+          - aws-stemcell/*.tgz
+          releases:
+          - tarballs/*.tgz
+          - garden-runc-release-tarball/*.tgz
+          - etcd-release-tarball/*.tgz
+          - rootfs-release-tarball/*.tgz
+          - diego-release-tarball/*.tgz
+
 ##### Human-triggered utilities
   - name: delete-deployment-pickelhelm-diego
     public: true
@@ -387,3 +466,29 @@ jobs:
           BOSH_USER: admin
           BOSH_PASSWORD: {{mitre-bosh-password}}
           DEPLOYMENT_NAME: mitre
+  - name: delete-deployment-toque-diego
+    public: true
+    serial_groups: [toque]
+    plan:
+    plan:
+      - get: container-networking-ci
+      - task: delete-deployment
+        file: container-networking-ci/tasks/delete-deployment.yml
+        params:
+          BOSH_TARGET: {{toque-bosh-host}}
+          BOSH_USER: admin
+          BOSH_PASSWORD: {{toque-bosh-password}}
+          DEPLOYMENT_NAME: toque-diego
+  - name: delete-deployment-toque-cf
+    public: true
+    serial_groups: [toque]
+    plan:
+    plan:
+      - get: container-networking-ci
+      - task: delete-deployment
+        file: container-networking-ci/tasks/delete-deployment.yml
+        params:
+          BOSH_TARGET: {{toque-bosh-host}}
+          BOSH_USER: admin
+          BOSH_PASSWORD: {{toque-bosh-password}}
+          DEPLOYMENT_NAME: toque
