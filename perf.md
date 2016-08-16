@@ -4,7 +4,7 @@ Container networking performance tests will be conducted on the following enviro
 ## Setup
 ### Number of Diego Cells
 0. Git checkout [container-networking-ci](https://github.com/cloudfoundry-incubator/container-networking-ci) repository
-0. Set `toque-deploy` `CELL_COUNT` to the number of desired Diego cells in [CI pipeline](pipelines/netman.yml)
+0. Set `toque-deploy` `CELL_COUNT` to the number of desired Diego cells in [pipelines/netman.yml](pipelines/netman.yml)
      ```yaml
       - name: toque-deploy
         serial_groups: [toque]
@@ -12,7 +12,7 @@ Container networking performance tests will be conducted on the following enviro
           - aggregate:
             - get: container-networking-ci
               trigger: false
-               . . .
+               . . . omit for brevity
           - aggregate:
                . . .
             - task: generate-toque-manifests
