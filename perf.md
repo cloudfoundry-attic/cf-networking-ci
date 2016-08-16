@@ -12,9 +12,9 @@ Container networking performance tests will be conducted on the following enviro
           - aggregate:
             - get: container-networking-ci
               trigger: false
-               . . . omit for brevity
+               # omit for brevity
           - aggregate:
-               . . .
+               # omit for brevity
             - task: generate-toque-manifests
               file: container-networking-ci/tasks/generate-deployment-manifests.yml
               params:
