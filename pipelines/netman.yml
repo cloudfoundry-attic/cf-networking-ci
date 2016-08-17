@@ -305,6 +305,23 @@ jobs:
           BOSH_PASSWORD: {{pickelhelm-bosh-password}}
           ERRAND: netman-cf-acceptance
 
+  - name: pickelhelm-cats
+    serial_groups: [pickelhelm]
+    plan:
+      - aggregate:
+        - get: container-networking-ci
+        - get: netman-release
+          passed: [pickelhelm-deploy]
+          trigger: true
+        - get: environment
+          resource: pickelhelm-cf
+          passed: [pickelhelm-deploy]
+      - task: cf-acceptance-tests
+        file: container-networking-ci/tasks/run-errand.yml
+        params:
+          BOSH_PASSWORD: {{pickelhelm-bosh-password}}
+          ERRAND: acceptance_tests
+
   - name: mitre-deploy
     serial_groups: [mitre]
     plan:
