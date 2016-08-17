@@ -1,5 +1,12 @@
 resources:
   ###### Deployments
+  - name: uberzug
+    type: bosh-deployment
+    source:
+      target: {{uberzug-bosh-host}}
+      username: admin
+      password: {{uberzug-password}}
+      deployment: netman
   - name: pickelhelm-cf
     type: bosh-deployment
     source:
@@ -47,6 +54,13 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry-incubator/container-networking-ci
+  - name: uberzug-config
+    type: git
+    source:
+      uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
+      branch: master
+      private_key: {{container-networking-deployments-deploy-key}}
+      paths: [ environments/uberzug ]
   - name: pickelhelm-config
     type: git
     source:
@@ -139,6 +153,59 @@ jobs:
       - task: netman-tests
         file: netman-release/ci/netman-tests-mysql.yml
         privileged: true
+
+  - name: uberzug-deploy
+    public: true
+    serial: true
+    serial_groups: [uberzug]
+    plan:
+      - aggregate:
+        - get: container-networking-ci
+          trigger: false
+        - get: uberzug-config
+          trigger: true
+        - get: aws-stemcell
+          trigger: true
+        - get: garden-runc-release
+          trigger: true
+        - get: etcd-release-tarball
+        - get: netman-release
+          params: { submodules: all }
+          trigger: true
+          passed: [netman-tests-postgres, netman-tests-mysql]
+      - task: create-garden-runc-release-tarball
+        file: container-networking-ci/tasks/create-garden-runc-release-tarball.yml
+      - task: create-release-tarball
+        file: netman-release/ci/create-release-tarball.yml
+      - put: uberzug
+        params:
+          cleanup: true
+          manifest: uberzug-config/environments/uberzug/uberzug.yml
+          stemcells:
+          - aws-stemcell/*.tgz
+          releases:
+          - garden-runc-release-tarball/*.tgz
+          - etcd-release-tarball/*.tgz
+          - tarballs/*.tgz
+
+  - name: uberzug-gats
+    public: true
+    serial_groups: [uberzug]
+    plan:
+      - aggregate:
+        - get: garden-runc-release
+          passed: [uberzug-deploy]
+        - get: container-networking-ci
+          trigger: false
+        - get: environment
+          resource: uberzug
+          passed: [uberzug-deploy]
+          trigger: true
+      - task: garden-integration-tests
+        file: garden-runc-release/ci/non-nested-gats.yml
+        input_mapping: {gr-release-develop: garden-runc-release}
+        params:
+          GARDEN_ADDRESS: 10.0.1.12:7777
 
   - name: pickelhelm-deploy
     serial_groups: [pickelhelm]
@@ -414,6 +481,19 @@ jobs:
           - diego-release-tarball/*.tgz
 
 ##### Human-triggered utilities
+  - name: delete-deployment-uberzug
+    public: true
+    serial_groups: [uberzug]
+    plan:
+    plan:
+      - get: container-networking-ci
+      - task: delete-deployment
+        file: container-networking-ci/tasks/delete-deployment.yml
+        params:
+          BOSH_TARGET: {{uberzug-bosh-host}}
+          BOSH_USER: admin
+          BOSH_PASSWORD: {{uberzug-password}}
+          DEPLOYMENT_NAME: netman
   - name: delete-deployment-pickelhelm-diego
     public: true
     serial_groups: [pickelhelm]
