@@ -3,7 +3,8 @@ Container networking performance tests will be conducted on the following enviro
 
 ## Setup
 ### Number of Diego Cells
-0. Git checkout [container-networking-ci](https://github.com/cloudfoundry-incubator/container-networking-ci) repository under ~/workspace
+0. Git checkout [container-networking-ci](https://github.com/cloudfoundry-incubator/container-networking-ci) repository under ~/workspace.
+
     ```
     $ cd ~/workspace && git clone https://github.com/cloudfoundry-incubator/container-networking-ci.git
     ```
