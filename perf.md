@@ -30,5 +30,6 @@ $ cd ~/workspace && git clone https://github.com/cloudfoundry-incubator/containe
 $ ./reconfigure netman
 ```
 *Note: In order to reconfigure a [Concourse](http://concourse.ci) pipeline you may need to first download the `fly` command line tool for [Mac](https://c2c.ci.cf-app.com/api/v1/cli?arch=amd64&platform=darwin), [Windows](https://c2c.ci.cf-app.com/api/v1/cli?arch=amd64&platform=windows) or [Linux](https://c2c.ci.cf-app.com/api/v1/cli?arch=amd64&platform=linux).*
+
 0.  Git commit `CELL_COUNT` changes back to [container-networking-ci](https://github.com/cloudfoundry-incubator/container-networking-ci)
 0.  Deploy `CELL_COUNT` changes using `toque-deploy` stage in [CI](https://c2c.ci.cf-app.com/pipelines/netman/jobs/toque-deploy)
