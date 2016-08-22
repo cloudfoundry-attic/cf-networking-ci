@@ -15,6 +15,9 @@ export CONFIG=$environment_path/netman-cf-acceptance.json
 cd netman-release
 export GOPATH=$PWD
 
+go build -o /tmp/bin/network-policy-plugin ./src/cli-plugin
+cf install-plugin -f /tmp/bin/network-policy-plugin
+
 cd src/netman-cf-acceptance
 export APPS_DIR=../example-apps
 ginkgo -r -v
