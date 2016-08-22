@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e -u
+
+curl -L -o cf.tgz 'https://cli.run.pivotal.io/stable?release=linux64-binary&version=6.21.1&source=github-rel'
+tar -xzf cf.tgz
+mkdir -p /tmp/bin
+mv cf /tmp/bin/cf
+export PATH=$PATH:/tmp/bin
+cf -v
+
+environment_path="${PWD}/deployments-repo/environments/${ENVIRONMENT_NAME}"
+export CONFIG=$environment_path/netman-cf-acceptance.json
+
+cd netman-release
+export GOPATH=$PWD
+
+cd src/netman-cf-acceptance
+export APPS_DIR=../example-apps
+ginkgo -r -v
