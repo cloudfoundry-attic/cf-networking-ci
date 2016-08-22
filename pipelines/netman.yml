@@ -268,6 +268,9 @@ jobs:
     plan:
       - aggregate:
         - get: container-networking-ci
+        - get: deployments-repo
+          resource: pickelhelm-config
+          trigger: false
         - get: diego-release
           params: { submodules: none }
           passed: [pickelhelm-deploy]
@@ -300,10 +303,9 @@ jobs:
         - get: etcd-release-tarball
           passed: [pickelhelm-deploy]
       - task: netman-cf-acceptance
-        file: container-networking-ci/tasks/run-errand.yml
+        file: container-networking-ci/tasks/netman-cf-acceptance.yml
         params:
-          BOSH_PASSWORD: {{pickelhelm-bosh-password}}
-          ERRAND: netman-cf-acceptance
+          ENVIRONMENT_NAME: pickelhelm
 
   - name: pickelhelm-cats
     serial_groups: [pickelhelm]
@@ -411,6 +413,9 @@ jobs:
     serial_groups: [mitre]
     plan:
       - aggregate:
+        - get: deployments-repo
+          resource: mitre-config
+          trigger: false
         - get: diego-release
           params: { submodules: none }
           passed: [mitre-deploy]
@@ -434,10 +439,9 @@ jobs:
           passed: [mitre-deploy]
           trigger: true
       - task: netman-cf-acceptance
-        file: container-networking-ci/tasks/run-errand.yml
+        file: container-networking-ci/tasks/netman-cf-acceptance.yml
         params:
-          BOSH_PASSWORD: {{mitre-bosh-password}}
-          ERRAND: netman-cf-acceptance
+          ENVIRONMENT_NAME: mitre
 
   - name: toque-deploy
     serial_groups: [toque]
