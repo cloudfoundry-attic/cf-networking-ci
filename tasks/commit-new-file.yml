@@ -8,6 +8,7 @@ image_resource:
 inputs:
   - name: container-networking-ci
   - name: input_repo
+  - name: source
 
 outputs:
   - name: output_repo
