@@ -18,6 +18,7 @@ outputs:
 params:
   ENVIRONMENT_NAME: ~
   CELL_COUNT: 2
+  NETMANIFY: true
 
 run:
   path: container-networking-ci/tasks/generate-deployment-manifests
