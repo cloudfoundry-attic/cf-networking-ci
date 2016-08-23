@@ -133,7 +133,13 @@ resources:
     type: bosh-io-release
     source:
       repository: cloudfoundry/garden-runc-release
-
+  ####### Stats
+  - name: mitre-stats
+    type: git
+    source:
+      uri: "git@github.com:cf-container-networking/mitre-stats.git"
+      branch: master
+      private_key: {{stats-deploy-key}}
 
 jobs:
   - name: netman-tests-postgres
@@ -438,10 +444,22 @@ jobs:
           resource: mitre-diego
           passed: [mitre-deploy]
           trigger: true
+        - get: mitre-stats
       - task: netman-cf-acceptance
         file: container-networking-ci/tasks/netman-cf-acceptance.yml
         params:
           ENVIRONMENT_NAME: mitre
+      - task: commit-stats
+        file: container-networking-ci/tasks/commit-new-file.yml
+        input_mapping:
+          input_repo: mitre-stats
+          source: network-stats
+        output_mapping: {output_repo: stats_output}
+        params:
+          SOURCE_FILE: stats.json
+          DEST_SUFFIX: json
+      - put: mitre-stats
+        params: {repository: stats_output}
 
   - name: toque-deploy
     serial_groups: [toque]

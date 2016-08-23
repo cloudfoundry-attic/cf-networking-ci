@@ -8,6 +8,7 @@ ls
 git clone input_repo output_repo
 
 timestamp="$(date +'%Y-%m-%d-%H-%M-%S')"
+ls -la source
 cp "source/${SOURCE_FILE}" "output_repo/${timestamp}.$DEST_SUFFIX"
 
 cd output_repo
