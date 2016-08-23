@@ -498,6 +498,7 @@ jobs:
           params:
             ENVIRONMENT_NAME: toque
             CELL_COUNT: 4
+            NETMANIFY: false
       - put: toque-cf
         params:
           cleanup: false
