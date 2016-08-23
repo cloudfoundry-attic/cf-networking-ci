@@ -140,6 +140,12 @@ resources:
       uri: "git@github.com:cf-container-networking/mitre-stats.git"
       branch: master
       private_key: {{stats-deploy-key}}
+  ####### Timers
+  - name: every-30-mins
+    type: time
+    source:
+      interval: 330m
+
 
 jobs:
   - name: netman-tests-postgres
@@ -524,6 +530,8 @@ jobs:
     serial_groups: [toque]
     plan:
       - aggregate:
+        - get: every-30-mins
+          trigger: true
         - get: container-networking-ci
         - get: netman-release
           passed: [toque-deploy]
