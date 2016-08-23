@@ -10,6 +10,9 @@ inputs:
   - name: deployments-repo
   - name: netman-release
 
+outputs:
+  - name: network-stats
+
 params:
     ENVIRONMENT_NAME: ~
 

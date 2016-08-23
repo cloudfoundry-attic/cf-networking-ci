@@ -14,6 +14,8 @@ cf -v
 environment_path="${PWD}/deployments-repo/environments/${ENVIRONMENT_NAME}"
 export CONFIG=$environment_path/netman-cf-acceptance.json
 
+export NETWORK_STATS_FILE=$PWD/network-stats/stats.json
+
 cd netman-release
 export GOPATH=$PWD
 
