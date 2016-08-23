@@ -4,10 +4,8 @@ set -e -u
 
 curl -L -o cf.tgz 'https://cli.run.pivotal.io/stable?release=linux64-binary&version=6.21.1&source=github-rel'
 tar -xzf cf.tgz
-pwd
-ls -al
 mkdir -p /tmp/bin
-mv cf-cli_linux_x86-64 /tmp/bin/cf
+mv cf /tmp/bin/cf
 export PATH=$PATH:/tmp/bin
 cf -v
 
