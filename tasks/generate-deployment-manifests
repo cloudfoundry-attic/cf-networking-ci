@@ -42,4 +42,5 @@ if [ ${NETMANIFY:-"false"} = "true" ]; then
 else
   echo "skipping netman deployment modifications, will just use plain diego"
   cp ${output_path}/diego_plain.yml ${output_path}/diego.yml
+  cat ${output_path}/diego.yml
 fi
