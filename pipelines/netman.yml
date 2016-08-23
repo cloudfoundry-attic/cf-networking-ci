@@ -519,6 +519,23 @@ jobs:
           - rootfs-release-tarball/*.tgz
           - diego-release-tarball/*.tgz
 
+  - name: toque-cats
+    serial_groups: [toque]
+    plan:
+      - aggregate:
+        - get: container-networking-ci
+        - get: netman-release
+          passed: [toque-deploy]
+          trigger: true
+        - get: environment
+          resource: toque-cf
+          passed: [toque-deploy]
+      - task: cf-acceptance-tests
+        file: container-networking-ci/tasks/run-errand.yml
+        params:
+          BOSH_PASSWORD: {{toque-bosh-password}}
+          ERRAND: acceptance_tests
+
 ##### Human-triggered utilities
   - name: delete-deployment-uberzug
     public: true
