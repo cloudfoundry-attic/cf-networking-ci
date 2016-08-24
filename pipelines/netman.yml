@@ -82,6 +82,10 @@ resources:
       branch: master
       private_key: {{container-networking-deployments-deploy-key}}
       paths: [ environments/toque ]
+  - name: runtime-ci
+    type: git
+    source:
+      uri: git://github.com/cloudfoundry/runtime-ci
   ###### BOSH stemcells
   - name: aws-stemcell
     type: bosh-io-stemcell
@@ -145,6 +149,12 @@ resources:
     type: time
     source:
       interval: 330m
+  ####### Tests
+  - name: cf-acceptance-tests
+    type: git
+    source:
+      branch: master
+      uri: git://github.com/cloudfoundry/cf-acceptance-tests.git
 
 
 jobs:
@@ -515,18 +525,40 @@ jobs:
       - aggregate:
         - get: every-30-mins
           trigger: true
-        - get: container-networking-ci
+        - get: cf-acceptance-tests
+          version: { ref: "94e87de26d361aa2040dc38dbed71065e6e735fb" }
+        - get: runtime-ci
+          params: { submodules: none }
         - get: netman-release
           passed: [toque-deploy]
           trigger: true
         - get: environment
           resource: toque-cf
           passed: [toque-deploy]
-      - task: cf-acceptance-tests
-        file: container-networking-ci/tasks/run-errand.yml
+        - get: diego-environment
+          resource: toque-diego
+          passed: [toque-deploy]
+      - task: cats
+        file: runtime-ci/scripts/ci/run-cats/task.yml
         params:
-          BOSH_PASSWORD: {{toque-bosh-password}}
-          ERRAND: acceptance_tests
+          INCLUDE_BACKEND_COMPATIBILITY: false
+          INCLUDE_INTERNET_DEPENDENT: false
+          INCLUDE_DIEGO_DOCKER: false
+          INCLUDE_DIEGO_SSH: false
+          INCLUDE_ROUTE_SERVICES: false
+          INCLUDE_SECURITY_GROUPS: false
+          INCLUDE_SERVICES: false
+          INCLUDE_V3: false
+          INCLUDE_PRIVILEGED_CONTAINER_SUPPORT: false
+          INCLUDE_SSO: false
+          BACKEND: diego
+          CF_API: "api.toque.c2c.cf-app.com"
+          CF_ADMIN_USER: admin
+          CF_ADMIN_PASSWORD: {{toque-cf-admin-password}}
+          CF_APPS_DOMAIN: toque.c2c.cf-app.com
+          SKIP_SSL_VALIDATION: "true"
+          USE_HTTP: "true"
+          NODES: 6
 
 ##### Human-triggered utilities
   - name: delete-deployment-uberzug
