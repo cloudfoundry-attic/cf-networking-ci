@@ -490,14 +490,13 @@ jobs:
       - aggregate:
         - task: create-garden-runc-release-tarball
           file: container-networking-ci/tasks/create-garden-runc-release-tarball.yml
-        # - task: create-release-tarball
-        #   file: netman-release/ci/create-release-tarball.yml
+        - task: create-release-tarball
+          file: netman-release/ci/create-release-tarball.yml
         - task: generate-toque-manifests
           file: container-networking-ci/tasks/generate-deployment-manifests.yml
           params:
             ENVIRONMENT_NAME: toque
             CELL_COUNT: 4
-            NETMANIFY: false
       - put: toque-cf
         params:
           cleanup: false
@@ -513,7 +512,7 @@ jobs:
           stemcells:
           - aws-stemcell/*.tgz
           releases:
-          # - tarballs/*.tgz
+          - tarballs/*.tgz
           - garden-runc-release-tarball/*.tgz
           - etcd-release-tarball/*.tgz
           - rootfs-release-tarball/*.tgz
