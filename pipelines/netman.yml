@@ -148,7 +148,7 @@ resources:
   - name: every-30-mins
     type: time
     source:
-      interval: 330m
+      interval: 30m
   ####### Tests
   - name: cf-acceptance-tests
     type: git
