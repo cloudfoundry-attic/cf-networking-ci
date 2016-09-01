@@ -8,8 +8,5 @@ inputs:
   - name: container-networking-ci
   - name: scaling-deploy
 
-outputs:
-  - name: container-networking-ci
-
 run:
   path: container-networking-ci/tasks/set-scaling-deploy

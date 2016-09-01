@@ -505,10 +505,10 @@ jobs:
           file: netman-release/ci/create-release-tarball.yml
         - task: set-scaling-deploy
           file: container-networking-ci/tasks/set-scaling-deploy.yml
-        - task: generate-toque-manifests
-          file: container-networking-ci/tasks/generate-deployment-manifests.yml
-          params:
-            ENVIRONMENT_NAME: toque
+      - task: generate-toque-manifests
+        file: container-networking-ci/tasks/generate-deployment-manifests.yml
+        params:
+          ENVIRONMENT_NAME: toque
       - put: toque-cf
         params:
           cleanup: false
