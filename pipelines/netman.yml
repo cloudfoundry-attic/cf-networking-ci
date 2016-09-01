@@ -557,14 +557,12 @@ jobs:
     plan:
       - aggregate:
         - get: every-30-mins
-          trigger: true
         - get: cf-acceptance-tests
           version: { ref: "94e87de26d361aa2040dc38dbed71065e6e735fb" }
         - get: runtime-ci
           params: { submodules: none }
         - get: netman-release
           passed: [toque-test]
-          trigger: true
         - get: environment
           resource: toque-cf
           passed: [toque-test]
