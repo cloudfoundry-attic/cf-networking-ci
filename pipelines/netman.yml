@@ -244,6 +244,8 @@ jobs:
       - aggregate:
         - get: container-networking-ci
           trigger: false
+        - get: config-repo
+          resource: container-networking-ci
         - get: deployments-repo
           resource: pickelhelm-config
           trigger: false
@@ -344,6 +346,8 @@ jobs:
       - aggregate:
         - get: container-networking-ci
           trigger: false
+        - get: config-repo
+          resource: container-networking-ci
         - get: deployments-repo
           resource: mitre-config
           trigger: false
