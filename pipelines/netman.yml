@@ -518,6 +518,40 @@ jobs:
           - rootfs-release-tarball/*.tgz
           - diego-release-tarball/*.tgz
 
+  - name: toque-test
+    serial_groups: [toque]
+    plan:
+      - aggregate:
+        - get: deployments-repo
+          resource: toque-config
+          trigger: false
+        - get: diego-release
+          params: { submodules: none }
+          passed: [toque-deploy]
+          trigger: true
+        - get: cf-release
+          params: { submodules: none }
+          passed: [toque-deploy]
+          trigger: true
+        - get: garden-runc-release
+          passed: [toque-deploy]
+          trigger: true
+        - get: netman-release
+          passed: [toque-deploy]
+          trigger: true
+        - get: container-networking-ci
+        - get: cf-deployment
+          resource: toque-cf
+          passed: [toque-deploy]
+        - get: environment
+          resource: toque-diego
+          passed: [toque-deploy]
+          trigger: true
+      - task: netman-cf-acceptance
+        file: container-networking-ci/tasks/netman-cf-acceptance.yml
+        params:
+          ENVIRONMENT_NAME: toque
+
   - name: toque-cats
     serial_groups: [toque]
     plan:
@@ -529,14 +563,14 @@ jobs:
         - get: runtime-ci
           params: { submodules: none }
         - get: netman-release
-          passed: [toque-deploy]
+          passed: [toque-test]
           trigger: true
         - get: environment
           resource: toque-cf
-          passed: [toque-deploy]
+          passed: [toque-test]
         - get: diego-environment
           resource: toque-diego
-          passed: [toque-deploy]
+          passed: [toque-test]
       - task: cats
         file: runtime-ci/scripts/ci/run-cats/task.yml
         params:
