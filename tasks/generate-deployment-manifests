@@ -17,15 +17,13 @@ pushd cf-release
     > ${output_path}/cf.yml
 popd
 
-sed "s/\ CELL_Z1_COUNT/\ ${CELL_COUNT}/" < ${stubs_path}/instance_count_overrides.yml > ${stubs_path}/instance_count_overrides1.yml
-
 pushd diego-release
   ./scripts/generate-deployment-manifest \
     -g \
     -c ${output_path}/cf.yml \
     -i ${environment_path}/stubs/diego/iaas-settings.yml \
     -p ${environment_path}/stubs/diego/property-overrides.yml \
-    -n ${stubs_path}/instance_count_overrides1.yml \
+    -n ${stubs_path}/instance-count-overrides.yml \
     -v ${environment_path}/stubs/diego/release-versions.yml \
     > ${output_path}/diego_plain.yml
 popd

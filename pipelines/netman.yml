@@ -54,6 +54,11 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry-incubator/container-networking-ci
+  - name: toque-scaling-deploy
+    type: git
+    source:
+      uri: https://github.com/cf-container-networking/toque-scaling
+      paths: [ deploy ]
   - name: uberzug-config
     type: git
     source:
@@ -155,7 +160,11 @@ resources:
     source:
       branch: master
       uri: git://github.com/cloudfoundry/cf-acceptance-tests.git
-
+  - name: toque-scaling-test-params
+    type: git
+    source:
+      uri: https://github.com/cf-container-networking/toque-scaling
+      paths: [ test-params ]
 
 jobs:
   - name: netman-tests-postgres
@@ -487,16 +496,19 @@ jobs:
           trigger: false
           passed: [pickelhelm-test]
         - get: etcd-release-tarball
+        - get: scaling-deploy
+          resource: toque-scaling-deploy
       - aggregate:
         - task: create-garden-runc-release-tarball
           file: container-networking-ci/tasks/create-garden-runc-release-tarball.yml
         - task: create-release-tarball
           file: netman-release/ci/create-release-tarball.yml
+        - task: set-scaling-deploy
+          file: container-networking-ci/tasks/set-scaling-deploy.yml
         - task: generate-toque-manifests
           file: container-networking-ci/tasks/generate-deployment-manifests.yml
           params:
             ENVIRONMENT_NAME: toque
-            CELL_COUNT: 4
       - put: toque-cf
         params:
           cleanup: false

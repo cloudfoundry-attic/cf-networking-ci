@@ -1,0 +1,15 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source: { repository: c2cnetworking/deploy }
+
+inputs:
+  - name: container-networking-ci
+  - name: scaling-deploy
+
+outputs:
+  - name: generated-manifest
+
+run:
+  path: container-networking-ci/tasks/set-scaling-deploy

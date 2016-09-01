@@ -17,7 +17,6 @@ outputs:
 
 params:
   ENVIRONMENT_NAME: ~
-  CELL_COUNT: 2
   NETMANIFY: true
 
 run:
