@@ -8,6 +8,7 @@ image_resource:
 inputs:
   - name: deployments-repo
   - name: config-repo
+  - name: container-networking-ci
   - name: cf-release
   - name: diego-release
   - name: netman-release
