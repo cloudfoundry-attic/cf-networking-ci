@@ -2,7 +2,8 @@
 
 set -e -u -x
 
+mkdir -p ${PWD}/config-repo/stubs/diego
 input_params=${PWD}/scaling-deploy/deploy/instance-count-overrides.yml
-output_params=${PWD}/container-networking-ci/stubs/diego/instance-count-overrides.yml
+output_params=${PWD}/config-repo/stubs/diego/instance-count-overrides.yml
 
 mv $input_params $output_params
