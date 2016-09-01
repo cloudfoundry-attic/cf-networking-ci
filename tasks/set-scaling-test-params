@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e -u -x
+
+mkdir -p ${PWD}/test-config/environments/${ENVIRONMENT_NAME}
+input_test_params=${PWD}/scaling-deploy/test-params/params.json
+existing_test_params=${PWD}/deployments-repo/environments/${ENVIRONMENT_NAME}/netman-cf-acceptance.json
+output_test_params=${PWD}/test-config/environments/${ENVIRONMENT_NAME}/netman-cf-acceptance.json
+
+jq -s '.[0] * .[1]' $existing_test_params $input_test_params > $output_test_params
+

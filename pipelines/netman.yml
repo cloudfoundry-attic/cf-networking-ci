@@ -304,6 +304,9 @@ jobs:
         - get: deployments-repo
           resource: pickelhelm-config
           trigger: false
+        - get: test-config
+          resource: pickelhelm-config
+          trigger: false
         - get: diego-release
           params: { submodules: none }
           passed: [pickelhelm-deploy]
@@ -432,6 +435,9 @@ jobs:
     plan:
       - aggregate:
         - get: deployments-repo
+          resource: mitre-config
+          trigger: false
+        - get: test-config
           resource: mitre-config
           trigger: false
         - get: diego-release
@@ -563,6 +569,12 @@ jobs:
           resource: toque-diego
           passed: [toque-deploy]
           trigger: true
+        - get: scaling-test-params
+          resource: toque-scaling-test-params
+      - task: set-scaling-test-params
+        file: container-networking-ci/tasks/set-scaling-test-params.yml
+        params:
+          ENVIRONMENT_NAME: toque
       - task: netman-cf-acceptance
         file: container-networking-ci/tasks/netman-cf-acceptance.yml
         params:

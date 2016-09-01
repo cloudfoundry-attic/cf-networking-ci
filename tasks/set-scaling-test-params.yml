@@ -1,0 +1,19 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source: { repository: c2cnetworking/deploy }
+
+inputs:
+  - name: container-networking-ci
+  - name: deployments-repo
+  - name: scaling-test-params
+
+outputs:
+  - name: test-config
+
+params:
+  ENVIRONMENT_NAME: ~
+
+run:
+  path: container-networking-ci/tasks/set-scaling-test-params

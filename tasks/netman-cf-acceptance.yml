@@ -7,7 +7,7 @@ image_resource:
 
 inputs:
   - name: container-networking-ci
-  - name: deployments-repo
+  - name: test-config
   - name: netman-release
 
 outputs:
