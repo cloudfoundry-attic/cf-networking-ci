@@ -2,7 +2,7 @@
 
 set -e -u -x
 
-input_params={$PWD}/scaling-deploy/deploy/instance-count-overrides.yml
-output_params={$PWD}/container-networking-ci/stubs/diego/instance-count-overrides.yml
+input_params=${PWD}/scaling-deploy/deploy/instance-count-overrides.yml
+output_params=${PWD}/container-networking-ci/stubs/diego/instance-count-overrides.yml
 
 mv $input_params $output_params
