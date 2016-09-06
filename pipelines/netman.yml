@@ -115,8 +115,8 @@ resources:
   - name: garden-runc-release
     type: git
     source:
-      uri: git://github.com/cf-container-networking/garden-runc-release
-      branch: external-binary-improvements
+      uri: git://github.com/cloudfoundry/garden-runc-release
+      branch: develop
   ###### BOSH release tarballs
   - name: rootfs-release-tarball
     type: bosh-io-release
