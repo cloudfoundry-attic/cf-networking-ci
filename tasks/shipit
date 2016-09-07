@@ -9,11 +9,13 @@ if [ -z "$VERSION" ]; then
   exit 1
 fi
 
+echo $VERSION
+
 CANDIDATE_DIR=$PWD/netman-release
 cd netman-release
 
-git config --global user.email "ci@localhost"
-git config --global user.name "CI Bot"
+git config --global user.email "container-networking+ci@pivotal.io"
+git config --global user.name "Container Networking Bot"
 
 RELEASE_YML=$PWD/releases/netman/netman-${VERSION}.yml
 
@@ -24,7 +26,7 @@ else
   echo "finalizing release"
   bosh -n finalize release --version "$VERSION" ${CANDIDATE_DIR}/netman-*.tgz
   git add -A
-  git commit -m "release v${VERSION}"
+  git commit -m "Release v${VERSION}"
 fi
 
 mv releases/netman/*.tgz ../final-release/netman-${VERSION}.tgz

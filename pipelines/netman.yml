@@ -171,6 +171,13 @@ resources:
     source:
       uri: https://github.com/cf-container-networking/toque-scaling
       paths: [ test-params ]
+  - name: netman-version
+    type: semver
+    source:
+      bucket: {{netman-release-s3-bucket}}
+      key: releases/current-version
+      access_key_id: {{aws-access-key-id}}
+      secret_access_key: {{aws-secret-access-key}}
 
 jobs:
   - name: netman-tests-postgres
@@ -729,3 +736,37 @@ jobs:
           BOSH_USER: admin
           BOSH_PASSWORD: {{toque-bosh-password}}
           DEPLOYMENT_NAME: toque
+
+  - name: netman-shipit
+    serial: true
+    plan:
+    - do:
+      - aggregate:
+        - get: container-networking-ci
+          trigger: false
+        - get: netman-version
+          params:
+            bump: final
+        - get: netman-release
+          passed: [mitre-test]
+          trigger: false
+      - task: shipit
+        file: container-networking-ci/tasks/shipit.yml
+      # - aggregate:
+      #   - put: netman-version
+      #     params: {file: netman-version/number}
+      #   - put: gr-release-master
+      #     params:
+      #       repository: release/master
+      #       tag: gr-version/number
+      #       tag_prefix: v
+      #   - put: gr-release-tarball
+      #     params:
+      #       from: final-release/garden-runc-([^/]*).tgz
+      #       to: releases/
+      #   - put: gr-github-release
+      #     params:
+      #       name: gr-version/number
+      #       tag: gr-version/number
+      #       tag_prefix: v
+
