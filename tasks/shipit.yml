@@ -1,0 +1,18 @@
+---
+image_resource:
+  type: docker-image
+  source: { repository: c2cnetworking/deploy }
+
+platform: linux
+
+inputs:
+  - name: netman-version
+  - name: container-networking-ci
+  - name: netman-release
+
+outputs:
+  - name: final-release
+  - name: release
+
+run:
+  path: container-networking-ci/tasks/shipit
