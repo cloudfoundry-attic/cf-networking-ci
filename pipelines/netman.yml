@@ -171,11 +171,21 @@ resources:
     source:
       uri: https://github.com/cf-container-networking/toque-scaling
       paths: [ test-params ]
+  #######  Release management
   - name: netman-version
     type: semver
     source:
       bucket: {{netman-release-s3-bucket}}
+      region: us-west-2
       key: releases/current-version
+      access_key_id: {{aws-access-key-id}}
+      secret_access_key: {{aws-secret-access-key}}
+  - name: netman-tarball
+    type: s3
+    source:
+      bucket: {{netman-candidate-s3-bucket}}
+      region: us-west-2
+      regexp: releases/netman-(.*).tgz
       access_key_id: {{aws-access-key-id}}
       secret_access_key: {{aws-secret-access-key}}
 
@@ -288,6 +298,10 @@ jobs:
           file: container-networking-ci/tasks/generate-deployment-manifests.yml
           params:
             ENVIRONMENT_NAME: pickelhelm
+      - put: netman-tarball
+        params:
+          from: tarballs/netman-([^/]*).tgz
+          to: releases/
       - put: pickelhelm-cf
         params:
           cleanup: false
@@ -334,6 +348,8 @@ jobs:
         - get: netman-release
           passed: [pickelhelm-deploy]
           trigger: true
+        - get: netman-tarball
+          passed: [pickelhelm-deploy]
         - get: cf-deployment
           resource: pickelhelm-cf
           passed: [pickelhelm-deploy]
@@ -384,12 +400,13 @@ jobs:
         - get: netman-release
           trigger: false
           passed: [pickelhelm-test]
+        - get: netman-tarball
+          trigger: false
+          passed: [pickelhelm-test]
         - get: etcd-release-tarball
       - aggregate:
         - task: create-garden-runc-release-tarball
           file: container-networking-ci/tasks/create-garden-runc-release-tarball.yml
-        - task: create-release-tarball
-          file: netman-release/ci/create-release-tarball.yml
         - task: generate-mitre-manifests
           file: container-networking-ci/tasks/generate-deployment-manifests.yml
           params:
@@ -409,7 +426,7 @@ jobs:
           stemcells:
           - aws-stemcell/*.tgz
           releases:
-          - tarballs/*.tgz
+          - netman-tarball/*.tgz
           - garden-runc-release-tarball/*.tgz
           - etcd-release-tarball/*.tgz
           - rootfs-release-tarball/*.tgz
@@ -467,6 +484,8 @@ jobs:
         - get: netman-release
           passed: [mitre-deploy]
           trigger: true
+        - get: netman-tarball
+          passed: [mitre-deploy]
         - get: container-networking-ci
         - get: cf-deployment
           resource: mitre-cf
@@ -748,6 +767,9 @@ jobs:
           params:
             bump: final
         - get: netman-release
+          passed: [mitre-test]
+          trigger: false
+        - get: netman-tarball
           passed: [mitre-test]
           trigger: false
       - task: shipit

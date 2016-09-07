@@ -8,6 +8,7 @@ platform: linux
 inputs:
   - name: netman-version
   - name: container-networking-ci
+  - name: netman-tarball
   - name: netman-release
 
 outputs:
