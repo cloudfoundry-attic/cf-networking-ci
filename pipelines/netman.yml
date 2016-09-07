@@ -176,7 +176,7 @@ resources:
     type: semver
     source:
       bucket: {{netman-release-s3-bucket}}
-      region: us-west-2
+      region_name: us-west-2
       key: releases/current-version
       access_key_id: {{aws-access-key-id}}
       secret_access_key: {{aws-secret-access-key}}
@@ -184,7 +184,7 @@ resources:
     type: s3
     source:
       bucket: {{netman-candidate-s3-bucket}}
-      region: us-west-2
+      region_name: us-west-2
       regexp: releases/netman-(.*).tgz
       access_key_id: {{aws-access-key-id}}
       secret_access_key: {{aws-secret-access-key}}
