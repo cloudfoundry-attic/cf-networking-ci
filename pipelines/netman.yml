@@ -87,6 +87,12 @@ resources:
       branch: master
       private_key: {{container-networking-deployments-deploy-key}}
       paths: [ environments/toque ]
+  - name: container-networking-deployments
+    type: git
+    source:
+      uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
+      branch: master
+      private_key: {{container-networking-deployments-deploy-key}}
   - name: runtime-ci
     type: git
     source:
@@ -760,17 +766,15 @@ jobs:
     plan:
     - do:
       - aggregate:
+        - get: container-networking-deployments
         - get: container-networking-ci
-          trigger: false
         - get: netman-version
           params:
             bump: final
         - get: netman-release
           passed: [mitre-test]
-          trigger: false
         - get: netman-tarball
           passed: [mitre-test]
-          trigger: false
       - task: shipit
         file: container-networking-ci/tasks/shipit.yml
       # - aggregate:

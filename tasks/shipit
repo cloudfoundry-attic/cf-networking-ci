@@ -9,7 +9,7 @@ if [ -z "$VERSION" ]; then
   exit 1
 fi
 
-echo $VERSION
+cp container-networking-deployments/config/private.yml netman-release/config/private.yml
 
 CANDIDATE_DIR=$PWD/netman-tarball
 cd netman-release
