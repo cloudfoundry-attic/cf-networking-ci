@@ -834,8 +834,7 @@ jobs:
     plan:
     - aggregate:
       - get: netman-version
-        # trigger: true
-        trigger: false
+        trigger: true
         passed: [netman-shipit]
         params: {bump: minor, pre: rc}
     - put: netman-version
@@ -852,8 +851,7 @@ jobs:
             submodules: none
             fetch: [develop]
           passed: [netman-shipit]
-          # trigger: true
-          trigger: false
+          trigger: true
         - get: netman-release-dev
           params: {submodules: none}
       - task: merge-master
