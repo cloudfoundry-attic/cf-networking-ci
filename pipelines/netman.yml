@@ -113,11 +113,11 @@ resources:
     source:
       branch: master
       uri: https://github.com/cloudfoundry/diego-release.git
-  - name: netman-release
+  - name: netman-release-dev
     type: git
     source:
       uri: git://github.com/cloudfoundry-incubator/netman-release
-      branch: master
+      branch: develop
   - name: garden-runc-release
     type: git
     source:
@@ -200,6 +200,7 @@ jobs:
     public: true
     plan:
       - get: netman-release
+        resource: netman-release-dev
         trigger: true
       - task: netman-tests
         file: netman-release/ci/netman-tests-postgres.yml
@@ -209,6 +210,7 @@ jobs:
     public: true
     plan:
       - get: netman-release
+        resource: netman-release-dev
         trigger: true
       - task: netman-tests
         file: netman-release/ci/netman-tests-mysql.yml
@@ -230,6 +232,7 @@ jobs:
           trigger: true
         - get: etcd-release-tarball
         - get: netman-release
+          resource: netman-release-dev
           params: { submodules: all }
           trigger: true
           passed: [netman-tests-postgres, netman-tests-mysql]
@@ -292,6 +295,7 @@ jobs:
         - get: garden-runc-release
           trigger: true
         - get: netman-release
+          resource: netman-release-dev
           trigger: true
           passed: [netman-tests-postgres, netman-tests-mysql]
         - get: etcd-release-tarball
@@ -348,6 +352,7 @@ jobs:
           passed: [pickelhelm-deploy]
           trigger: true
         - get: netman-release
+          resource: netman-release-dev
           passed: [pickelhelm-deploy]
           trigger: true
         - get: cf-deployment
@@ -398,6 +403,7 @@ jobs:
           trigger: false
           passed: [pickelhelm-test]
         - get: netman-release
+          resource: netman-release-dev
           trigger: false
           passed: [pickelhelm-test]
         - get: netman-version
@@ -489,6 +495,7 @@ jobs:
           passed: [mitre-deploy]
           trigger: true
         - get: netman-release
+          resource: netman-release-dev
           passed: [mitre-deploy]
           trigger: true
         - get: netman-tarball
@@ -544,6 +551,7 @@ jobs:
           trigger: false
           passed: [pickelhelm-test]
         - get: netman-release
+          resource: netman-release-dev
           trigger: false
           passed: [pickelhelm-test]
         - get: etcd-release-tarball
@@ -600,6 +608,7 @@ jobs:
           passed: [toque-deploy]
           trigger: true
         - get: netman-release
+          resource: netman-release-dev
           passed: [toque-deploy]
           trigger: true
         - get: container-networking-ci
@@ -643,6 +652,7 @@ jobs:
         - get: runtime-ci
           params: { submodules: none }
         - get: netman-release
+          resource: netman-release-dev
           passed: [toque-test]
         - get: environment
           resource: toque-cf
@@ -777,6 +787,7 @@ jobs:
             bump: final
           passed: [mitre-test]
         - get: netman-release
+          resource: netman-release-dev
           passed: [mitre-test]
         - get: netman-tarball
           passed: [mitre-test]
