@@ -118,6 +118,12 @@ resources:
     source:
       uri: git://github.com/cloudfoundry-incubator/netman-release
       branch: develop
+  - name: netman-release-master
+    type: git
+    source:
+      uri: git://github.com/cloudfoundry-incubator/netman-release
+      branch: master
+      private_key: {{netman-release-deploy-key}}
   - name: garden-runc-release
     type: git
     source:
@@ -788,28 +794,31 @@ jobs:
           passed: [mitre-test]
         - get: netman-release
           resource: netman-release-dev
+          params:
+            fetch: [master]
+            submodules: none
           passed: [mitre-test]
         - get: netman-tarball
           passed: [mitre-test]
       - task: shipit
         file: container-networking-ci/tasks/shipit.yml
-      # - aggregate:
-      #   - put: netman-version
-      #     params: {file: netman-version/number}
-      #   - put: netman-release
-      #     params:
-      #       repository: release/master
-      #       tag: netman-version/number
-      #       tag_prefix: v
-      #   - put: netman-tarball
-      #     params:
-      #       from: final-release/netman-([^/]*).tgz
-      #       to: releases/
-      #   - put: netman-github-release
-      #     params:
-      #       name: netman-version/number
-      #       tag: netman-version/number
-      #       tag_prefix: v
+      - aggregate:
+        - put: netman-version
+          params: {file: netman-version/number}
+        - put: netman-release-master
+          params:
+            repository: release/master
+            tag: netman-version/number
+            tag_prefix: v
+        - put: netman-tarball
+          params:
+            from: final-release/netman-([^/]*).tgz
+            to: releases/
+        - put: netman-github-release
+          params:
+            name: netman-version/number
+            tag: netman-version/number
+            tag_prefix: v
 
   - name: netman-bump-minor-version
     serial: true
@@ -822,3 +831,23 @@ jobs:
         params: {bump: minor, pre: rc}
     - put: netman-version
       params: {file: netman-version/number}
+
+  # merge master back to develop
+  - name: netman-merge-master
+    plan:
+    - do:
+      - aggregate:
+        - get: container-networking-ci
+        - get: netman-release-master
+          params:
+            submodules: none
+            fetch: [develop]
+          passed: [netman-shipit]
+          # trigger: true
+          trigger: false
+        - get: netman-release-dev
+          params: {submodules: none}
+      - task: merge-master
+        file: container-networking-ci/tasks/merge-master.yml
+      - put: netman-release-dev
+        params: {repository: release-merged}
