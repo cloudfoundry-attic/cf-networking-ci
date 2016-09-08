@@ -121,7 +121,7 @@ resources:
   - name: netman-release-master
     type: git
     source:
-      uri: git://github.com/cloudfoundry-incubator/netman-release
+      uri: git@github.com:cloudfoundry-incubator/netman-release.git
       branch: master
       private_key: {{netman-release-deploy-key}}
   - name: garden-runc-release
