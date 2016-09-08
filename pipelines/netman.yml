@@ -829,6 +829,18 @@ jobs:
         #     tag: netman-version/number
         #     tag_prefix: v
 
+  - name: github-release
+    serial: true
+    plan:
+    - aggregate:
+      - get: netman-version
+        passed: [netman-shipit]
+      - put: netman-github-release
+        params:
+          name: netman-version/number
+          tag: netman-version/number
+          tag_prefix: v
+
   - name: netman-bump-minor-version
     serial: true
     plan:
