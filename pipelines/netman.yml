@@ -776,18 +776,18 @@ jobs:
       # - aggregate:
       #   - put: netman-version
       #     params: {file: netman-version/number}
-      #   - put: gr-release-master
+      #   - put: netman-release
       #     params:
       #       repository: release/master
-      #       tag: gr-version/number
+      #       tag: netman-version/number
       #       tag_prefix: v
-      #   - put: gr-release-tarball
+      #   - put: netman-tarball
       #     params:
-      #       from: final-release/garden-runc-([^/]*).tgz
+      #       from: final-release/netman-([^/]*).tgz
       #       to: releases/
-      #   - put: gr-github-release
+      #   - put: netman-github-release
       #     params:
-      #       name: gr-version/number
-      #       tag: gr-version/number
+      #       name: netman-version/number
+      #       tag: netman-version/number
       #       tag_prefix: v
 
