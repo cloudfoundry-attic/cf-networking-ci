@@ -200,6 +200,14 @@ resources:
       regexp: releases/netman-(.*).tgz
       access_key_id: {{aws-access-key-id}}
       secret_access_key: {{aws-secret-access-key}}
+  # Github release
+  - name: netman-github-release
+    type: github-release
+    source:
+      user: cloudfoundry
+      repository: netman-release
+      access_token: {{github-access-token}}
+      drafts: true
 
 jobs:
   - name: netman-tests-postgres
