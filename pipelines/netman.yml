@@ -205,7 +205,7 @@ resources:
   - name: netman-github-release
     type: github-release
     source:
-      user: cloudfoundry
+      user: cloudfoundry-incubator
       repository: netman-release
       access_token: {{github-access-token}}
       drafts: true
@@ -823,24 +823,13 @@ jobs:
           params:
             from: final-release/netman-([^/]*).tgz
             to: releases/
-        # - put: netman-github-release
-        #   params:
-        #     name: netman-version/number
-        #     tag: netman-version/number
-        #     tag_prefix: v
+        - put: netman-github-release
+          params:
+            name: netman-version/number
+            tag: netman-version/number
+            tag_prefix: v
 
-  - name: github-release
-    serial: true
-    plan:
-    - aggregate:
-      - get: netman-version
-        passed: [netman-shipit]
-      - put: netman-github-release
-        params:
-          name: netman-version/number
-          tag: netman-version/number
-          tag_prefix: v
-
+  # bump minor version (i.e. 0.1.0 -> 0.2.0)
   - name: netman-bump-minor-version
     serial: true
     plan:
