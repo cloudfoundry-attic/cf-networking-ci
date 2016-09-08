@@ -822,11 +822,11 @@ jobs:
           params:
             from: final-release/netman-([^/]*).tgz
             to: releases/
-        - put: netman-github-release
-          params:
-            name: netman-version/number
-            tag: netman-version/number
-            tag_prefix: v
+        # - put: netman-github-release
+        #   params:
+        #     name: netman-version/number
+        #     tag: netman-version/number
+        #     tag_prefix: v
 
   - name: netman-bump-minor-version
     serial: true
