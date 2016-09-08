@@ -118,6 +118,7 @@ resources:
     source:
       uri: git@github.com:cloudfoundry-incubator/netman-release.git
       branch: develop
+      private_key: {{netman-release-deploy-key}}
   - name: netman-release-master
     type: git
     source:
