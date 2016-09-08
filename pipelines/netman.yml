@@ -828,6 +828,8 @@ jobs:
             name: netman-version/number
             tag: netman-version/number
             tag_prefix: v
+            globs:
+            - final-release/netman-*.tgz
 
   # bump minor version (i.e. 0.1.0 -> 0.2.0)
   - name: netman-bump-minor-version
