@@ -791,3 +791,14 @@ jobs:
       #       tag: netman-version/number
       #       tag_prefix: v
 
+  - name: netman-bump-minor-version
+    serial: true
+    plan:
+    - aggregate:
+      - get: netman-version
+        # trigger: true
+        trigger: false
+        passed: [netman-shipit]
+        params: {bump: minor, pre: rc}
+    - put: netman-version
+      params: {file: netman-version/number}
