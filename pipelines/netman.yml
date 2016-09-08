@@ -298,10 +298,6 @@ jobs:
           file: container-networking-ci/tasks/generate-deployment-manifests.yml
           params:
             ENVIRONMENT_NAME: pickelhelm
-      - put: netman-tarball
-        params:
-          from: tarballs/netman-([^/]*).tgz
-          to: releases/
       - put: pickelhelm-cf
         params:
           cleanup: false
@@ -348,8 +344,6 @@ jobs:
         - get: netman-release
           passed: [pickelhelm-deploy]
           trigger: true
-        - get: netman-tarball
-          passed: [pickelhelm-deploy]
         - get: cf-deployment
           resource: pickelhelm-cf
           passed: [pickelhelm-deploy]
@@ -400,17 +394,22 @@ jobs:
         - get: netman-release
           trigger: false
           passed: [pickelhelm-test]
-        - get: netman-tarball
-          trigger: false
-          passed: [pickelhelm-test]
+        - get: netman-version
+          params: { pre: rc }
         - get: etcd-release-tarball
       - aggregate:
         - task: create-garden-runc-release-tarball
           file: container-networking-ci/tasks/create-garden-runc-release-tarball.yml
+        - task: create-release-tarball
+          file: netman-release/ci/create-release.yml
         - task: generate-mitre-manifests
           file: container-networking-ci/tasks/generate-deployment-manifests.yml
           params:
             ENVIRONMENT_NAME: mitre
+      - put: netman-tarball
+        params:
+          from: tarballs/netman-([^/]*).tgz
+          to: releases/
       - put: mitre-cf
         params:
           cleanup: false
@@ -426,7 +425,7 @@ jobs:
           stemcells:
           - aws-stemcell/*.tgz
           releases:
-          - netman-tarball/*.tgz
+          - tarballs/*.tgz
           - garden-runc-release-tarball/*.tgz
           - etcd-release-tarball/*.tgz
           - rootfs-release-tarball/*.tgz
