@@ -436,6 +436,8 @@ jobs:
           - etcd-release-tarball/*.tgz
           - rootfs-release-tarball/*.tgz
           - diego-release-tarball/*.tgz
+      - put: netman-version
+        params: {file: netman-version/number}
       - task: add-acceptance-space-developer
         file: container-networking-ci/tasks/add-space-developer.yml
         params:
@@ -490,6 +492,8 @@ jobs:
           passed: [mitre-deploy]
           trigger: true
         - get: netman-tarball
+          passed: [mitre-deploy]
+        - get: netman-version
           passed: [mitre-deploy]
         - get: container-networking-ci
         - get: cf-deployment
@@ -771,6 +775,7 @@ jobs:
         - get: netman-version
           params:
             bump: final
+          passed: [mitre-test]
         - get: netman-release
           passed: [mitre-test]
         - get: netman-tarball
