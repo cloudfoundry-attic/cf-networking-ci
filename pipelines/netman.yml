@@ -432,7 +432,7 @@ jobs:
         file: container-networking-ci/tasks/netman-build-cli.yml
       - put: netman-tarball
         params:
-          from: netman-release/binaries/network-policy-plugin-*.tgz
+          from: netman-release/binaries/network-policy-plugin-*
           to: releases/
 
   - name: mitre-deploy
