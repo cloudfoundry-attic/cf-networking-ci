@@ -28,6 +28,11 @@ groups:
     - delete-deployment-pickelhelm-diego
     - delete-deployment-toque-cf
     - delete-deployment-toque-diego
+- name: version
+  jobs:
+  - major-bump
+  - minor-bump
+  - patch-bump
 
 resources:
   ###### Deployments
@@ -425,7 +430,7 @@ jobs:
           ENVIRONMENT_NAME: pickelhelm
 
   - name: mitre-deploy
-    serial_groups: [mitre]
+    serial_groups: [mitre, version]
     plan:
       - aggregate:
         - get: container-networking-ci
@@ -823,7 +828,7 @@ jobs:
           DEPLOYMENT_NAME: toque
 
   - name: netman-shipit
-    serial: true
+    serial_groups: [version]
     plan:
     - do:
       - aggregate:
@@ -865,7 +870,7 @@ jobs:
 
   # bump minor version (i.e. 0.1.0 -> 0.2.0)
   - name: netman-bump-minor-version
-    serial: true
+    serial_groups: [version]
     plan:
     - aggregate:
       - get: version
@@ -894,34 +899,27 @@ jobs:
       - put: netman-release-dev
         params: {repository: release-merged}
 
-  # - name: rc-bump
-  #   # serial_groups: [version]
-  #   plan:
-  #   - get: version
-  #     params: {pre: rc}
-  #   - put: version
-  #     params: {file: version/number}
+  # versioning
+  - name: patch-bump
+    serial_groups: [version]
+    plan:
+    - get: version
+      params: {bump: patch}
+    - put: version
+      params: {file: version/number}
 
-  # - name: patch-bump
-  #   serial_groups: [version]
-  #   plan:
-  #   - get: version
-  #     params: {bump: patch}
-  #   - put: version
-  #     params: {file: version/number}
+  - name: minor-bump
+    serial_groups: [version]
+    plan:
+    - get: version
+      params: {bump: minor}
+    - put: version
+      params: {file: version/number}
 
-  # - name: minor-bump
-  #   serial_groups: [version]
-  #   plan:
-  #   - get: version
-  #     params: {bump: minor}
-  #   - put: version
-  #     params: {file: version/number}
-
-  # - name: major-bump
-  #   serial_groups: [version]
-  #   plan:
-  #   - get: version
-  #     params: {bump: major}
-  #   - put: version
-  #     params: {file: version/number}
+  - name: major-bump
+    serial_groups: [version]
+    plan:
+    - get: version
+      params: {bump: major}
+    - put: version
+      params: {file: version/number}
