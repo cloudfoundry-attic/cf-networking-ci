@@ -428,6 +428,12 @@ jobs:
         file: container-networking-ci/tasks/netman-cf-acceptance.yml
         params:
           ENVIRONMENT_NAME: pickelhelm
+      - task: build-cli
+        file: container-networking-ci/tasks/netman-build-cli.yml
+      - put: netman-tarball
+        params:
+          from: netman-release/binaries/network-policy-plugin-*.tgz
+          to: releases/
 
   - name: mitre-deploy
     serial_groups: [mitre, version]
