@@ -437,6 +437,8 @@ jobs:
         params:
           from: tarballs/netman-([^/]*).tgz
           to: releases/
+      - put: netman-version
+        params: {file: netman-version/number}
       - put: mitre-cf
         params:
           cleanup: false
@@ -457,8 +459,6 @@ jobs:
           - etcd-release-tarball/*.tgz
           - rootfs-release-tarball/*.tgz
           - diego-release-tarball/*.tgz
-      - put: netman-version
-        params: {file: netman-version/number}
       - task: add-acceptance-space-developer
         file: container-networking-ci/tasks/add-space-developer.yml
         params:
