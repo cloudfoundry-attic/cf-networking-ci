@@ -424,15 +424,15 @@ jobs:
           passed: [pickelhelm-deploy]
         - get: etcd-release-tarball
           passed: [pickelhelm-deploy]
-      - task: netman-cf-acceptance
-        file: container-networking-ci/tasks/netman-cf-acceptance.yml
-        params:
-          ENVIRONMENT_NAME: pickelhelm
+      # - task: netman-cf-acceptance
+      #   file: container-networking-ci/tasks/netman-cf-acceptance.yml
+      #   params:
+      #     ENVIRONMENT_NAME: pickelhelm
       - task: build-cli
         file: container-networking-ci/tasks/netman-build-cli.yml
       - put: netman-tarball
         params:
-          from: netman-release/binaries/network-policy-plugin-*
+          from: binaries/network-policy-plugin-*
           to: releases/
 
   - name: mitre-deploy
