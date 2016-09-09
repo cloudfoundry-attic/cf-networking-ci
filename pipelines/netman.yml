@@ -862,3 +862,35 @@ jobs:
         file: container-networking-ci/tasks/merge-master.yml
       - put: netman-release-dev
         params: {repository: release-merged}
+
+  # - name: rc-bump
+  #   # serial_groups: [version]
+  #   plan:
+  #   - get: version
+  #     params: {pre: rc}
+  #   - put: version
+  #     params: {file: version/number}
+
+  # - name: patch-bump
+  #   serial_groups: [version]
+  #   plan:
+  #   - get: version
+  #     params: {bump: patch}
+  #   - put: version
+  #     params: {file: version/number}
+
+  # - name: minor-bump
+  #   serial_groups: [version]
+  #   plan:
+  #   - get: version
+  #     params: {bump: minor}
+  #   - put: version
+  #     params: {file: version/number}
+
+  # - name: major-bump
+  #   serial_groups: [version]
+  #   plan:
+  #   - get: version
+  #     params: {bump: major}
+  #   - put: version
+  #     params: {file: version/number}
