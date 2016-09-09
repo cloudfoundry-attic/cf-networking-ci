@@ -424,16 +424,10 @@ jobs:
           passed: [pickelhelm-deploy]
         - get: etcd-release-tarball
           passed: [pickelhelm-deploy]
-      # - task: netman-cf-acceptance
-      #   file: container-networking-ci/tasks/netman-cf-acceptance.yml
-      #   params:
-      #     ENVIRONMENT_NAME: pickelhelm
-      - task: build-cli
-        file: container-networking-ci/tasks/netman-build-cli.yml
-      - put: netman-tarball
+      - task: netman-cf-acceptance
+        file: container-networking-ci/tasks/netman-cf-acceptance.yml
         params:
-          from: binaries/network-policy-plugin-*
-          to: releases/
+          ENVIRONMENT_NAME: pickelhelm
 
   - name: mitre-deploy
     serial_groups: [mitre, version]
@@ -854,6 +848,8 @@ jobs:
           passed: [mitre-test]
       - task: shipit
         file: container-networking-ci/tasks/shipit.yml
+      - task: build-cli
+        file: container-networking-ci/tasks/netman-build-cli.yml
       - aggregate:
         - put: version
           params: {file: version/number}
@@ -873,6 +869,7 @@ jobs:
             tag_prefix: v
             globs:
             - final-release/netman-*.tgz
+            - binaries/network-policy-plugin-*
 
   # bump minor version (i.e. 0.1.0 -> 0.2.0)
   - name: netman-bump-minor-version
