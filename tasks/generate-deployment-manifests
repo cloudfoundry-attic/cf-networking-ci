@@ -24,6 +24,7 @@ pushd diego-release
     -i ${environment_path}/stubs/diego/iaas-settings.yml \
     -p ${environment_path}/stubs/diego/property-overrides.yml \
     -n ${stubs_path}/instance-count-overrides.yml \
+    -v ${environment_path}/stubs/diego/release-versions.yml \
     > ${output_path}/diego_plain.yml
 popd
 
