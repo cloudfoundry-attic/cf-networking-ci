@@ -679,10 +679,26 @@ jobs:
         file: container-networking-ci/tasks/set-scaling-test-params.yml
         params:
           ENVIRONMENT_NAME: toque
+      - task: emit-datadog-test-start
+        file: container-networking-ci/tasks/emit-datadog-event.yml
+        params:
+          TITLE: test_start
+          TEXT: test_start
+          PRIORITY: normal
+          AWS_ENV: toque-diego
+          DATADOG_API_KEY: {{datadog_api_key}}
       - task: netman-cf-acceptance
         file: container-networking-ci/tasks/netman-cf-acceptance.yml
         params:
           ENVIRONMENT_NAME: toque
+      - task: emit-datadog-test-stop
+        file: container-networking-ci/tasks/emit-datadog-event.yml
+        params:
+          TITLE: test_end
+          TEXT: test_end
+          PRIORITY: normal
+          AWS_ENV: toque-diego
+          DATADOG_API_KEY: {{datadog_api_key}}
       - task: commit-stats
         file: container-networking-ci/tasks/commit-new-file.yml
         input_mapping:
