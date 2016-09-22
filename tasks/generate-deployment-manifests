@@ -26,7 +26,5 @@ pushd diego-release
     -n ${stubs_path}/instance-count-overrides.yml \
     -N ${environment_path}/stubs/netman/stub.yml \
     -v ${environment_path}/stubs/diego/release-versions.yml \
-    > ${output_path}/diego_plain.yml
+    > ${output_path}/diego.yml
 popd
-
-cp ${output_path}/diego_plain.yml ${output_path}/diego.yml

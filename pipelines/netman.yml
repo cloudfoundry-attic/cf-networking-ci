@@ -147,8 +147,8 @@ resources:
   - name: diego-release
     type: git
     source:
-      branch: xtp-diego
-      uri: https://github.com/cf-container-networking/diego-release.git
+      branch: develop
+      uri: https://github.com/cloudfoundry/diego-release.git
   - name: netman-release-dev
     type: git
     source:
