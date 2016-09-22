@@ -147,7 +147,7 @@ resources:
   - name: diego-release
     type: git
     source:
-      branch: netman-manifest-generation
+      branch: xtp-diego
       uri: https://github.com/cf-container-networking/diego-release.git
   - name: netman-release-dev
     type: git

@@ -18,7 +18,6 @@ outputs:
 
 params:
   ENVIRONMENT_NAME: ~
-  NETMANIFY: true
 
 run:
   path: container-networking-ci/tasks/generate-deployment-manifests
