@@ -7,6 +7,7 @@ The main source code repo is [netman-release](https://github.com/cloudfoundry-in
 
 View our team's [CI & metrics dashboard](http://dashboard.c2c.cf-app.com).
 
+[Metrics dashboard by itself](https://p.datadoghq.com/sb/f3af7f8e2-baf5212773?tv_mode=true).
 
 ## to update a pipeline
 ```bash
