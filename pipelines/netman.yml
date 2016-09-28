@@ -451,15 +451,13 @@ jobs:
           resource: mitre-config
           trigger: false
         - get: cf-release
-          resource: cf-release-master
-          params: { submodules: none }
+          resource: cf-release-develop
+          params: { submodules: all }
         - get: diego-release
           params: { submodules: none }
         - get: aws-stemcell
           trigger: false
         - get: rootfs-release-tarball
-        - get: cf-release-tarball
-          trigger: false
         - get: diego-release-tarball
           trigger: false
         - get: garden-runc-release-tarball
@@ -473,6 +471,8 @@ jobs:
           params: { pre: rc }
         - get: etcd-release-tarball
       - aggregate:
+        - task: create-cf-release-tarball
+          file: container-networking-ci/tasks/create-cf-release-tarball.yml
         - task: create-release-tarball
           file: netman-release/ci/create-release.yml
         - task: generate-mitre-manifests
@@ -549,7 +549,7 @@ jobs:
           passed: [mitre-deploy]
           trigger: true
         - get: cf-release
-          resource: cf-release-master
+          resource: cf-release-develop
           params: { submodules: none }
           passed: [mitre-deploy]
           trigger: true
@@ -599,15 +599,13 @@ jobs:
           resource: toque-config
           trigger: false
         - get: cf-release
-          resource: cf-release-master
-          params: { submodules: none }
+          resource: cf-release-develop
+          params: { submodules: all }
         - get: diego-release
           params: { submodules: none }
         - get: aws-stemcell
           trigger: false
         - get: rootfs-release-tarball
-        - get: cf-release-tarball
-          trigger: false
         - get: diego-release-tarball
           trigger: false
         - get: garden-runc-release-tarball
@@ -621,6 +619,8 @@ jobs:
         - get: scaling-deploy
           resource: toque-scaling-deploy
       - aggregate:
+        - task: create-cf-release-tarball
+          file: container-networking-ci/tasks/create-cf-release-tarball.yml
         - task: create-release-tarball
           file: netman-release/ci/create-release-tarball.yml
         - task: set-scaling-deploy
@@ -664,7 +664,7 @@ jobs:
           passed: [toque-deploy]
           trigger: true
         - get: cf-release
-          resource: cf-release-master
+          resource: cf-release-develop
           params: { submodules: none }
           passed: [toque-deploy]
           trigger: true
