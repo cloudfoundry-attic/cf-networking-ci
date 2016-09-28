@@ -718,6 +718,7 @@ jobs:
     plan:
       - aggregate:
         - get: after-midnight
+          trigger: true
         - get: cf-acceptance-tests
           version: { ref: "94e87de26d361aa2040dc38dbed71065e6e735fb" }
         - get: runtime-ci
