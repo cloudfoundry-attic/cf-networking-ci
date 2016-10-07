@@ -3,6 +3,8 @@
 set -e -u
 
 cd netman-release
+git submodule update --init --recursive
+
 mkdir -p ../binaries
 export GOPATH=$PWD
 
