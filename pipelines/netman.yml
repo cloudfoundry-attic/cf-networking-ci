@@ -210,10 +210,10 @@ resources:
     source:
       start: 12:00 AM -0700
       stop: 1:00 AM -0700
-  - name: every-hour
+  - name: every-half-hour
     type: time
     source:
-      interval: 1h
+      interval: 30m
   ####### Tests
   - name: cf-acceptance-tests
     type: git
@@ -649,7 +649,7 @@ jobs:
     serial_groups: [toque]
     plan:
       - aggregate:
-        - get: every-hour
+        - get: every-half-hour
           trigger: true
         - get: deployments-repo
           resource: toque-config
