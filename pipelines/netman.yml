@@ -147,7 +147,7 @@ resources:
   - name: diego-release
     type: git
     source:
-      branch: master
+      branch: develop
       uri: https://github.com/cloudfoundry/diego-release.git
   - name: netman-release-dev
     type: git
