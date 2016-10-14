@@ -878,6 +878,8 @@ jobs:
         params:
           from: final-release/netman-([^/]*).tgz
           to: releases/
+      - task: build-release-notes
+        file: container-networking-ci/tasks/build-release-notes.yml
       - put: netman-github-release
         params:
           name: version/number
