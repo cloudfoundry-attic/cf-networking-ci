@@ -537,7 +537,7 @@ jobs:
         - get: after-midnight
           trigger: true
         - get: cf-acceptance-tests
-          version: { ref: "94e87de26d361aa2040dc38dbed71065e6e735fb" }
+          resource: cf-acceptance-tests
         - get: runtime-ci
           params: { submodules: none }
         - get: netman-release
@@ -557,7 +557,7 @@ jobs:
           INCLUDE_DIEGO_DOCKER: false
           INCLUDE_DIEGO_SSH: false
           INCLUDE_ROUTE_SERVICES: false
-          INCLUDE_SECURITY_GROUPS: false
+          INCLUDE_SECURITY_GROUPS: true
           INCLUDE_SERVICES: false
           INCLUDE_V3: false
           INCLUDE_PRIVILEGED_CONTAINER_SUPPORT: false
