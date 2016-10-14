@@ -7,6 +7,7 @@ groups:
   - pickelhelm-test
   - mitre-deploy
   - mitre-test
+  - mitre-cats
   - netman-shipit
   - netman-bump-minor-version
   - netman-merge-master
@@ -15,7 +16,6 @@ groups:
   - toque-deploy
   - toque-push
   - toque-test
-  - toque-cats
 - name: uberzug
   jobs:
   - uberzug-deploy
@@ -530,6 +530,47 @@ jobs:
           SPACE_NAME: GemFire
           USER: gemfire-test
 
+  - name: mitre-cats
+    serial_groups: [mitre]
+    plan:
+      - aggregate:
+        - get: after-midnight
+          trigger: true
+        - get: cf-acceptance-tests
+          version: { ref: "94e87de26d361aa2040dc38dbed71065e6e735fb" }
+        - get: runtime-ci
+          params: { submodules: none }
+        - get: netman-release
+          resource: netman-release-dev
+          passed: [mitre-test]
+        - get: environment
+          resource: mitre-cf
+          passed: [mitre-test]
+        - get: diego-environment
+          resource: mitre-diego
+          passed: [mitre-test]
+      - task: cats
+        file: runtime-ci/scripts/ci/run-cats/task.yml
+        params:
+          INCLUDE_BACKEND_COMPATIBILITY: false
+          INCLUDE_INTERNET_DEPENDENT: false
+          INCLUDE_DIEGO_DOCKER: false
+          INCLUDE_DIEGO_SSH: false
+          INCLUDE_ROUTE_SERVICES: false
+          INCLUDE_SECURITY_GROUPS: false
+          INCLUDE_SERVICES: false
+          INCLUDE_V3: false
+          INCLUDE_PRIVILEGED_CONTAINER_SUPPORT: false
+          INCLUDE_SSO: false
+          BACKEND: diego
+          CF_API: "api.mitre.c2c.cf-app.com"
+          CF_ADMIN_USER: admin
+          CF_ADMIN_PASSWORD: {{mitre-cf-admin-password}}
+          CF_APPS_DOMAIN: mitre.c2c.cf-app.com
+          SKIP_SSL_VALIDATION: "true"
+          USE_HTTP: "true"
+          NODES: 6
+
   - name: mitre-test
     serial_groups: [mitre]
     plan:
@@ -740,47 +781,6 @@ jobs:
           DEST_SUFFIX: json
       - put: toque-stats
         params: {repository: stats_output}
-
-  - name: toque-cats
-    serial_groups: [toque]
-    plan:
-      - aggregate:
-        - get: after-midnight
-          trigger: true
-        - get: cf-acceptance-tests
-          version: { ref: "94e87de26d361aa2040dc38dbed71065e6e735fb" }
-        - get: runtime-ci
-          params: { submodules: none }
-        - get: netman-release
-          resource: netman-release-dev
-          passed: [toque-test]
-        - get: environment
-          resource: toque-cf
-          passed: [toque-test]
-        - get: diego-environment
-          resource: toque-diego
-          passed: [toque-test]
-      - task: cats
-        file: runtime-ci/scripts/ci/run-cats/task.yml
-        params:
-          INCLUDE_BACKEND_COMPATIBILITY: false
-          INCLUDE_INTERNET_DEPENDENT: false
-          INCLUDE_DIEGO_DOCKER: false
-          INCLUDE_DIEGO_SSH: false
-          INCLUDE_ROUTE_SERVICES: false
-          INCLUDE_SECURITY_GROUPS: false
-          INCLUDE_SERVICES: false
-          INCLUDE_V3: false
-          INCLUDE_PRIVILEGED_CONTAINER_SUPPORT: false
-          INCLUDE_SSO: false
-          BACKEND: diego
-          CF_API: "api.toque.c2c.cf-app.com"
-          CF_ADMIN_USER: admin
-          CF_ADMIN_PASSWORD: {{toque-cf-admin-password}}
-          CF_APPS_DOMAIN: toque.c2c.cf-app.com
-          SKIP_SSL_VALIDATION: "true"
-          USE_HTTP: "true"
-          NODES: 6
 
 ##### Human-triggered utilities
   - name: delete-deployment-uberzug
