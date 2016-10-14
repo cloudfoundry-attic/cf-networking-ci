@@ -13,6 +13,7 @@ groups:
 - name: toque
   jobs:
   - toque-deploy
+  - toque-push
   - toque-test
   - toque-cats
 - name: uberzug
@@ -644,6 +645,29 @@ jobs:
           - etcd-release-tarball/*.tgz
           - rootfs-release-tarball/*.tgz
           - diego-release-tarball/*.tgz
+
+  - name: toque-push
+    serial_groups: [toque]
+    plan:
+      - aggregate:
+        - get: deployments-repo
+          resource: toque-config
+          trigger: false
+        - get: netman-release
+          resource: netman-release-dev
+          passed: [toque-deploy]
+          trigger: false
+        - get: container-networking-ci
+        - get: scaling-test-params
+          resource: toque-scaling-test-params
+      - task: set-scaling-test-params
+        file: container-networking-ci/tasks/set-scaling-test-params.yml
+        params:
+          ENVIRONMENT_NAME: toque
+      - task: push-apps
+        file: container-networking-ci/tasks/push-apps.yml
+        params:
+          ENVIRONMENT_NAME: toque
 
   - name: toque-test
     serial_groups: [toque]
