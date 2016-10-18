@@ -172,10 +172,6 @@ resources:
     type: bosh-io-release
     source:
       repository: cloudfoundry/cflinuxfs2-rootfs-release
-  - name: consul-release-tarball
-    type: bosh-io-release
-    source:
-      repository: cloudfoundry-incubator/consul-release
   - name: etcd-release-tarball
     type: bosh-io-release
     source:
@@ -631,29 +627,21 @@ jobs:
     plan:
       - aggregate:
         - get: container-networking-ci
-          trigger: false
         - get: deployments-repo
           resource: toque-config
-          trigger: false
         - get: cf-release
           resource: cf-release-master
           params: { submodules: none }
         - get: diego-release
           params: { submodules: none }
         - get: aws-stemcell
-          trigger: false
         - get: rootfs-release-tarball
         - get: diego-release-tarball
-          trigger: false
         - get: cf-release-tarball
-          trigger: false
         - get: garden-runc-release-tarball
-          trigger: false
-          passed: [pickelhelm-test]
         - get: netman-release
           resource: netman-release-dev
-          trigger: false
-          passed: [pickelhelm-test]
+          passed: [netman-tests-postgres, netman-tests-mysql]
         - get: etcd-release-tarball
         - get: scaling-deploy
           resource: toque-scaling-deploy
@@ -693,11 +681,9 @@ jobs:
       - aggregate:
         - get: deployments-repo
           resource: toque-config
-          trigger: false
         - get: netman-release
           resource: netman-release-dev
           passed: [toque-deploy]
-          trigger: false
         - get: container-networking-ci
         - get: scaling-test-params
           resource: toque-scaling-test-params
@@ -718,31 +704,13 @@ jobs:
           trigger: true
         - get: deployments-repo
           resource: toque-config
-          trigger: false
-        - get: diego-release
-          params: { submodules: none }
-          passed: [toque-deploy]
-          trigger: true
-        - get: cf-release
-          resource: cf-release-master
-          params: { submodules: none }
-          passed: [toque-deploy]
-          trigger: true
-        - get: garden-runc-release-tarball
-          passed: [toque-deploy]
-          trigger: true
         - get: netman-release
           resource: netman-release-dev
-          passed: [toque-deploy]
-          trigger: true
         - get: container-networking-ci
         - get: cf-deployment
           resource: toque-cf
-          passed: [toque-deploy]
         - get: environment
           resource: toque-diego
-          passed: [toque-deploy]
-          trigger: true
         - get: scaling-test-params
           resource: toque-scaling-test-params
         - get: toque-stats
