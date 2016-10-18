@@ -21,7 +21,7 @@ do
   curl -s https://www.pivotaltracker.com/services/v5/stories/$story_id
 done < $tmp_dir/stories.raw > $tmp_dir/stories.json
 
-cat $tmp_dir/stories.json | jq -r '"- ("+.current_state+") ["+.name+"]("+.url+")"' > $OUTPUT_DIR/notes.md
+cat $tmp_dir/stories.json | jq -r '"- ["+.name+"]("+.url+")"' > $OUTPUT_DIR/notes.md
 
 echo "built: "
 cat $OUTPUT_DIR/notes.md
