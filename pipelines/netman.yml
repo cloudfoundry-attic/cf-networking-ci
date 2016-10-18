@@ -758,8 +758,8 @@ jobs:
           PRIORITY: normal
           AWS_ENV: toque-diego
           DATADOG_API_KEY: {{datadog_api_key}}
-      - task: netman-cf-acceptance
-        file: container-networking-ci/tasks/netman-cf-acceptance.yml
+      - task: test-scalability
+        file: container-networking-ci/tasks/test-scalability.yml
         params:
           ENVIRONMENT_NAME: toque
       - task: emit-datadog-test-stop

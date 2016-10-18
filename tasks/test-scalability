@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -e -u
+
+environment_path="${PWD}/test-config/environments/${ENVIRONMENT_NAME}"
+export CONFIG=$environment_path/netman-cf-acceptance.json
+
+export NETWORK_STATS_FILE=$PWD/network-stats/stats.json
+
+cd netman-release
+export GOPATH=$PWD
+
+go build -o /tmp/bin/network-policy-plugin ./src/cli-plugin
+cf install-plugin -f /tmp/bin/network-policy-plugin
+
+cd src/netman-cf-acceptance
+export APPS_DIR=../example-apps
+ginkgo inter_container_connectivity_test.go -v
