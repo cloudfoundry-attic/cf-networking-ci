@@ -642,6 +642,7 @@ jobs:
         - get: netman-release
           resource: netman-release-dev
           passed: [netman-tests-postgres, netman-tests-mysql]
+          trigger: true
         - get: etcd-release-tarball
         - get: scaling-deploy
           resource: toque-scaling-deploy
@@ -684,9 +685,11 @@ jobs:
         - get: netman-release
           resource: netman-release-dev
           passed: [toque-deploy]
+          trigger: true
         - get: container-networking-ci
         - get: scaling-test-params
           resource: toque-scaling-test-params
+          trigger: true
       - task: set-scaling-test-params
         file: container-networking-ci/tasks/set-scaling-test-params.yml
         params:
@@ -706,6 +709,7 @@ jobs:
           resource: toque-config
         - get: netman-release
           resource: netman-release-dev
+          passed: [toque-push]
         - get: container-networking-ci
         - get: cf-deployment
           resource: toque-cf
@@ -713,6 +717,7 @@ jobs:
           resource: toque-diego
         - get: scaling-test-params
           resource: toque-scaling-test-params
+          passed: [toque-push]
         - get: toque-stats
       - task: set-scaling-test-params
         file: container-networking-ci/tasks/set-scaling-test-params.yml
