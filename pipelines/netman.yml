@@ -29,6 +29,9 @@ groups:
     - delete-deployment-pickelhelm-diego
     - delete-deployment-toque-cf
     - delete-deployment-toque-diego
+- name: trucker
+  jobs:
+  - trucker-deploy
 - name: version
   jobs:
   - major-bump
@@ -248,6 +251,11 @@ resources:
       repository: netman-release
       access_token: {{github-access-token}}
       drafts: true
+  - name: cf-deployment
+    type: git
+    source:
+      branch: master
+      uri: https://github.com/cloudfoundry/cf-deployment.git
 
 jobs:
   - name: netman-tests-postgres
@@ -754,6 +762,39 @@ jobs:
           DEST_SUFFIX: json
       - put: toque-stats
         params: {repository: stats_output}
+
+  - name: trucker-deploy
+    serial_groups: [trucker]
+    plan:
+      - aggregate:
+        - get: container-networking-ci
+        - get: deployments-repo
+          resource: trucker-config
+        - get: cf-deployment
+      - task: deploy-trucker
+        file: container-networking-ci/tasks/cf-deployment.yml
+        params:
+          MANIFEST_FILE: cf-deployment/cf-deployment.yml
+          ENVIRONMENT_NAME: trucker
+
+  # - name: trucker-upgrade
+  #   serial_groups: [trucker]
+  #   plan:
+  #     - aggregate:
+  #       - get: container-networking-ci
+  #       - get: deployments-repo
+  #         resource: trucker-config
+  #       - get: cf-deployment
+  #         passed: [trucker-deploy]
+  #         trigger: true
+  #     - task: upgrade
+  #       file: container-networking-ci/tasks/cf-deployment-upgrade.yml
+  #       params:
+  #     - task: deploy-trucker
+  #       file: container-networking-ci/tasks/cf-deployment.yml
+  #       params:
+  #         MANIFEST_FILE: cf-deployment/cf-deployment-upgrade.yml
+  #         ENVIRONMENT_NAME: trucker
 
 ##### Human-triggered utilities
   - name: delete-deployment-uberzug
