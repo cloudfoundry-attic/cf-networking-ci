@@ -1,0 +1,139 @@
+diff --git a/cf-deployment.yml b/cf-deployment.yml
+index 5a38d15..77a7532 100644
+--- a/cf-deployment.yml
++++ b/cf-deployment.yml
+@@ -241,6 +241,9 @@ instance_groups:
+           - name: diego
+             username: "((cf_mysql_mysql_seeded_databases_diego_username))"
+             password: "((cf_mysql_mysql_seeded_databases_diego_password))"
++          - name: network_policy
++            username: "((cf_mysql_mysql_seeded_databases_network_policy_username))"
++            password: "((cf_mysql_mysql_seeded_databases_network_policy_password))"
+           database_startup_timeout: 600
+           cluster_ips:
+           - 10.0.31.193
+@@ -522,6 +525,9 @@ instance_groups:
+         - 0.0.0.0/0
+         persistent_image_list:
+         - "/var/vcap/packages/cflinuxfs2/rootfs"
++        network_plugin: /var/vcap/packages/runc-cni/bin/garden-external-networker
++        network_plugin_extra_args:
++        - --configFile=/var/vcap/jobs/garden-cni/config/adapter.json
+   - name: rep
+     release: diego
+     properties:
+@@ -532,6 +538,34 @@ instance_groups:
+           - cflinuxfs2:/var/vcap/packages/cflinuxfs2/rootfs
+         ssl:
+           skip_cert_verify: true
++  - name: garden-cni
++    release: netman
++    properties:
++      garden-cni:
++        cni_plugin_dir: /var/vcap/packages/flannel/bin
++        cni_config_dir: /var/vcap/jobs/cni-flannel/config/cni
++  - name: cni-flannel
++    release: netman
++    properties:
++      cni-flannel:
++        etcd_endpoints:
++          - "((etcd_advertise_urls_dns_suffix))"
++        etcd_client_cert: "((etcd_client_cert))"
++        etcd_client_key: "((etcd_client_key))"
++        etcd_ca_cert: "((etcd_ca_cert))"
++        flannel:
++          etcd:
++            require_ssl: "((etcd_require_ssl))"
++  - name: netmon
++    release: netman
++  - name: vxlan-policy-agent
++    release: netman
++    properties:
++      vxlan-policy-agent:
++        policy_server_url: https://policy-server.service.cf.internal:4003
++        ca_cert: "((network_policy_ca_cert))"
++        client_cert: "((network_policy_client_cert))"
++        client_key: "((network_policy_client_key))"
+   - name: metron_agent
+     release: loggregator
+     properties: *2
+@@ -1242,6 +1276,68 @@ instance_groups:
+   - name: metron_agent
+     release: loggregator
+     properties: *2
++- name: policy-server
++  azs:
++  - z1
++  instances: 1
++  vm_type: t2.small
++  stemcell: default
++  networks:
++  - name: private
++  jobs:
++  - name: policy-server
++    release: netman
++    properties:
++      policy-server:
++        uaa_client_secret: "((network_policy_uaa_client_secret))"
++        uaa_url:  "((uaa_url))"
++        skip_ssl_validation: true
++        ca_cert: "((network_policy_ca_cert))"
++        server_cert: "((network_policy_server_cert))"
++        server_key: "((network_policy_server_key))"
++        database:
++          type: "((network_policy_db_type))"
++          connection_string: "((network_policy_db_connection_string))"
++  - name: route_registrar
++    release: routing
++    properties:
++      route_registrar:
++        routes:
++        - name: policy-server
++          port: 4002
++          registration_interval: 20s
++          uris:
++          - "((network_policy_server_uri))"
++      nats:
++        machines: *4
++        password: "((nats_password))"
++        port: 4222
++        user: "((nats_user))"
++  - name: consul_agent
++    release: consul
++    properties:
++      consul:
++        agent:
++          mode: client
++          domain: cf.internal
++          servers: *3
++          services:
++            policy-server:
++              name: policy-server
++              check:
++                interval: 5s
++                script: /bin/true
++        encrypt_keys: "((consul_encrypt_keys))"
++        agent_cert: "((consul_agent_cert))"
++        agent_key: "((consul_agent_agent_key))"
++        ca_cert: "((consul_agent_ca_cert))"
++        server_cert: "((consul_agent_server_cert))"
++        server_key: "((consul_agent_server_key))"
++  - name: metron_agent
++    release: loggregator
++    properties: *2
++  networks:
++  - name: private
+ releases:
+ - name: capi
+   url: https://bosh.io/d/github.com/cloudfoundry/capi-release?v=1.8.0
+@@ -1291,6 +1387,10 @@ releases:
+   url: https://bosh.io/d/github.com/cloudfoundry/cf-release?v=245
+   version: '245'
+   sha1: 0c9f485f640c2b9e3136fcc89047b3d76dd6863c
++- name: netman
++  url: https://bosh.io/d/github.com/cloudfoundry-incubator/netman-release?v=0.4.0
++  version: 0.4.0
++  sha1: 463d59c19309dd8221e1ff7cae739193e2e8a5eb
+ stemcells:
+ - alias: default
+   os: ubuntu-trusty
