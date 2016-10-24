@@ -127,6 +127,13 @@ resources:
       branch: master
       private_key: {{container-networking-deployments-deploy-key}}
       paths: [ environments/toque ]
+  - name: trucker-config
+    type: git
+    source:
+      uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
+      branch: master
+      private_key: {{container-networking-deployments-deploy-key}}
+      paths: [ environments/trucker ]
   - name: container-networking-deployments
     type: git
     source:
