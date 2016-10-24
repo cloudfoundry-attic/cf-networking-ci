@@ -36,6 +36,6 @@ pushd cf-deployment
   git apply ../container-networking-ci/netman-cf-deployment.patch
 popd
 
-VAR_FILE=deployments-repo/environment/${ENVIRONMENT_NAME}/deployment-env-vars.yml
+VAR_FILE=${PWD}/deployments-repo/environment/${ENVIRONMENT_NAME}/deployment-env-vars.yml
 
 bosh-cli -d cf -e $BOSH_DIRECTOR_URL --ca-cert=/tmp/ca.crt -n deploy --var-files=${VAR_FILE} ${MANIFEST_FILE}
