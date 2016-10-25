@@ -770,7 +770,7 @@ jobs:
       - put: toque-stats
         params: {repository: stats_output}
 
-  - name: trucker-deploy
+  - name: trucker-test-upgrade
     serial_groups: [trucker]
     plan:
       - aggregate:
