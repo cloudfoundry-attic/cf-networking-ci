@@ -786,16 +786,8 @@ jobs:
         file: container-networking-ci/tasks/test-upgrade.yml
         params:
           ENVIRONMENT_NAME: trucker
-      - task: deploy-plain
-        file: container-networking-ci/tasks/deploy-newstyle.yml
-        params:
-          ENVIRONMENT_NAME: trucker
-          MANIFEST_FILE: deployment-manifests/plain.yml
-      - task: deploy-with-netman
-        file: container-networking-ci/tasks/deploy-newstyle.yml
-        params:
-          ENVIRONMENT_NAME: trucker
-          MANIFEST_FILE: deployment-manifests/with-netman.yml
+          BASE_MANIFEST: deployment-manifests/plain.yml
+          UPGRADE_MANIFEST: deployment-manifests/with-netman.yml
 
 
 ##### Human-triggered utilities

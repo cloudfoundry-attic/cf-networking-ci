@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -e -u
+
+environment_path="${PWD}/test-config/environments/${ENVIRONMENT_NAME}"
+export CONFIG=$environment_path/netman-cf-acceptance.json
+
+cd netman-release
+export GOPATH=$PWD
+
+echo "manifests:"
+echo "  base: ${BASE_MANIFEST}"
+echo "  upgrade: ${UPGRADE_MANIFEST}"
+
+go install ./src/github.com/onsi/ginkgo/ginkgo
+
+cd src/netman-cf-upgrade
+ginkgo -v

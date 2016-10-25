@@ -1,20 +1,17 @@
 ---
 image_resource:
   type: docker-image
-  source: { repository: c2cnetworking/deploy-light }
+  source: { repository: c2cnetworking/deploy-heavy }
 
 platform: linux
 
 params:
   ENVIRONMENT_NAME: ~
+  BASE_MANIFEST: ~
+  UPGRADE_MANIFEST: ~
 
 inputs:
   - name: deployment-manifests
 
 run:
-  path: bash
-  args:
-    - -c
-    - |
-      echo "would do upgrade tests here.  for now, we found manifests: " \
-        && ls -la deployment-manifests
+  path: container-networking-ci/tasks/test-upgrade
