@@ -1,26 +1,6 @@
 #!/bin/bash
-# vim: set ft=sh
 
 set -e -x -u
-
-BIN_DIR=/tmp/bin
-mkdir -p ${BIN_DIR}
-
-export GOPATH=/tmp/go
-mkdir -p $GOPATH
-
-export PATH=$PATH:$BIN_DIR:$GOPATH
-
-# install bbl
-curl -o ${BIN_DIR}/bbl -L https://github.com/cloudfoundry/bosh-bootloader/releases/download/v1.1.0/bbl-v1.1.0_linux_x86-64
-chmod +x ${BIN_DIR}/bbl
-
-# install bosh-init
-curl -o ${BIN_DIR}/bosh-init -L https://s3.amazonaws.com/bosh-init-artifacts/bosh-init-0.0.98-linux-amd64
-chmod +x ${BIN_DIR}/bosh-init
-
-# install bosh-cli
-go get github.com/cloudfoundry/bosh-cli
 
 pushd deployments-repo/environments/$ENVIRONMENT_NAME
   export BOSH_DIRECTOR_URL=$(bbl director-address)
