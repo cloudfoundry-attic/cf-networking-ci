@@ -15,6 +15,7 @@ outputs:
 
 params:
     ENVIRONMENT_NAME: ~
+    CONFIG: ~
 
 run:
   path: container-networking-ci/tasks/netman-cf-acceptance
