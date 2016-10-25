@@ -9,10 +9,11 @@ inputs:
   - name: container-networking-ci
   - name: deployments-repo
   - name: cf-deployment
+outputs:
+  - name: deployment-manifests
 
 run:
-  path: container-networking-ci/tasks/cf-deployment
+  path: container-networking-ci/tasks/generate-upgrade-manifests.yml
 
 params:
   ENVIRONMENT_NAME: ~
-  MANIFEST_FILE: ~

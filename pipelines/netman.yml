@@ -778,30 +778,14 @@ jobs:
         - get: deployments-repo
           resource: trucker-config
         - get: cf-deployment
-      - task: deploy-trucker
-        file: container-networking-ci/tasks/cf-deployment.yml
+      - task: generate-upgrade-manifests
+        file: container-networking-ci/tasks/generate-upgrade-manifests.yml
         params:
-          MANIFEST_FILE: cf-deployment/cf-deployment.yml
           ENVIRONMENT_NAME: trucker
-
-  # - name: trucker-upgrade
-  #   serial_groups: [trucker]
-  #   plan:
-  #     - aggregate:
-  #       - get: container-networking-ci
-  #       - get: deployments-repo
-  #         resource: trucker-config
-  #       - get: cf-deployment
-  #         passed: [trucker-deploy]
-  #         trigger: true
-  #     - task: upgrade
-  #       file: container-networking-ci/tasks/cf-deployment-upgrade.yml
-  #       params:
-  #     - task: deploy-trucker
-  #       file: container-networking-ci/tasks/cf-deployment.yml
-  #       params:
-  #         MANIFEST_FILE: cf-deployment/cf-deployment-upgrade.yml
-  #         ENVIRONMENT_NAME: trucker
+      - task: test-upgrade
+        file: container-networking-ci/tasks/test-upgrade.yml
+        params:
+          ENVIRONMENT_NAME: trucker
 
 ##### Human-triggered utilities
   - name: delete-deployment-uberzug
