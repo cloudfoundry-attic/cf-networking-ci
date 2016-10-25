@@ -13,6 +13,7 @@ params:
 inputs:
   - name: deployment-manifests
   - name: container-networking-ci
+  - name: netman-release
 
 run:
   path: container-networking-ci/tasks/test-upgrade
