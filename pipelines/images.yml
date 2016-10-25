@@ -135,3 +135,11 @@ jobs:
   - put: small-git-image
     params:
       build: small-git-dockerfile/dockerfiles/small-git
+
+- name: build-deploy-light-image
+  plan:
+  - get: deploy-light-dockerfile
+    trigger: true
+  - put: deploy-light-image
+    params:
+      build: deploy-light-dockerfile/dockerfiles/deploy-light
