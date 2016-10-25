@@ -12,6 +12,7 @@ params:
 
 inputs:
   - name: deployment-manifests
+  - name: container-networking-ci
 
 run:
   path: container-networking-ci/tasks/test-upgrade
