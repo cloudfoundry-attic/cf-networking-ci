@@ -2,8 +2,8 @@
 
 set -e
 
-environment_path="${PWD}/test-config/environments/${ENVIRONMENT_NAME}"
-export CONFIG=${CONFIG:-"$environment_path/netman-cf-acceptance.json"}
+ENVIRONMENT_PATH="test-config/environments/${ENVIRONMENT_NAME}/netman-cf-acceptance.json"
+export CONFIG=${PWD}/${CONFIG:-"${ENVIRONMENT_PATH}"}
 
 echo $CONFIG
 
