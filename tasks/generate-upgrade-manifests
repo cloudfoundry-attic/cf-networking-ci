@@ -15,7 +15,7 @@ DIRECTOR_UUID=$(curl -s -k $BOSH_DIRECTOR_URL/info | jq -r .uuid)
 
 function makeManifest() {
   outFile=$1
-  bosh-cli -d cf -e $BOSH_DIRECTOR_URL --ca-cert=/tmp/ca.crt build-manifest --var-files=${VAR_FILE} ${MANIFEST_FILE} > $outFile
+  bosh-cli -d cf -e $BOSH_DIRECTOR_URL --ca-cert=/tmp/ca.crt build-manifest --var-files=${VAR_FILE} --var-errs ${MANIFEST_FILE} > $outFile
   echo "director_uuid: ${DIRECTOR_UUID}" >> $outFile
 }
 
