@@ -95,6 +95,22 @@ resources:
     email: {{dockerhub_email}}
     repository: c2cnetworking/deploy-light
 
+- name: deploy-heavy-dockerfile
+  type: git
+  source:
+    uri: git://github.com/cloudfoundry-incubator/container-networking-ci
+    branch: master
+    paths:
+      - dockerfiles/deploy-heavy
+
+- name: deploy-heavy-image
+  type: docker-image
+  source:
+    username: {{dockerhub_username}}
+    password: {{dockerhub_password}}
+    email: {{dockerhub_email}}
+    repository: c2cnetworking/deploy-heavy
+
 jobs:
 - name: build-dev-postgres-image
   plan:
@@ -143,3 +159,11 @@ jobs:
   - put: deploy-light-image
     params:
       build: deploy-light-dockerfile/dockerfiles/deploy-light
+
+- name: build-deploy-heavy-image
+  plan:
+  - get: deploy-heavy-dockerfile
+    trigger: true
+  - put: deploy-heavy-image
+    params:
+      build: deploy-heavy-dockerfile/dockerfiles/deploy-heavy
