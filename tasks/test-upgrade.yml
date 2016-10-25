@@ -17,4 +17,4 @@ run:
     - -c
     - |
       echo "would do upgrade tests here.  for now, we found manifests: " \
-        ls -la deployment-manifests
+        && ls -la deployment-manifests
