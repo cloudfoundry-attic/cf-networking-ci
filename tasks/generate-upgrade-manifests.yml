@@ -13,7 +13,7 @@ outputs:
   - name: deployment-manifests
 
 run:
-  path: container-networking-ci/tasks/generate-upgrade-manifests.yml
+  path: container-networking-ci/tasks/generate-upgrade-manifests
 
 params:
   ENVIRONMENT_NAME: ~

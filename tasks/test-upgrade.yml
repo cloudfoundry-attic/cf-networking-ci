@@ -1,7 +1,7 @@
 ---
 image_resource:
   type: docker-image
-  source: { repository: c2cnetworking/deploy }
+  source: { repository: c2cnetworking/deploy-light }
 
 platform: linux
 
