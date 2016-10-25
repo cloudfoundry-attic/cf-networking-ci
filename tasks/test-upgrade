@@ -7,6 +7,7 @@ export CONFIG=$environment_path/netman-cf-acceptance.json
 
 cd netman-release
 export GOPATH=$PWD
+export PATH=$PATH:$GOPATH/bin
 
 echo "manifests:"
 echo "  base: ${BASE_MANIFEST}"

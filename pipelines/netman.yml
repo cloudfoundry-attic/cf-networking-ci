@@ -778,6 +778,8 @@ jobs:
         - get: deployments-repo
           resource: trucker-config
         - get: cf-deployment
+        - get: netman-release
+          resource: netman-release-dev
       - task: generate-upgrade-manifests
         file: container-networking-ci/tasks/generate-upgrade-manifests.yml
         params:
