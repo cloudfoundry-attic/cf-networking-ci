@@ -3,9 +3,19 @@
 set -e -u
 
 environment_path="${PWD}/test-config/environments/${ENVIRONMENT_NAME}"
-export CONFIG=$environment_path/netman-cf-acceptance.json
 export BASE_MANIFEST=${PWD}/${BASE_MANIFEST}
 export UPGRADE_MANIFEST=${PWD}/${UPGRADE_MANIFEST}
+
+export CONFIG=$environment_path/netman-cf-acceptance.json
+bbl director-ca-cert > /tmp/ca.crt
+export CA_CERT_CONFIG=/tmp/ca_cert_config.json
+echo '
+{
+	"bosh_director_ca_cert": "/tmp/ca.crt"
+}
+' > $CA_CERT_CONFIG
+
+jq -s '.[0] * .[1]' $CONFIG $CA_CERT_CONFIG > $CONFIG
 
 cd netman-release
 export GOPATH=$PWD
