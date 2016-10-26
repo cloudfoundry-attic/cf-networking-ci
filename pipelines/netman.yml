@@ -788,6 +788,13 @@ jobs:
         - get: cf-deployment
         - get: netman-release
           resource: netman-release-dev
+          passed: [pickelhelm-test]
+      - task: create-release-tarball
+        file: netman-release/ci/create-release-tarball.yml
+      - task: upload-netman-release
+        file: container-networking-ci/tasks/upload-release-tarball.yml
+        params:
+          ENVIRONMENT_NAME: trucker
       - task: generate-upgrade-manifests
         file: container-networking-ci/tasks/generate-upgrade-manifests.yml
         params:
