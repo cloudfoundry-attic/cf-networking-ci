@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e -u
+
+pushd "deployments-repo/environments/${ENVIRONMENT_NAME}"
+  export BOSH_DIRECTOR_URL=$(bbl director-address)
+  export BOSH_PASSWORD=$(bbl director-password)
+  export BOSH_USER=$(bbl director-username)
+  bbl director-ca-cert > /tmp/ca.crt
+popd
+
+bosh -t "${BOSH_DIRECTOR_URL}" upload release tarballs/*.tgz
