@@ -774,6 +774,8 @@ jobs:
     serial_groups: [trucker]
     plan:
       - aggregate:
+        - get: test-config
+          resource: trucker-config
         - get: container-networking-ci
         - get: deployments-repo
           resource: trucker-config
