@@ -221,6 +221,10 @@ resources:
     type: time
     source:
       interval: 30m
+  - name: every-six-hours
+    type: time
+    source:
+      interval: 6h
   ####### Tests
   - name: cf-acceptance-tests
     type: git
@@ -774,6 +778,8 @@ jobs:
     serial_groups: [trucker]
     plan:
       - aggregate:
+        - get: every-six-hours
+          trigger: true
         - get: test-config
           resource: trucker-config
         - get: container-networking-ci
