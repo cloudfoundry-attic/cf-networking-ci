@@ -1,5 +1,5 @@
 diff --git a/cf-deployment.yml b/cf-deployment.yml
-index 5a38d15..77a7532 100644
+index e6a3d15..05580f1 100644
 --- a/cf-deployment.yml
 +++ b/cf-deployment.yml
 @@ -241,6 +241,9 @@ instance_groups:
@@ -126,14 +126,12 @@ index 5a38d15..77a7532 100644
  releases:
  - name: capi
    url: https://bosh.io/d/github.com/cloudfoundry/capi-release?v=1.8.0
-@@ -1291,6 +1387,10 @@ releases:
+@@ -1291,6 +1387,8 @@ releases:
    url: https://bosh.io/d/github.com/cloudfoundry/cf-release?v=245
    version: '245'
    sha1: 0c9f485f640c2b9e3136fcc89047b3d76dd6863c
 +- name: netman
-+  url: https://bosh.io/d/github.com/cloudfoundry-incubator/netman-release?v=0.4.0
-+  version: 0.4.0
-+  sha1: 463d59c19309dd8221e1ff7cae739193e2e8a5eb
++  version: latest
  stemcells:
  - alias: default
    os: ubuntu-trusty
