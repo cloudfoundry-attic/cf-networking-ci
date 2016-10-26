@@ -7,7 +7,9 @@ export BASE_MANIFEST=${PWD}/${BASE_MANIFEST}
 export UPGRADE_MANIFEST=${PWD}/${UPGRADE_MANIFEST}
 
 export CONFIG=$environment_path/netman-cf-acceptance.json
-bbl director-ca-cert > /tmp/ca.crt
+pushd "$environment_path"
+	bbl director-ca-cert > /tmp/ca.crt
+popd
 export CA_CERT_CONFIG=/tmp/ca_cert_config.json
 echo '
 {
