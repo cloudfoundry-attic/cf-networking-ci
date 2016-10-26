@@ -17,7 +17,8 @@ echo '
 }
 ' > $CA_CERT_CONFIG
 
-jq -s '.[0] * .[1]' $CONFIG $CA_CERT_CONFIG > $CONFIG
+jq -s '.[0] * .[1]' "$CONFIG" "$CA_CERT_CONFIG" > /tmp/new-config.json
+mv /tmp/new-config.json "$CONFIG"
 
 cd netman-release
 export GOPATH=$PWD
