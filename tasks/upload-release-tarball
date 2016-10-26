@@ -9,4 +9,4 @@ pushd "deployments-repo/environments/${ENVIRONMENT_NAME}"
   bbl director-ca-cert > /tmp/ca.crt
 popd
 
-bosh -t "${BOSH_DIRECTOR_URL}" upload release tarballs/*.tgz
+bosh-cli -e "$BOSH_DIRECTOR_URL" --ca-cert=/tmp/ca.crt upload-release tarballs/*.tgz
