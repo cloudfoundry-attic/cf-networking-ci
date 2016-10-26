@@ -4,8 +4,8 @@ set -e -u
 
 environment_path="${PWD}/test-config/environments/${ENVIRONMENT_NAME}"
 export CONFIG=$environment_path/netman-cf-acceptance.json
-export BASE_MANIFEST=$environment_path/${BASE_MANIFEST}
-export UPGRADE_MANIFEST=$environment_path/${UPGRADE_MANIFEST}
+export BASE_MANIFEST=${PWD}/${BASE_MANIFEST}
+export UPGRADE_MANIFEST=${PWD}/${UPGRADE_MANIFEST}
 
 cd netman-release
 export GOPATH=$PWD
