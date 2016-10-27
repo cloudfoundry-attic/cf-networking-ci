@@ -565,8 +565,7 @@ jobs:
         - get: diego-environment
           resource: mitre-diego
           passed: [mitre-test]
-        - get: integration-config
-          resource: mitre-config
+        - get: mitre-config
       - task: copy-config
         params:
           ENVIRONMENT: mitre
