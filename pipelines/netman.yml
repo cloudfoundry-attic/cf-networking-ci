@@ -558,7 +558,7 @@ jobs:
         - get: netman-release
           resource: netman-release-dev
           passed: [mitre-test]
-        - get: integration-config
+        - get: environment
           resource: mitre-cf
           passed: [mitre-test]
         - get: diego-environment
