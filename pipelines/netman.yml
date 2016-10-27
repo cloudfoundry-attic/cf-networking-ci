@@ -143,7 +143,8 @@ resources:
   - name: runtime-ci
     type: git
     source:
-      uri: git://github.com/cloudfoundry/runtime-ci
+      uri: git://github.com/cf-container-networking/runtime-ci.git
+      branch: with-c2c-patches
   ###### BOSH stemcells
   - name: aws-stemcell
     type: bosh-io-stemcell
