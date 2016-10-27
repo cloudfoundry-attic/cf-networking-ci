@@ -3,8 +3,10 @@
 set -e -u
 
 environment_path="${PWD}/test-config/environments/${ENVIRONMENT_NAME}"
-export BASE_MANIFEST=${PWD}/${BASE_MANIFEST}
-export UPGRADE_MANIFEST=${PWD}/${UPGRADE_MANIFEST}
+pushd deployment-manifests
+  export BASE_MANIFEST=$PWD/plain.yml
+  export UPGRADE_MANIFEST=$PWD/with-netman.yml
+popd
 
 export CONFIG=$environment_path/netman-cf-acceptance.json
 pushd "$environment_path"

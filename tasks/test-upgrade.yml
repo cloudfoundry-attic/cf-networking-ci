@@ -7,8 +7,6 @@ platform: linux
 
 params:
   ENVIRONMENT_NAME: ~
-  BASE_MANIFEST: ~
-  UPGRADE_MANIFEST: ~
 
 inputs:
   - name: deployment-manifests
