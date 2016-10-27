@@ -1,0 +1,19 @@
+---
+image_resource:
+  type: docker-image
+  source: { repository: c2cnetworking/deploy }
+
+platform: linux
+
+params:
+  ENVIRONMENT: ~
+
+inputs:
+  - name: integration-config
+
+run:
+  path: sh
+  args:
+  - -exc
+  - |
+    cp integration-config/environments/${ENVIRONMENT}/integration_config.json integration-config/

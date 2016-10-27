@@ -564,11 +564,13 @@ jobs:
         - get: diego-environment
           resource: mitre-diego
           passed: [mitre-test]
-        - get: mitre-config
-      - task: cats
-        input_mapping:
-        - integration-config: mitre-config
-        file: runtime-ci/scripts/ci/run-cats/task.yml
+        - get: integration-config
+          resource: mitre-config
+      - aggregate:
+        - task: copy-config
+          file: container-networking-ci/tasks/copy-config.yml
+        - task: cats
+          file: runtime-ci/scripts/ci/run-cats/task.yml
 
   - name: mitre-test
     serial_groups: [mitre]
