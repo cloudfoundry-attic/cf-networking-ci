@@ -564,6 +564,7 @@ jobs:
         - get: diego-environment
           resource: mitre-diego
           passed: [mitre-test]
+        - get: mitre-config
       - task: cats
         input_mapping:
         - integration-config: mitre-config
