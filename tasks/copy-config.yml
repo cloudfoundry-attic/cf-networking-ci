@@ -17,3 +17,5 @@ run:
   - -exc
   - |
     cp integration-config/environments/${ENVIRONMENT}/integration_config.json integration-config/
+    ls integration-config/environments/${ENVIRONMENT}
+    ls integration-config/
