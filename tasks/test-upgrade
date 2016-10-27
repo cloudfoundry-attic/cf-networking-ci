@@ -11,11 +11,13 @@ popd
 export CONFIG=$environment_path/netman-cf-acceptance.json
 pushd "$environment_path"
 	bbl director-ca-cert > /tmp/ca.crt
+  export BOSH_DIRECTOR_URL=$(bbl director-address)
 popd
 export CA_CERT_CONFIG=/tmp/ca_cert_config.json
 echo '
 {
-	"bosh_director_ca_cert": "/tmp/ca.crt"
+	"bosh_director_ca_cert": "/tmp/ca.crt",
+  "bosh_director_url": "'"$BOSH_DIRECTOR_URL"'"
 }
 ' > $CA_CERT_CONFIG
 
