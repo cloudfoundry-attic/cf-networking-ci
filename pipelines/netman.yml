@@ -229,8 +229,8 @@ resources:
   - name: cf-acceptance-tests
     type: git
     source:
-      branch: master
-      uri: git://github.com/cloudfoundry/cf-acceptance-tests.git
+      branch: with-c2c-patches
+      uri: git://github.com/cf-container-networking/cf-acceptance-tests.git
   - name: toque-scaling-test-params
     type: git
     source:
@@ -567,16 +567,21 @@ jobs:
       - task: cats
         file: runtime-ci/scripts/ci/run-cats/task.yml
         params:
-          INCLUDE_BACKEND_COMPATIBILITY: false
-          INCLUDE_INTERNET_DEPENDENT: false
-          INCLUDE_DIEGO_DOCKER: false
-          INCLUDE_DIEGO_SSH: false
-          INCLUDE_ROUTE_SERVICES: false
-          INCLUDE_SECURITY_GROUPS: true
-          INCLUDE_SERVICES: false
+          INCLUDE_APPS: true
           INCLUDE_V3: false
+          INCLUDE_SECURITY_GROUPS: true
+          INCLUDE_BACKEND_COMPATIBILITY: false
+          INCLUDE_CONTAINER_NETWORKING: true
+          INCLUDE_INTERNET_DEPENDENT: true
+          INCLUDE_DIEGO_DOCKER: true
+          INCLUDE_DIEGO_SSH: true
+          INCLUDE_SERVICES: true
+          INCLUDE_ROUTE_SERVICES: false
+          INCLUDE_ROUTING: true
+          INCLUDE_TASKS: false
+          INCLUDE_SSO: true
+          INCLUDE_DETECT: true
           INCLUDE_PRIVILEGED_CONTAINER_SUPPORT: false
-          INCLUDE_SSO: false
           BACKEND: diego
           CF_API: "api.mitre.c2c.cf-app.com"
           CF_ADMIN_USER: admin
