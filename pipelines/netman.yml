@@ -565,6 +565,8 @@ jobs:
           resource: mitre-diego
           passed: [mitre-test]
       - task: cats
+        input_mapping:
+        - integration-config: mitre-cf
         file: runtime-ci/scripts/ci/run-cats/task.yml
         params:
           INCLUDE_APPS: true
