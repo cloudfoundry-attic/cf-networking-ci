@@ -558,40 +558,14 @@ jobs:
         - get: netman-release
           resource: netman-release-dev
           passed: [mitre-test]
-        - get: environment
+        - get: integration-config
           resource: mitre-cf
           passed: [mitre-test]
         - get: diego-environment
           resource: mitre-diego
           passed: [mitre-test]
       - task: cats
-        input_mapping:
-        - integration-config: mitre-cf
         file: runtime-ci/scripts/ci/run-cats/task.yml
-        params:
-          INCLUDE_APPS: true
-          INCLUDE_V3: false
-          INCLUDE_SECURITY_GROUPS: true
-          INCLUDE_BACKEND_COMPATIBILITY: false
-          INCLUDE_CONTAINER_NETWORKING: true
-          INCLUDE_INTERNET_DEPENDENT: true
-          INCLUDE_DIEGO_DOCKER: true
-          INCLUDE_DIEGO_SSH: true
-          INCLUDE_SERVICES: true
-          INCLUDE_ROUTE_SERVICES: false
-          INCLUDE_ROUTING: true
-          INCLUDE_TASKS: false
-          INCLUDE_SSO: true
-          INCLUDE_DETECT: true
-          INCLUDE_PRIVILEGED_CONTAINER_SUPPORT: false
-          BACKEND: diego
-          CF_API: "api.mitre.c2c.cf-app.com"
-          CF_ADMIN_USER: admin
-          CF_ADMIN_PASSWORD: {{mitre-cf-admin-password}}
-          CF_APPS_DOMAIN: mitre.c2c.cf-app.com
-          SKIP_SSL_VALIDATION: "true"
-          USE_HTTP: "true"
-          NODES: 6
 
   - name: mitre-test
     serial_groups: [mitre]
