@@ -551,6 +551,7 @@ jobs:
       - aggregate:
         - get: after-midnight
           trigger: true
+        - get: container-networking-ci
         - get: cf-acceptance-tests
           resource: cf-acceptance-tests
         - get: runtime-ci
