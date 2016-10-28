@@ -213,13 +213,6 @@ resources:
       branch: master
       private_key: {{toque-stats-deploy-key}}
   ####### Timers
-  - name: after-midnight
-    type: time
-    source:
-      start: 12:00 AM
-      stop: 1:00 AM
-      location: America/Los_Angeles
-      interval: 1h
   - name: every-half-hour
     type: time
     source:
@@ -565,7 +558,7 @@ jobs:
     serial_groups: [mitre]
     plan:
       - aggregate:
-        - get: after-midnight
+        - get: overnight-every-1h
           trigger: true
         - get: container-networking-ci
         - get: cf-acceptance-tests
