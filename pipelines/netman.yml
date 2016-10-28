@@ -581,6 +581,8 @@ jobs:
         file: container-networking-ci/tasks/copy-config.yml
       - task: cats
         file: runtime-ci/scripts/ci/run-cats/task.yml
+        params:
+          NODES: 6
 
   - name: mitre-test
     serial_groups: [mitre]
