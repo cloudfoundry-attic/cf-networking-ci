@@ -216,8 +216,10 @@ resources:
   - name: after-midnight
     type: time
     source:
-      start: 12:00 AM -0700
-      stop: 1:00 AM -0700
+      start: 12:00 AM
+      stop: 1:00 AM
+      location: America/Los_Angeles
+      interval: 1h
   - name: every-half-hour
     type: time
     source:
@@ -226,6 +228,13 @@ resources:
     type: time
     source:
       interval: 6h
+  - name: overnight-every-1h
+    type: time
+    source:
+      start: 10:00 PM
+      stop: 6:00 AM
+      location: America/Los_Angeles
+      interval: 1h
   ####### Tests
   - name: cf-acceptance-tests
     type: git
@@ -273,22 +282,28 @@ jobs:
   - name: netman-tests-postgres
     public: true
     plan:
+    - aggregate:
+      - get: overnight-every-1h
+        trigger: true
       - get: netman-release
         resource: netman-release-dev
         trigger: true
-      - task: netman-tests
-        file: netman-release/ci/netman-tests-postgres.yml
-        privileged: true
+    - task: netman-tests
+      file: netman-release/ci/netman-tests-postgres.yml
+      privileged: true
 
   - name: netman-tests-mysql
     public: true
     plan:
+    - aggregate:
+      - get: overnight-every-1h
+        trigger: true
       - get: netman-release
         resource: netman-release-dev
         trigger: true
-      - task: netman-tests
-        file: netman-release/ci/netman-tests-mysql.yml
-        privileged: true
+    - task: netman-tests
+      file: netman-release/ci/netman-tests-mysql.yml
+      privileged: true
 
   - name: uberzug-deploy
     public: true
