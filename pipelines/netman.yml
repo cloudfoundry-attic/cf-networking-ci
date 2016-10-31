@@ -217,10 +217,10 @@ resources:
     type: time
     source:
       interval: 30m
-  - name: every-six-hours
+  - name: every-three-hours
     type: time
     source:
-      interval: 6h
+      interval: 3h
   - name: overnight-every-1h
     type: time
     source:
@@ -268,8 +268,8 @@ resources:
   - name: cf-deployment
     type: git
     source:
-      branch: master
-      uri: https://github.com/cloudfoundry/cf-deployment.git
+      branch: service-names
+      uri: git://github.com/cf-container-networking/cf-deployment.git
 
 jobs:
   - name: netman-tests-postgres
@@ -776,7 +776,7 @@ jobs:
     serial_groups: [trucker]
     plan:
       - aggregate:
-        - get: every-six-hours
+        - get: every-three-hours
           trigger: true
         - get: test-config
           resource: trucker-config
