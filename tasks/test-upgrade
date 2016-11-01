@@ -34,6 +34,7 @@ export PATH=$PATH:$GOPATH/bin
 echo "manifests:"
 echo "  base: ${BASE_MANIFEST}"
 echo "  upgrade: ${UPGRADE_MANIFEST}"
+echo "  ASG_TARGET_IP: ${ASG_TARGET_IP}"
 
 go install ./src/github.com/onsi/ginkgo/ginkgo
 
