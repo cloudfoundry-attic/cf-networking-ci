@@ -28,13 +28,9 @@ cd netman-release
 export GOPATH=$PWD
 export PATH=$PATH:$GOPATH/bin
 
-# export ASG_TARGET_IP=$(bosh-cli vms 2>/dev/null |grep router |grep -v ha_proxy|awk '{print  $11 }')
-export ASG_TARGET_IP="10.0.16.8"
-
 echo "manifests:"
 echo "  base: ${BASE_MANIFEST}"
 echo "  upgrade: ${UPGRADE_MANIFEST}"
-echo "  ASG_TARGET_IP: ${ASG_TARGET_IP}"
 
 go install ./src/github.com/onsi/ginkgo/ginkgo
 
