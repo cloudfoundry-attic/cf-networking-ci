@@ -28,9 +28,8 @@ cd netman-release
 export GOPATH=$PWD
 export PATH=$PATH:$GOPATH/bin
 
-bosh-cli vms
-# set ASG target ip
-export ASG_TARGET_IP=$(bosh-cli vms 2>/dev/null |grep router |grep -v ha_proxy|awk '{print  $11 }')
+# export ASG_TARGET_IP=$(bosh-cli vms 2>/dev/null |grep router |grep -v ha_proxy|awk '{print  $11 }')
+export ASG_TARGET_IP="10.0.16.8"
 
 echo "manifests:"
 echo "  base: ${BASE_MANIFEST}"
