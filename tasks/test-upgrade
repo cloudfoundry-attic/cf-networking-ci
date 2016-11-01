@@ -8,9 +8,6 @@ pushd deployment-manifests
   export UPGRADE_MANIFEST=$PWD/with-netman.yml
 popd
 
-# set ASG target ip
-export ASG_TARGET_IP=$(bosh vms 2>/dev/null |grep router |grep -v ha_proxy|awk '{print  $11 }')
-
 export CONFIG=$environment_path/netman-cf-acceptance.json
 pushd "$environment_path"
 	bbl director-ca-cert > /tmp/ca.crt
@@ -30,6 +27,10 @@ mv /tmp/new-config.json "$CONFIG"
 cd netman-release
 export GOPATH=$PWD
 export PATH=$PATH:$GOPATH/bin
+
+bosh-cli vms
+# set ASG target ip
+export ASG_TARGET_IP=$(bosh-cli vms 2>/dev/null |grep router |grep -v ha_proxy|awk '{print  $11 }')
 
 echo "manifests:"
 echo "  base: ${BASE_MANIFEST}"
