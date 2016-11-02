@@ -268,7 +268,7 @@ resources:
   - name: cf-deployment
     type: git
     source:
-      branch: master
+      branch: develop
       uri: git://github.com/cloudfoundry/cf-deployment.git
 
 jobs:
