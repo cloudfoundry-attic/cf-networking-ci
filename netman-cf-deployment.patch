@@ -1,8 +1,8 @@
 diff --git a/cf-deployment.yml b/cf-deployment.yml
-index e6a3d15..05580f1 100644
+index 5b066ad..3689b3b 100644
 --- a/cf-deployment.yml
 +++ b/cf-deployment.yml
-@@ -241,6 +241,9 @@ instance_groups:
+@@ -239,6 +239,9 @@ instance_groups:
            - name: diego
              username: "((cf_mysql_mysql_seeded_databases_diego_username))"
              password: "((cf_mysql_mysql_seeded_databases_diego_password))"
@@ -12,7 +12,7 @@ index e6a3d15..05580f1 100644
            database_startup_timeout: 600
            cluster_ips:
            - 10.0.31.193
-@@ -522,6 +525,9 @@ instance_groups:
+@@ -520,6 +523,9 @@ instance_groups:
          - 0.0.0.0/0
          persistent_image_list:
          - "/var/vcap/packages/cflinuxfs2/rootfs"
@@ -22,7 +22,7 @@ index e6a3d15..05580f1 100644
    - name: rep
      release: diego
      properties:
-@@ -532,6 +538,34 @@ instance_groups:
+@@ -530,6 +536,34 @@ instance_groups:
            - cflinuxfs2:/var/vcap/packages/cflinuxfs2/rootfs
          ssl:
            skip_cert_verify: true
@@ -57,7 +57,7 @@ index e6a3d15..05580f1 100644
    - name: metron_agent
      release: loggregator
      properties: *2
-@@ -1242,6 +1276,68 @@ instance_groups:
+@@ -1238,6 +1272,68 @@ instance_groups:
    - name: metron_agent
      release: loggregator
      properties: *2
@@ -125,8 +125,8 @@ index e6a3d15..05580f1 100644
 +  - name: private
  releases:
  - name: capi
-   url: https://bosh.io/d/github.com/cloudfoundry/capi-release?v=1.8.0
-@@ -1291,6 +1387,8 @@ releases:
+   url: https://bosh.io/d/github.com/cloudfoundry/capi-release?v=1.10.0
+@@ -1287,6 +1383,8 @@ releases:
    url: https://bosh.io/d/github.com/cloudfoundry/cf-release?v=245
    version: '245'
    sha1: 0c9f485f640c2b9e3136fcc89047b3d76dd6863c
