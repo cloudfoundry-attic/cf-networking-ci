@@ -1,8 +1,8 @@
 diff --git a/cf-deployment.yml b/cf-deployment.yml
-index 5b066ad..3689b3b 100644
+index a2fb5ae..c64b03c 100644
 --- a/cf-deployment.yml
 +++ b/cf-deployment.yml
-@@ -239,6 +239,9 @@ instance_groups:
+@@ -240,6 +240,9 @@ instance_groups:
            - name: diego
              username: "((cf_mysql_mysql_seeded_databases_diego_username))"
              password: "((cf_mysql_mysql_seeded_databases_diego_password))"
@@ -12,7 +12,7 @@ index 5b066ad..3689b3b 100644
            database_startup_timeout: 600
            cluster_ips:
            - 10.0.31.193
-@@ -520,6 +523,9 @@ instance_groups:
+@@ -521,6 +524,9 @@ instance_groups:
          - 0.0.0.0/0
          persistent_image_list:
          - "/var/vcap/packages/cflinuxfs2/rootfs"
@@ -22,7 +22,7 @@ index 5b066ad..3689b3b 100644
    - name: rep
      release: diego
      properties:
-@@ -530,6 +536,34 @@ instance_groups:
+@@ -531,9 +537,99 @@ instance_groups:
            - cflinuxfs2:/var/vcap/packages/cflinuxfs2/rootfs
          ssl:
            skip_cert_verify: true
@@ -54,10 +54,6 @@ index 5b066ad..3689b3b 100644
 +        ca_cert: "((network_policy_ca_cert))"
 +        client_cert: "((network_policy_client_cert))"
 +        client_key: "((network_policy_client_key))"
-   - name: metron_agent
-     release: loggregator
-     properties: *2
-@@ -1238,6 +1272,68 @@ instance_groups:
    - name: metron_agent
      release: loggregator
      properties: *2
@@ -123,13 +119,13 @@ index 5b066ad..3689b3b 100644
 +    properties: *2
 +  networks:
 +  - name: private
- releases:
- - name: capi
-   url: https://bosh.io/d/github.com/cloudfoundry/capi-release?v=1.10.0
-@@ -1287,6 +1383,8 @@ releases:
-   url: https://bosh.io/d/github.com/cloudfoundry/cf-release?v=245
-   version: '245'
-   sha1: 0c9f485f640c2b9e3136fcc89047b3d76dd6863c
+ - name: router
+   azs:
+   - z1
+@@ -1288,6 +1384,8 @@ releases:
+   url: https://bosh.io/d/github.com/cloudfoundry/cf-release?v=246
+   version: '246'
+   sha1: 50ddad48110e24170b215eec653d407480638c9a
 +- name: netman
 +  version: latest
  stemcells:
