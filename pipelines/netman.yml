@@ -232,8 +232,8 @@ resources:
   - name: cf-acceptance-tests
     type: git
     source:
-      branch: with-c2c-patches
-      uri: git://github.com/cf-container-networking/cf-acceptance-tests.git
+      branch: master
+      uri: git://github.com/cloudfoundry/cf-acceptance-tests.git
   - name: toque-scaling-test-params
     type: git
     source:
