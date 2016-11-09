@@ -204,6 +204,18 @@ resources:
       stop: 6:00 AM
       location: America/Los_Angeles
       interval: 1h
+  - name: after-9pm
+    type: time
+    source:
+      start: 9:00 PM
+      stop: 10:00 PM
+      location: America/Los_Angeles
+  - name: after-6am
+    type: time
+    source:
+      start: 6:00 AM
+      stop: 7:00 AM
+      location: America/Los_Angeles
   ####### Tests
   - name: cf-acceptance-tests
     type: git
@@ -304,6 +316,8 @@ jobs:
           trigger: true
           passed: [netman-tests-postgres, netman-tests-mysql]
         - get: etcd-release-tarball
+        - get: after-6am
+          trigger: true
       - aggregate:
         - task: create-release-tarball
           file: netman-release/ci/create-release-tarball.yml
@@ -731,6 +745,8 @@ jobs:
     serial_groups: [pickelhelm]
     plan:
       - get: container-networking-ci
+      - get: after-9pm
+        trigger: true
       - task: delete-deployment
         file: container-networking-ci/tasks/delete-deployment.yml
         params:
@@ -743,6 +759,8 @@ jobs:
     serial_groups: [pickelhelm]
     plan:
       - get: container-networking-ci
+      - get: after-9pm
+        trigger: true
       - task: delete-deployment
         file: container-networking-ci/tasks/delete-deployment.yml
         params:
