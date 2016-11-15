@@ -195,10 +195,10 @@ resources:
     type: time
     source:
       interval: 30m
-  - name: every-three-hours
+  - name: every-24-hours
     type: time
     source:
-      interval: 3h
+      interval: 24h
   - name: overnight-every-1h
     type: time
     source:
@@ -698,7 +698,7 @@ jobs:
     serial_groups: [trucker]
     plan:
       - aggregate:
-        - get: every-three-hours
+        - get: every-24-hours
           trigger: true
         - get: test-config
           resource: trucker-config
