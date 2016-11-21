@@ -1,27 +1,28 @@
 diff --git a/cf-filler/recipe-cf-deployment.yml b/cf-filler/recipe-cf-deployment.yml
-index 364f4f7..e1ea135 100644
+index 5b2c510..03bf648 100644
 --- a/cf-filler/recipe-cf-deployment.yml
 +++ b/cf-filler/recipe-cf-deployment.yml
-@@ -31,6 +31,9 @@ strings:
+@@ -31,6 +31,10 @@ strings:
    nats_user:          "nats"
    router_status_user: "router-status"
  
 +  etcd_advertise_urls_dns_suffix: "etcd.service.cf.internal"
 +  network_policy_server_uri: "api.((system_domain))/networking"
++  cf_mysql_mysql_seeded_databases_network_policy_username: "network_policy"
 +
  passwords:
  - blobstore_admin_users_password
  - blobstore_secure_link_secret
-@@ -62,6 +65,8 @@ passwords:
- - uaa_clients_tcp_router_secret
+@@ -63,6 +67,8 @@ passwords:
  - uaa_login_client_secret
  - diego_bbs_encryption_keys_passphrase
-+- diego_bbs_sql_db_password
+ - diego_bbs_sql_db_password
 +- network_policy_uaa_client_secret
++- cf_mysql_mysql_seeded_databases_network_policy_password
  
  password_arrays:
  - varname: consul_encrypt_keys
-@@ -160,3 +165,12 @@ cert_sets:
+@@ -161,3 +167,12 @@ cert_sets:
    certkeypairs:
    - varname_cert: router_ssl_cert
      varname_key:  router_ssl_key
