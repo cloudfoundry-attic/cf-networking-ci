@@ -254,8 +254,6 @@ jobs:
     public: true
     plan:
     - aggregate:
-      - get: overnight-every-1h
-        trigger: true
       - get: netman-release
         resource: netman-release-dev
         trigger: true
@@ -267,8 +265,6 @@ jobs:
     public: true
     plan:
     - aggregate:
-      - get: overnight-every-1h
-        trigger: true
       - get: netman-release
         resource: netman-release-dev
         trigger: true
