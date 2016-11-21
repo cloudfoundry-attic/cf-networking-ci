@@ -43,7 +43,7 @@ index d652657..69e5a4b 100644
 +        etcd_ca_cert: "((etcd_ca_cert))"
 +        flannel:
 +          etcd:
-+            require_ssl: "((etcd_require_ssl))"
++            require_ssl: "true"
 +  - name: netmon
 +    release: netman
 +  - name: vxlan-policy-agent
