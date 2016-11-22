@@ -1,5 +1,5 @@
 diff --git a/cf-filler/recipe-cf-deployment.yml b/cf-filler/recipe-cf-deployment.yml
-index 5b2c510..cc464ad 100644
+index 5b2c510..c059afb 100644
 --- a/cf-filler/recipe-cf-deployment.yml
 +++ b/cf-filler/recipe-cf-deployment.yml
 @@ -31,6 +31,10 @@ strings:
@@ -31,7 +31,7 @@ index 5b2c510..cc464ad 100644
    certkeypairs:
    - varname_cert: etcd_server_cert
      varname_key:  etcd_server_key
-@@ -161,3 +167,12 @@ cert_sets:
+@@ -161,3 +167,13 @@ cert_sets:
    certkeypairs:
    - varname_cert: router_ssl_cert
      varname_key:  router_ssl_key
@@ -44,3 +44,4 @@ index 5b2c510..cc464ad 100644
 +    varname_key:  network_policy_client_key
 +  - varname_cert: network_policy_server_cert
 +    varname_key:  network_policy_server_key
++    commonname: policy-server.service.cf.internal
