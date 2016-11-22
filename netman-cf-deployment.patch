@@ -1,5 +1,5 @@
 diff --git a/cf-deployment.yml b/cf-deployment.yml
-index e743904..3c826ae 100644
+index e743904..b48ee96 100644
 --- a/cf-deployment.yml
 +++ b/cf-deployment.yml
 @@ -243,6 +243,9 @@ instance_groups:
@@ -21,7 +21,18 @@ index e743904..3c826ae 100644
              db_driver: mysql
            etcd:
              machines: []
-@@ -529,6 +532,9 @@ instance_groups:
+@@ -401,6 +404,10 @@ instance_groups:
+             authorities: routing.routes.read,routing.router_groups.read
+             authorized-grant-types: client_credentials,refresh_token
+             secret: "((uaa_clients_tcp_router_secret))"
++          network-policy:
++            authorities: uaa.resource,cloud_controller.admin_read_only
++            authorized-grant-types: client_credentials,refresh_token
++            secret: "((network_policy_uaa_client_secret))"
+       uaadb:
+         address: 10.0.31.193
+         databases:
+@@ -529,6 +536,9 @@ instance_groups:
          - 0.0.0.0/0
          persistent_image_list:
          - "/var/vcap/packages/cflinuxfs2/rootfs"
@@ -31,7 +42,7 @@ index e743904..3c826ae 100644
    - name: rep
      release: diego
      properties:
-@@ -539,9 +545,100 @@ instance_groups:
+@@ -539,9 +549,100 @@ instance_groups:
            - cflinuxfs2:/var/vcap/packages/cflinuxfs2/rootfs
          ssl:
            skip_cert_verify: true
@@ -63,9 +74,9 @@ index e743904..3c826ae 100644
 +        ca_cert: "((network_policy_ca_cert))"
 +        client_cert: "((network_policy_client_cert))"
 +        client_key: "((network_policy_client_key))"
-   - name: metron_agent
-     release: loggregator
-     properties: *2
++  - name: metron_agent
++    release: loggregator
++    properties: *2
 +- name: policy-server
 +  azs:
 +  - z1
@@ -124,15 +135,15 @@ index e743904..3c826ae 100644
 +        ca_cert: "((consul_agent_ca_cert))"
 +        server_cert: "((consul_agent_server_cert))"
 +        server_key: "((consul_agent_server_key))"
-+  - name: metron_agent
-+    release: loggregator
-+    properties: *2
+   - name: metron_agent
+     release: loggregator
+     properties: *2
 +  networks:
 +  - name: private
  - name: router
    azs:
    - z1
-@@ -1368,6 +1465,8 @@ releases:
+@@ -1368,6 +1469,8 @@ releases:
    url: https://bosh.io/d/github.com/cloudfoundry/staticfile-buildpack-release?v=1.3.13
    version: 1.3.13
    sha1: 0741ad6d39cf258c317151e1227e0ccfe1fd7579
