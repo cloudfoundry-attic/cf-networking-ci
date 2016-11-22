@@ -19,7 +19,6 @@ function makeManifest() {
 }
 
 pushd cf-deployment
-  git apply ../container-networking-ci/netman-recipe.patch
   git apply ../container-networking-ci/netman-cf-deployment.patch
 popd
 
