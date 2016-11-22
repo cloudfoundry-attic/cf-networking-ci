@@ -367,27 +367,6 @@ jobs:
           ADMIN_PASSWORD: {{mitre-cf-admin-password}}
           SPACE_NAME: Acceptance
           USER: acceptance
-      - task: add-spring-space-developer
-        file: container-networking-ci/tasks/add-space-developer.yml
-        params:
-          API: {{mitre-cf-api}}
-          ADMIN_PASSWORD: {{mitre-cf-admin-password}}
-          SPACE_NAME: Spring
-          USER: spring-test
-      - task: add-data-space-developer
-        file: container-networking-ci/tasks/add-space-developer.yml
-        params:
-          API: {{mitre-cf-api}}
-          ADMIN_PASSWORD: {{mitre-cf-admin-password}}
-          SPACE_NAME: Data
-          USER: data-test
-      - task: add-gemfire-space-developer
-        file: container-networking-ci/tasks/add-space-developer.yml
-        params:
-          API: {{mitre-cf-api}}
-          ADMIN_PASSWORD: {{mitre-cf-admin-password}}
-          SPACE_NAME: GemFire
-          USER: gemfire-test
 
   - name: mitre-cats
     serial_groups: [mitre]
