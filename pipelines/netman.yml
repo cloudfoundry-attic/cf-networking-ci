@@ -21,7 +21,6 @@ groups:
     - delete-deployment-mitre-cf
     - delete-deployment-mitre-diego
     - delete-deployment-pickelhelm-cf
-    - delete-deployment-pickelhelm-diego
     - delete-deployment-toque-cf
     - delete-deployment-toque-diego
 - name: trucker
@@ -39,16 +38,9 @@ resources:
     type: bosh-deployment
     source:
       target: {{pickelhelm-bosh-host}}
-      username: admin
+      username: {{pickelhelm-bosh-user}}
       password: {{pickelhelm-bosh-password}}
-      deployment: cf-diego
-  - name: pickelhelm-diego
-    type: bosh-deployment
-    source:
-      target: {{pickelhelm-bosh-host}}
-      username: admin
-      password: {{pickelhelm-bosh-password}}
-      deployment: cf-diego-diego
+      deployment: cf
   - name: mitre-cf
     type: bosh-deployment
     source:
@@ -283,52 +275,29 @@ jobs:
         - get: deployments-repo
           resource: pickelhelm-config
           trigger: false
-        - get: cf-release
-          resource: cf-release-master
-          params: { submodules: none }
-        - get: diego-release
-          params: { submodules: none }
+        - get: cf-deployment
+          trigger: true
         - get: aws-stemcell
-          trigger: true
-        - get: rootfs-release-tarball
-        - get: cf-release-tarball
-          trigger: true
-        - get: diego-release-tarball
-          trigger: true
-        - get: garden-runc-release-tarball
           trigger: true
         - get: netman-release
           resource: netman-release-dev
           trigger: true
           passed: [netman-tests-postgres, netman-tests-mysql]
-        - get: etcd-release-tarball
       - aggregate:
         - task: create-release-tarball
           file: netman-release/ci/create-release-tarball.yml
-        - task: generate-pickelhelm-manifests
-          file: container-networking-ci/tasks/generate-deployment-manifests.yml
+        - task: generate-pickelhelm-manifest
+          file: container-networking-ci/tasks/generate-cf-deployment-manifest.yml
           params:
             ENVIRONMENT_NAME: pickelhelm
       - put: pickelhelm-cf
         params:
           cleanup: false
-          manifest: generated-manifest/cf.yml
-          stemcells:
-          - aws-stemcell/*.tgz
-          releases:
-          - cf-release-tarball/*.tgz
-      - put: pickelhelm-diego
-        params:
-          cleanup: false
-          manifest: generated-manifest/diego.yml
+          manifest: deployment-manifest/cf-with-netman.yml
           stemcells:
           - aws-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
-          - garden-runc-release-tarball/*.tgz
-          - etcd-release-tarball/*.tgz
-          - rootfs-release-tarball/*.tgz
-          - diego-release-tarball/*.tgz
 
   - name: pickelhelm-test
     serial_groups: [pickelhelm]
@@ -341,18 +310,6 @@ jobs:
         - get: test-config
           resource: pickelhelm-config
           trigger: false
-        - get: diego-release
-          params: { submodules: none }
-          passed: [pickelhelm-deploy]
-          trigger: true
-        - get: cf-release
-          resource: cf-release-master
-          params: { submodules: none }
-          passed: [pickelhelm-deploy]
-          trigger: true
-        - get: garden-runc-release-tarball
-          passed: [pickelhelm-deploy]
-          trigger: true
         - get: netman-release
           resource: netman-release-dev
           passed: [pickelhelm-deploy]
@@ -360,17 +317,8 @@ jobs:
         - get: cf-deployment
           resource: pickelhelm-cf
           passed: [pickelhelm-deploy]
-        - get: environment
-          resource: pickelhelm-diego
-          passed: [pickelhelm-deploy]
           trigger: true
         - get: aws-stemcell
-          passed: [pickelhelm-deploy]
-        - get: rootfs-release-tarball
-          passed: [pickelhelm-deploy]
-        - get: diego-release-tarball
-          passed: [pickelhelm-deploy]
-        - get: etcd-release-tarball
           passed: [pickelhelm-deploy]
       - task: netman-cf-acceptance
         file: container-networking-ci/tasks/netman-cf-acceptance.yml
@@ -402,7 +350,6 @@ jobs:
           trigger: false
         - get: garden-runc-release-tarball
           trigger: false
-          passed: [pickelhelm-test]
         - get: netman-release
           resource: netman-release-dev
           trigger: false
@@ -724,18 +671,6 @@ jobs:
 
 
 ##### Human-triggered utilities
-  - name: delete-deployment-pickelhelm-diego
-    public: true
-    serial_groups: [pickelhelm]
-    plan:
-      - get: container-networking-ci
-      - task: delete-deployment
-        file: container-networking-ci/tasks/delete-deployment.yml
-        params:
-          BOSH_TARGET: {{pickelhelm-bosh-host}}
-          BOSH_USER: admin
-          BOSH_PASSWORD: {{pickelhelm-bosh-password}}
-          DEPLOYMENT_NAME: cf-diego-diego
   - name: delete-deployment-pickelhelm-cf
     public: true
     serial_groups: [pickelhelm]
@@ -745,9 +680,9 @@ jobs:
         file: container-networking-ci/tasks/delete-deployment.yml
         params:
           BOSH_TARGET: {{pickelhelm-bosh-host}}
-          BOSH_USER: admin
+          BOSH_USER: {{pickelhelm-bosh-user}}
           BOSH_PASSWORD: {{pickelhelm-bosh-password}}
-          DEPLOYMENT_NAME: cf-diego
+          DEPLOYMENT_NAME: cf
   - name: delete-deployment-mitre-diego
     public: true
     serial_groups: [mitre]

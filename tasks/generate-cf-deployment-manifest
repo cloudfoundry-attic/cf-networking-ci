@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -e -u
+
+pushd deployments-repo/environments/$ENVIRONMENT_NAME
+  export BOSH_ENVIRONMENT=$(bbl director-address)
+  bbl director-ca-cert > /tmp/ca.crt
+  export BOSH_CA_CERT=/tmp/ca.crt
+popd
+
+VAR_FILE=deployments-repo/environments/${ENVIRONMENT_NAME}/deployment-vars.yml
+MANIFEST_FILE=cf-deployment/cf-deployment.yml
+DIRECTOR_UUID=$(curl -s --cacert $BOSH_CA_CERT $BOSH_ENVIRONMENT/info | jq -r .uuid)
+
+function makeManifest() {
+  outFile=$1
+  bosh-cli build-manifest --var-errs -l=${VAR_FILE} ${MANIFEST_FILE} > $outFile
+  echo "director_uuid: ${DIRECTOR_UUID}" >> $outFile
+}
+
+pushd cf-deployment
+  git apply ../container-networking-ci/netman-recipe.patch
+  git apply ../container-networking-ci/netman-cf-deployment.patch
+popd
+
+makeManifest deployment-manifest/cf-with-netman.yml
