@@ -19,7 +19,6 @@ groups:
 - name: cleanup
   jobs:
     - delete-deployment-mitre-cf
-    - delete-deployment-mitre-diego
     - delete-deployment-pickelhelm-cf
     - delete-deployment-toque-cf
     - delete-deployment-toque-diego
@@ -45,16 +44,9 @@ resources:
     type: bosh-deployment
     source:
       target: {{mitre-bosh-host}}
-      username: admin
+      username: {{mitre-bosh-user}}
       password: {{mitre-bosh-password}}
-      deployment: mitre
-  - name: mitre-diego
-    type: bosh-deployment
-    source:
-      target: {{mitre-bosh-host}}
-      username: admin
-      password: {{mitre-bosh-password}}
-      deployment: mitre-diego
+      deployment: cf
   - name: toque-cf
     type: bosh-deployment
     source:
@@ -336,32 +328,22 @@ jobs:
         - get: deployments-repo
           resource: mitre-config
           trigger: false
-        - get: cf-release
-          resource: cf-release-master
-          params: { submodules: none }
-        - get: diego-release
-          params: { submodules: none }
+        - get: cf-deployment
+          trigger: true
         - get: aws-stemcell
-          trigger: false
-        - get: rootfs-release-tarball
-        - get: diego-release-tarball
-          trigger: false
-        - get: cf-release-tarball
-          trigger: false
-        - get: garden-runc-release-tarball
-          trigger: false
+          trigger: true
         - get: netman-release
           resource: netman-release-dev
-          trigger: false
+          trigger: true
           passed: [pickelhelm-test]
         - get: version
-          params: { pre: rc }
-        - get: etcd-release-tarball
+          params:
+            pre: rc
       - aggregate:
         - task: create-release-tarball
-          file: netman-release/ci/create-release.yml
-        - task: generate-mitre-manifests
-          file: container-networking-ci/tasks/generate-deployment-manifests.yml
+          file: netman-release/ci/create-release-tarball.yml
+        - task: generate-mitre-manifest
+          file: container-networking-ci/tasks/generate-cf-deployment-manifest.yml
           params:
             ENVIRONMENT_NAME: mitre
       - put: netman-tarball
@@ -373,23 +355,11 @@ jobs:
       - put: mitre-cf
         params:
           cleanup: false
-          manifest: generated-manifest/cf.yml
-          stemcells:
-          - aws-stemcell/*.tgz
-          releases:
-          - cf-release-tarball/*.tgz
-      - put: mitre-diego
-        params:
-          cleanup: false
-          manifest: generated-manifest/diego.yml
+          manifest: deployment-manifest/cf-with-netman.yml
           stemcells:
           - aws-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
-          - garden-runc-release-tarball/*.tgz
-          - etcd-release-tarball/*.tgz
-          - rootfs-release-tarball/*.tgz
-          - diego-release-tarball/*.tgz
       - task: add-acceptance-space-developer
         file: container-networking-ci/tasks/add-space-developer.yml
         params:
@@ -436,9 +406,6 @@ jobs:
         - get: environment
           resource: mitre-cf
           passed: [mitre-test]
-        - get: diego-environment
-          resource: mitre-diego
-          passed: [mitre-test]
         - get: mitre-config
       - task: copy-config
         params:
@@ -459,18 +426,6 @@ jobs:
         - get: test-config
           resource: mitre-config
           trigger: false
-        - get: diego-release
-          params: { submodules: none }
-          passed: [mitre-deploy]
-          trigger: true
-        - get: cf-release
-          resource: cf-release-master
-          params: { submodules: none }
-          passed: [mitre-deploy]
-          trigger: true
-        - get: garden-runc-release-tarball
-          passed: [mitre-deploy]
-          trigger: true
         - get: netman-release
           resource: netman-release-dev
           passed: [mitre-deploy]
@@ -482,9 +437,6 @@ jobs:
         - get: container-networking-ci
         - get: cf-deployment
           resource: mitre-cf
-          passed: [mitre-deploy]
-        - get: environment
-          resource: mitre-diego
           passed: [mitre-deploy]
           trigger: true
         - get: mitre-stats
@@ -683,18 +635,6 @@ jobs:
           BOSH_USER: {{pickelhelm-bosh-user}}
           BOSH_PASSWORD: {{pickelhelm-bosh-password}}
           DEPLOYMENT_NAME: cf
-  - name: delete-deployment-mitre-diego
-    public: true
-    serial_groups: [mitre]
-    plan:
-      - get: container-networking-ci
-      - task: delete-deployment
-        file: container-networking-ci/tasks/delete-deployment.yml
-        params:
-          BOSH_TARGET: {{mitre-bosh-host}}
-          BOSH_USER: admin
-          BOSH_PASSWORD: {{mitre-bosh-password}}
-          DEPLOYMENT_NAME: mitre-diego
   - name: delete-deployment-mitre-cf
     public: true
     serial_groups: [mitre]
@@ -704,9 +644,9 @@ jobs:
         file: container-networking-ci/tasks/delete-deployment.yml
         params:
           BOSH_TARGET: {{mitre-bosh-host}}
-          BOSH_USER: admin
+          BOSH_USER: {{mitre-bosh-user}}
           BOSH_PASSWORD: {{mitre-bosh-password}}
-          DEPLOYMENT_NAME: mitre
+          DEPLOYMENT_NAME: cf
   - name: delete-deployment-toque-diego
     public: true
     serial_groups: [toque]
