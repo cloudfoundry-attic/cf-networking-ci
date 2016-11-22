@@ -79,6 +79,7 @@ index dd1821c..e3d71f2 100644
 +    release: netman
 +    properties:
 +      policy-server:
++        cc_url:  "((api_url))"
 +        uaa_client_secret: "((network_policy_uaa_client_secret))"
 +        uaa_url:  "((uaa_url))"
 +        skip_ssl_validation: true
