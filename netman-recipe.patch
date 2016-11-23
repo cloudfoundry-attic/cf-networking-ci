@@ -2,14 +2,6 @@ diff --git a/cf-filler/recipe-cf-deployment.yml b/cf-filler/recipe-cf-deployment
 index 5b2c510..066eb83 100644
 --- a/cf-filler/recipe-cf-deployment.yml
 +++ b/cf-filler/recipe-cf-deployment.yml
-@@ -61,6 +61,7 @@ passwords:
- - uaa_clients_tcp_emitter_secret
- - uaa_clients_tcp_router_secret
- - uaa_login_client_secret
-+- uaa_login_saml_serviceProviderKeyPassword
- - diego_bbs_encryption_keys_passphrase
- - diego_bbs_sql_db_password
- 
 @@ -79,7 +80,7 @@ basic_key_pairs:
  cert_sets:
  - ca:
@@ -19,16 +11,3 @@ index 5b2c510..066eb83 100644
    certkeypairs:
    - varname_cert: etcd_server_cert
      varname_key:  etcd_server_key
-@@ -156,6 +157,12 @@ cert_sets:
-     varname_key:  uaa_sslPrivateKey
-     commonname:   uaa.service.cf.internal
- 
-+- ca:
-+    commonname: uaaSAMLCA
-+  certkeypairs:
-+  - varname_cert: uaa_login_saml_serviceProviderCertificate
-+    varname_key: uaa_login_saml_serviceProviderKey
-+
- - ca:
-     commonname: goRouterCA
-   certkeypairs:
