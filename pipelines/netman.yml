@@ -287,6 +287,8 @@ jobs:
     serial_groups: [pickelhelm]
     plan:
       - aggregate:
+        - get: every-half-hour
+          trigger: true
         - get: container-networking-ci
         - get: deployments-repo
           resource: pickelhelm-config
