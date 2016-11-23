@@ -316,12 +316,12 @@ jobs:
           trigger: false
         - get: cf-deployment
           passed: [pickelhelm-test]
-          trigger: true
+          trigger: false
         - get: aws-stemcell
-          trigger: true
+          trigger: false
         - get: netman-release
           resource: netman-release-dev
-          trigger: true
+          trigger: false
           passed: [pickelhelm-test]
         - get: version
           params:
