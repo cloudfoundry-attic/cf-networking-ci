@@ -354,13 +354,6 @@ jobs:
           - aws-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
-      - task: add-acceptance-space-developer
-        file: container-networking-ci/tasks/add-space-developer.yml
-        params:
-          API: {{mitre-cf-api}}
-          ADMIN_PASSWORD: {{mitre-cf-admin-password}}
-          SPACE_NAME: Acceptance
-          USER: acceptance
 
   - name: mitre-cats
     serial_groups: [mitre]
