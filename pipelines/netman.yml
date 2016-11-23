@@ -301,6 +301,8 @@ jobs:
         - get: cf-deployment
           passed: [pickelhelm-deploy]
           trigger: true
+        - get: pickelhelm-cf
+          passed: [pickelhelm-deploy]
         - get: aws-stemcell
           passed: [pickelhelm-deploy]
       - task: netman-cf-acceptance
@@ -402,6 +404,8 @@ jobs:
           passed: [mitre-deploy]
           trigger: true
         - get: mitre-stats
+        - get: mitre-cf
+          passed: [mitre-deploy]
       - task: netman-cf-acceptance
         file: container-networking-ci/tasks/netman-cf-acceptance.yml
         params:
