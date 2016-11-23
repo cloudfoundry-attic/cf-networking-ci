@@ -1,5 +1,5 @@
 diff --git a/cf-deployment.yml b/cf-deployment.yml
-index 5d9aa79..383bc01 100644
+index 5d9aa79..0c65d73 100644
 --- a/cf-deployment.yml
 +++ b/cf-deployment.yml
 @@ -243,6 +243,9 @@ instance_groups:
@@ -29,7 +29,7 @@ index 5d9aa79..383bc01 100644
            cloud_controller_username_lookup:
              authorities: scim.userids
              authorized-grant-types: client_credentials
-@@ -406,6 +410,10 @@ instance_groups:
+@@ -406,6 +410,17 @@ instance_groups:
              authorities: routing.routes.read,routing.router_groups.read
              authorized-grant-types: client_credentials,refresh_token
              secret: "((uaa_clients_tcp_router_secret))"
@@ -37,10 +37,17 @@ index 5d9aa79..383bc01 100644
 +            authorities: uaa.resource,cloud_controller.admin_read_only
 +            authorized-grant-types: client_credentials,refresh_token
 +            secret: "((network_policy_uaa_client_secret))"
++          datadog-firehose-nozzle: # for shipping loggregator metrics to datadog
++            access-token-validity: 1209600
++            authorized-grant-types: authorization_code,client_credentials,refresh_token
++            override: true
++            secret: "((datadog_firehose_nozzle_uaa_client_secret))"
++            scope: openid,oauth.approvals,doppler.firehose
++            authorities: oauth.login,doppler.firehose
        uaadb:
          address: 10.0.31.193
          databases:
-@@ -534,6 +542,9 @@ instance_groups:
+@@ -534,6 +549,9 @@ instance_groups:
          - 0.0.0.0/0
          persistent_image_list:
          - "/var/vcap/packages/cflinuxfs2/rootfs"
@@ -50,7 +57,7 @@ index 5d9aa79..383bc01 100644
    - name: rep
      release: diego
      properties:
-@@ -544,9 +555,100 @@ instance_groups:
+@@ -544,9 +562,100 @@ instance_groups:
            - cflinuxfs2:/var/vcap/packages/cflinuxfs2/rootfs
          ssl:
            skip_cert_verify: true
@@ -82,9 +89,9 @@ index 5d9aa79..383bc01 100644
 +        ca_cert: "((network_policy_ca_cert))"
 +        client_cert: "((network_policy_client_cert))"
 +        client_key: "((network_policy_client_key))"
-+  - name: metron_agent
-+    release: loggregator
-+    properties: *2
+   - name: metron_agent
+     release: loggregator
+     properties: *2
 +- name: policy-server
 +  azs:
 +  - z1
@@ -143,15 +150,15 @@ index 5d9aa79..383bc01 100644
 +        ca_cert: "((consul_agent_ca_cert))"
 +        server_cert: "((consul_agent_server_cert))"
 +        server_key: "((consul_agent_server_key))"
-   - name: metron_agent
-     release: loggregator
-     properties: *2
++  - name: metron_agent
++    release: loggregator
++    properties: *2
 +  networks:
 +  - name: private
  - name: router
    azs:
    - z1
-@@ -1373,6 +1475,8 @@ releases:
+@@ -1373,6 +1482,8 @@ releases:
    url: https://bosh.io/d/github.com/cloudfoundry/staticfile-buildpack-release?v=1.3.13
    version: 1.3.13
    sha1: 0741ad6d39cf258c317151e1227e0ccfe1fd7579
