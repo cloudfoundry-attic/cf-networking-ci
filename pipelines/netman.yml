@@ -21,7 +21,6 @@ groups:
     - delete-deployment-mitre-cf
     - delete-deployment-pickelhelm-cf
     - delete-deployment-toque-cf
-    - delete-deployment-toque-diego
 - name: trucker
   jobs:
   - trucker-test-upgrade
@@ -51,16 +50,9 @@ resources:
     type: bosh-deployment
     source:
       target: {{toque-bosh-host}}
-      username: admin
+      username: {{toque-bosh-user}}
       password: {{toque-bosh-password}}
-      deployment: toque
-  - name: toque-diego
-    type: bosh-deployment
-    source:
-      target: {{toque-bosh-host}}
-      username: admin
-      password: {{toque-bosh-password}}
-      deployment: toque-diego
+      deployment: cf
   ###### Control plane
   - name: container-networking-ci
     type: git
@@ -507,8 +499,6 @@ jobs:
         - get: container-networking-ci
         - get: cf-deployment
           resource: toque-cf
-        - get: environment
-          resource: toque-diego
         - get: scaling-test-params
           resource: toque-scaling-test-params
           passed: [toque-push]
@@ -607,18 +597,6 @@ jobs:
           BOSH_USER: {{mitre-bosh-user}}
           BOSH_PASSWORD: {{mitre-bosh-password}}
           DEPLOYMENT_NAME: cf
-  - name: delete-deployment-toque-diego
-    public: true
-    serial_groups: [toque]
-    plan:
-      - get: container-networking-ci
-      - task: delete-deployment
-        file: container-networking-ci/tasks/delete-deployment.yml
-        params:
-          BOSH_TARGET: {{toque-bosh-host}}
-          BOSH_USER: admin
-          BOSH_PASSWORD: {{toque-bosh-password}}
-          DEPLOYMENT_NAME: toque-diego
   - name: delete-deployment-toque-cf
     public: true
     serial_groups: [toque]
@@ -628,9 +606,9 @@ jobs:
         file: container-networking-ci/tasks/delete-deployment.yml
         params:
           BOSH_TARGET: {{toque-bosh-host}}
-          BOSH_USER: admin
+          BOSH_USER: {{toque-bosh-user}}
           BOSH_PASSWORD: {{toque-bosh-password}}
-          DEPLOYMENT_NAME: toque
+          DEPLOYMENT_NAME: cf
 
   - name: netman-shipit
     serial_groups: [version]
