@@ -175,13 +175,6 @@ resources:
     type: time
     source:
       interval: 24h
-  - name: overnight-every-1h
-    type: time
-    source:
-      start: 10:00 PM
-      stop: 6:00 AM
-      location: America/Los_Angeles
-      interval: 1h
   ####### Tests
   - name: cf-acceptance-tests
     type: git
@@ -355,32 +348,6 @@ jobs:
           releases:
           - tarballs/*.tgz
 
-  - name: mitre-cats
-    serial_groups: [mitre]
-    plan:
-      - aggregate:
-        - get: overnight-every-1h
-          trigger: true
-        - get: container-networking-ci
-        - get: cf-acceptance-tests
-          resource: cf-acceptance-tests
-        - get: runtime-ci
-          params: { submodules: none }
-        - get: netman-release
-          resource: netman-release-dev
-          passed: [mitre-test]
-        - get: cf-deployment
-          passed: [mitre-test]
-        - get: mitre-config
-      - task: copy-config
-        params:
-          ENVIRONMENT: mitre
-        file: container-networking-ci/tasks/copy-config.yml
-      - task: cats
-        file: runtime-ci/scripts/ci/run-cats/task.yml
-        params:
-          NODES: 6
-
   - name: mitre-test
     serial_groups: [mitre]
     plan:
@@ -421,6 +388,36 @@ jobs:
           DEST_SUFFIX: json
       - put: mitre-stats
         params: {repository: stats_output}
+
+  - name: mitre-cats
+    serial_groups: [mitre]
+    plan:
+      - aggregate:
+        - get: container-networking-ci
+        - get: cf-acceptance-tests
+          resource: cf-acceptance-tests
+        - get: runtime-ci
+          params: { submodules: none }
+        - get: netman-release
+          resource: netman-release-dev
+          passed: [mitre-test]
+          trigger: true
+        - get: cf-deployment
+          passed: [mitre-test]
+          trigger: true
+        - get: mitre-config
+        - get: netman-tarball
+          passed: [mitre-test]
+        - get: version
+          passed: [mitre-test]
+      - task: copy-config
+        params:
+          ENVIRONMENT: mitre
+        file: container-networking-ci/tasks/copy-config.yml
+      - task: cats
+        file: runtime-ci/scripts/ci/run-cats/task.yml
+        params:
+          NODES: 6
 
   - name: toque-deploy
     serial_groups: [toque]
@@ -615,17 +612,17 @@ jobs:
         - get: version
           params:
             bump: final
-          passed: [mitre-test]
+          passed: [mitre-cats]
         - get: netman-release
           resource: netman-release-dev
           params:
             fetch: [master]
             submodules: none
-          passed: [mitre-test]
+          passed: [mitre-cats]
         - get: cf-deployment
-          passed: [mitre-test]
+          passed: [mitre-cats]
         - get: netman-tarball
-          passed: [mitre-test]
+          passed: [mitre-cats]
       - task: shipit
         file: container-networking-ci/tasks/shipit.yml
       - task: build-cli
