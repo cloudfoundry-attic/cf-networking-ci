@@ -287,8 +287,6 @@ jobs:
     serial_groups: [pickelhelm]
     plan:
       - aggregate:
-        - get: every-half-hour
-          trigger: true
         - get: container-networking-ci
         - get: deployments-repo
           resource: pickelhelm-config
@@ -301,7 +299,6 @@ jobs:
           passed: [pickelhelm-deploy]
           trigger: true
         - get: cf-deployment
-          resource: pickelhelm-cf
           passed: [pickelhelm-deploy]
           trigger: true
         - get: aws-stemcell
@@ -323,6 +320,7 @@ jobs:
           resource: mitre-config
           trigger: false
         - get: cf-deployment
+          passed: [pickelhelm-test]
           trigger: true
         - get: aws-stemcell
           trigger: true
@@ -369,8 +367,7 @@ jobs:
         - get: netman-release
           resource: netman-release-dev
           passed: [mitre-test]
-        - get: environment
-          resource: mitre-cf
+        - get: cf-deployment
           passed: [mitre-test]
         - get: mitre-config
       - task: copy-config
@@ -402,7 +399,6 @@ jobs:
           passed: [mitre-deploy]
         - get: container-networking-ci
         - get: cf-deployment
-          resource: mitre-cf
           passed: [mitre-deploy]
           trigger: true
         - get: mitre-stats
@@ -621,6 +617,8 @@ jobs:
           params:
             fetch: [master]
             submodules: none
+          passed: [mitre-test]
+        - get: cf-deployment
           passed: [mitre-test]
         - get: netman-tarball
           passed: [mitre-test]
