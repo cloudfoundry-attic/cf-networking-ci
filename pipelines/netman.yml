@@ -66,11 +66,11 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry-incubator/container-networking-ci
-  - name: toque-scaling-deploy
-    type: git
-    source:
-      uri: https://github.com/cf-container-networking/toque-scaling
-      paths: [ deploy ]
+  # - name: toque-scaling-deploy
+  #   type: git
+  #   source:
+  #     uri: https://github.com/cf-container-networking/toque-scaling
+  #     paths: [ deploy ]
   - name: pickelhelm-config
     type: git
     source:
@@ -116,16 +116,16 @@ resources:
     source:
       name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
   ###### BOSH release repos
-  - name: cf-release-master
-    type: git
-    source:
-      branch: master
-      uri: https://github.com/cloudfoundry/cf-release.git
-  - name: diego-release
-    type: git
-    source:
-      branch: master
-      uri: https://github.com/cloudfoundry/diego-release.git
+  # - name: cf-release-master
+  #   type: git
+  #   source:
+  #     branch: master
+  #     uri: https://github.com/cloudfoundry/cf-release.git
+  # - name: diego-release
+  #   type: git
+  #   source:
+  #     branch: master
+  #     uri: https://github.com/cloudfoundry/diego-release.git
   - name: netman-release-dev
     type: git
     source:
@@ -141,26 +141,26 @@ resources:
       branch: master
       private_key: {{netman-release-deploy-key}}
   ###### BOSH release tarballs
-  - name: rootfs-release-tarball
-    type: bosh-io-release
-    source:
-      repository: cloudfoundry/cflinuxfs2-rootfs-release
-  - name: etcd-release-tarball
-    type: bosh-io-release
-    source:
-      repository: cloudfoundry-incubator/etcd-release
-  - name: diego-release-tarball
-    type: bosh-io-release
-    source:
-      repository: cloudfoundry/diego-release
-  - name: cf-release-tarball
-    type: bosh-io-release
-    source:
-      repository: cloudfoundry/cf-release
-  - name: garden-runc-release-tarball
-    type: bosh-io-release
-    source:
-      repository: cloudfoundry/garden-runc-release
+  # - name: rootfs-release-tarball
+  #   type: bosh-io-release
+  #   source:
+  #     repository: cloudfoundry/cflinuxfs2-rootfs-release
+  # - name: etcd-release-tarball
+  #   type: bosh-io-release
+  #   source:
+  #     repository: cloudfoundry-incubator/etcd-release
+  # - name: diego-release-tarball
+  #   type: bosh-io-release
+  #   source:
+  #     repository: cloudfoundry/diego-release
+  # - name: cf-release-tarball
+  #   type: bosh-io-release
+  #   source:
+  #     repository: cloudfoundry/cf-release
+  # - name: garden-runc-release-tarball
+  #   type: bosh-io-release
+  #   source:
+  #     repository: cloudfoundry/garden-runc-release
   ####### Stats
   - name: mitre-stats
     type: git
@@ -440,54 +440,35 @@ jobs:
     plan:
       - aggregate:
         - get: container-networking-ci
+          trigger: false
+        - get: config-repo
+          resource: container-networking-ci
         - get: deployments-repo
           resource: toque-config
-        - get: cf-release
-          resource: cf-release-master
-          params: { submodules: none }
-        - get: diego-release
-          params: { submodules: none }
+          trigger: false
+        - get: cf-deployment
+          trigger: true
         - get: aws-stemcell
-        - get: rootfs-release-tarball
-        - get: diego-release-tarball
-        - get: cf-release-tarball
-        - get: garden-runc-release-tarball
+          trigger: true
         - get: netman-release
           resource: netman-release-dev
-          passed: [netman-tests-postgres, netman-tests-mysql]
           trigger: true
-        - get: etcd-release-tarball
-        - get: scaling-deploy
-          resource: toque-scaling-deploy
+          passed: [netman-tests-postgres, netman-tests-mysql]
       - aggregate:
         - task: create-release-tarball
           file: netman-release/ci/create-release-tarball.yml
-        - task: set-scaling-deploy
-          file: container-networking-ci/tasks/set-scaling-deploy.yml
-      - task: generate-toque-manifests
-        file: container-networking-ci/tasks/generate-deployment-manifests.yml
-        params:
-          ENVIRONMENT_NAME: toque
+        - task: generate-toque-manifests
+          file: container-networking-ci/tasks/generate-cf-deployment-manifest.yml
+          params:
+            ENVIRONMENT_NAME: toque
       - put: toque-cf
         params:
           cleanup: false
-          manifest: generated-manifest/cf.yml
-          stemcells:
-          - aws-stemcell/*.tgz
-          releases:
-          - cf-release-tarball/*.tgz
-      - put: toque-diego
-        params:
-          cleanup: false
-          manifest: generated-manifest/diego.yml
+          manifest: deployment-manifest/cf-with-netman.yml
           stemcells:
           - aws-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
-          - garden-runc-release-tarball/*.tgz
-          - etcd-release-tarball/*.tgz
-          - rootfs-release-tarball/*.tgz
-          - diego-release-tarball/*.tgz
 
   - name: toque-push
     serial_groups: [toque]
