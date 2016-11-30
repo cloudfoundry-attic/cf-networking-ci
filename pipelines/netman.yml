@@ -505,7 +505,7 @@ jobs:
           TITLE: test_start
           TEXT: test_start
           PRIORITY: normal
-          AWS_ENV: toque-diego
+          AWS_ENV: toque.c2c.cf-app.com
           DATADOG_API_KEY: {{datadog_api_key}}
       - task: test-scalability
         file: container-networking-ci/tasks/test-scalability.yml
@@ -517,7 +517,7 @@ jobs:
           TITLE: test_end
           TEXT: test_end
           PRIORITY: normal
-          AWS_ENV: toque-diego
+          AWS_ENV: toque.c2c.cf-app.com
           DATADOG_API_KEY: {{datadog_api_key}}
       - task: commit-stats
         file: container-networking-ci/tasks/commit-new-file.yml
