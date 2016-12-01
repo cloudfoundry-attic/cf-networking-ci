@@ -8,11 +8,9 @@ platform: linux
 inputs:
   - name: container-networking-ci
   - name: deployments-repo
-  - name: deployment-manifests
 
 run:
-  path: container-networking-ci/tasks/deploy-newstyle
+  path: container-networking-ci/tasks/update-runtime-config
 
 params:
   ENVIRONMENT_NAME: ~
-  MANIFEST_FILE: ~
