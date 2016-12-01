@@ -267,6 +267,10 @@ jobs:
           file: container-networking-ci/tasks/generate-cf-deployment-manifest.yml
           params:
             ENVIRONMENT_NAME: pickelhelm
+      - task: update-runtime-config
+        file: container-networking-ci/tasks/update-runtime-config.yml
+        params:
+          ENVIRONMENT_NAME: pickelhelm
       - put: pickelhelm-cf
         params:
           cleanup: false
@@ -333,6 +337,10 @@ jobs:
           file: container-networking-ci/tasks/generate-cf-deployment-manifest.yml
           params:
             ENVIRONMENT_NAME: mitre
+      - task: update-runtime-config
+        file: container-networking-ci/tasks/update-runtime-config.yml
+        params:
+          ENVIRONMENT_NAME: mitre
       - put: netman-tarball
         params:
           from: tarballs/netman-([^/]*).tgz
@@ -445,6 +453,10 @@ jobs:
           file: container-networking-ci/tasks/generate-cf-deployment-manifest.yml
           params:
             ENVIRONMENT_NAME: toque
+      - task: update-runtime-config
+        file: container-networking-ci/tasks/update-runtime-config.yml
+        params:
+          ENVIRONMENT_NAME: toque
       - put: toque-cf
         params:
           cleanup: false
