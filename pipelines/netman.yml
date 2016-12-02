@@ -312,21 +312,20 @@ jobs:
     plan:
       - aggregate:
         - get: container-networking-ci
-          trigger: false
         - get: config-repo
           resource: container-networking-ci
         - get: deployments-repo
           resource: mitre-config
-          trigger: false
         - get: cf-deployment
           passed: [pickelhelm-test]
-          trigger: false
+          trigger: true
         - get: aws-stemcell
-          trigger: false
+          passed: [pickelhelm-test]
+          trigger: true
         - get: netman-release
           resource: netman-release-dev
-          trigger: false
           passed: [pickelhelm-test]
+          trigger: true
         - get: version
           params:
             pre: rc
