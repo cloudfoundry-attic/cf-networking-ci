@@ -11,7 +11,7 @@ popd
 VAR_FILE=deployments-repo/environments/${ENVIRONMENT_NAME}/deployment-vars.yml
 MANIFEST_FILE=cf-deployment/cf-deployment.yml
 AWS_OPS_FILE=cf-deployment/opsfiles/change-logging-port-for-aws-elb.yml
-INSTANCE_COUNTS_OPS_FILE=container-networking-ci/opsfiles/instance-counts.yml
+ENVIRONMENT_OPS_FILE=deployments-repo/environments/${ENVIRONMENT_NAME}/opsfile.yml
 DIRECTOR_UUID=$(curl -s --cacert $BOSH_CA_CERT $BOSH_ENVIRONMENT/info | jq -r .uuid)
 
 function makeManifest() {
@@ -19,7 +19,7 @@ function makeManifest() {
   bosh-cli build-manifest --var-errs \
     -l=${VAR_FILE} \
     -o ${AWS_OPS_FILE} \
-    -o ${INSTANCE_COUNTS_OPS_FILE} \
+    -o ${ENVIRONMENT_OPS_FILE} \
     ${MANIFEST_FILE} > $outFile
   echo "director_uuid: ${DIRECTOR_UUID}" >> $outFile
 }
