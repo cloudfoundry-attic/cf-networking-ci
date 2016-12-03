@@ -13,4 +13,5 @@ pushd deployments-repo/environments/$ENVIRONMENT_NAME
   export RUNTIME_VARS_FILE=$PWD/runtime-vars.yml
 popd
 
-bosh-cli -n update-runtime-config -l ${RUNTIME_VARS_FILE} container-networking-ci/runtime-config.yml
+# bosh-cli -n update-runtime-config -l ${RUNTIME_VARS_FILE} container-networking-ci/runtime-config.yml
+bosh-cli -n update-runtime-config -l ${RUNTIME_VARS_FILE} <(echo "releases: []")
