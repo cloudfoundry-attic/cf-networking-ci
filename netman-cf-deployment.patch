@@ -1,10 +1,10 @@
 diff --git a/cf-deployment.yml b/cf-deployment.yml
-index e05b1bd..8610767 100644
+index 784d510..6bb735c 100644
 --- a/cf-deployment.yml
 +++ b/cf-deployment.yml
-@@ -235,6 +235,9 @@ instance_groups:
+@@ -245,6 +245,9 @@ instance_groups:
            - name: diego
-             username: "((cf_mysql_mysql_seeded_databases_diego_username))"
+             username: diego
              password: "((cf_mysql_mysql_seeded_databases_diego_password))"
 +          - name: network_policy
 +            username: "((cf_mysql_mysql_seeded_databases_network_policy_username))"
@@ -12,7 +12,7 @@ index e05b1bd..8610767 100644
            database_startup_timeout: 600
            cluster_ips:
            - 10.0.31.193
-@@ -349,6 +352,7 @@ instance_groups:
+@@ -361,6 +364,7 @@ instance_groups:
              - routing.router_groups.read
              - scim.read
              - scim.write
@@ -20,7 +20,7 @@ index e05b1bd..8610767 100644
          login:
            client_secret: "((uaa_login_client_secret))"
          jwt:
-@@ -370,7 +374,7 @@ instance_groups:
+@@ -382,7 +386,7 @@ instance_groups:
              authorized-grant-types: password,refresh_token
              override: true
              refresh-token-validity: 2592000
@@ -29,7 +29,7 @@ index e05b1bd..8610767 100644
            cloud_controller_username_lookup:
              authorities: scim.userids
              authorized-grant-types: client_credentials
-@@ -398,6 +402,17 @@ instance_groups:
+@@ -414,6 +418,17 @@ instance_groups:
              authorities: routing.routes.read,routing.router_groups.read
              authorized-grant-types: client_credentials,refresh_token
              secret: "((uaa_clients_tcp_router_secret))"
@@ -47,7 +47,7 @@ index e05b1bd..8610767 100644
        uaadb:
          address: 10.0.31.193
          databases:
-@@ -526,6 +541,9 @@ instance_groups:
+@@ -544,6 +559,9 @@ instance_groups:
          - 0.0.0.0/0
          persistent_image_list:
          - "/var/vcap/packages/cflinuxfs2/rootfs"
@@ -57,7 +57,7 @@ index e05b1bd..8610767 100644
    - name: rep
      release: diego
      properties:
-@@ -536,9 +554,100 @@ instance_groups:
+@@ -554,9 +572,100 @@ instance_groups:
            - cflinuxfs2:/var/vcap/packages/cflinuxfs2/rootfs
          ssl:
            skip_cert_verify: true
@@ -89,9 +89,9 @@ index e05b1bd..8610767 100644
 +        ca_cert: "((network_policy_ca_cert))"
 +        client_cert: "((network_policy_client_cert))"
 +        client_key: "((network_policy_client_key))"
-   - name: metron_agent
-     release: loggregator
-     properties: *4
++  - name: metron_agent
++    release: loggregator
++    properties: *4
 +- name: policy-server
 +  azs:
 +  - z1
@@ -150,15 +150,15 @@ index e05b1bd..8610767 100644
 +        ca_cert: "((consul_agent_ca_cert))"
 +        server_cert: "((consul_agent_server_cert))"
 +        server_key: "((consul_agent_server_key))"
-+  - name: metron_agent
-+    release: loggregator
-+    properties: *4
+   - name: metron_agent
+     release: loggregator
+     properties: *4
 +  networks:
 +  - name: private
  - name: router
    azs:
    - z1
-@@ -1356,6 +1465,8 @@ releases:
+@@ -1394,6 +1503,8 @@ releases:
    url: https://bosh.io/d/github.com/cloudfoundry/staticfile-buildpack-release?v=1.3.13
    version: 1.3.13
    sha1: 0741ad6d39cf258c317151e1227e0ccfe1fd7579
