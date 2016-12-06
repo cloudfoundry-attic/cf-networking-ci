@@ -159,13 +159,13 @@ resources:
     source:
       uri: "git@github.com:cf-container-networking/mitre-stats.git"
       branch: master
-      private_key: {{mitre-stats-deploy-key}}
+      private_key: {{container-networking-bot-key}}
   - name: toque-stats
     type: git
     source:
       uri: "git@github.com:cf-container-networking/toque-stats.git"
       branch: master
-      private_key: {{toque-stats-deploy-key}}
+      private_key: {{container-networking-bot-key}}
   ####### Timers
   - name: every-half-hour
     type: time
