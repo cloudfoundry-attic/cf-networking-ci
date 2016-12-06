@@ -424,7 +424,7 @@ jobs:
       - task: cats
         file: runtime-ci/scripts/ci/run-cats/task.yml
         params:
-          NODES: 6
+          NODES: 16
 
   - name: toque-deploy
     serial_groups: [toque]
