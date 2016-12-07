@@ -1,5 +1,5 @@
 diff --git a/cf-deployment.yml b/cf-deployment.yml
-index cb64a6c..66a745b 100644
+index cb64a6c..91528a3 100644
 --- a/cf-deployment.yml
 +++ b/cf-deployment.yml
 @@ -235,6 +235,9 @@ instance_groups:
@@ -57,7 +57,7 @@ index cb64a6c..66a745b 100644
    - name: rep
      release: diego
      properties:
-@@ -536,9 +554,99 @@ instance_groups:
+@@ -536,9 +554,98 @@ instance_groups:
            - cflinuxfs2:/var/vcap/packages/cflinuxfs2/rootfs
          ssl:
            skip_cert_verify: true
@@ -105,7 +105,6 @@ index cb64a6c..66a745b 100644
 +    release: netman
 +    properties:
 +      policy-server:
-+        cc_url:  "((api_url))"
 +        uaa_client_secret: "((network_policy_uaa_client_secret))"
 +        skip_ssl_validation: true
 +        ca_cert: "((network_policy_ca_cert))"
@@ -157,7 +156,7 @@ index cb64a6c..66a745b 100644
  - name: router
    azs:
    - z1
-@@ -1354,6 +1462,8 @@ releases:
+@@ -1354,6 +1461,8 @@ releases:
    url: https://bosh.io/d/github.com/cloudfoundry/staticfile-buildpack-release?v=1.3.13
    version: 1.3.13
    sha1: 0741ad6d39cf258c317151e1227e0ccfe1fd7579
