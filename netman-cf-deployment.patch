@@ -1,5 +1,5 @@
 diff --git a/cf-deployment.yml b/cf-deployment.yml
-index cb64a6c..91528a3 100644
+index cb64a6c..0ec9295 100644
 --- a/cf-deployment.yml
 +++ b/cf-deployment.yml
 @@ -235,6 +235,9 @@ instance_groups:
@@ -57,7 +57,7 @@ index cb64a6c..91528a3 100644
    - name: rep
      release: diego
      properties:
-@@ -536,9 +554,98 @@ instance_groups:
+@@ -536,9 +554,99 @@ instance_groups:
            - cflinuxfs2:/var/vcap/packages/cflinuxfs2/rootfs
          ssl:
            skip_cert_verify: true
@@ -89,13 +89,14 @@ index cb64a6c..91528a3 100644
 +        ca_cert: "((network_policy_ca_cert))"
 +        client_cert: "((network_policy_client_cert))"
 +        client_key: "((network_policy_client_key))"
-   - name: metron_agent
-     release: loggregator
-     properties: *4
++  - name: metron_agent
++    release: loggregator
++    properties: *4
 +- name: policy-server
 +  azs:
 +  - z1
-+  instances: 1
++  - z2
++  instances: 2
 +  vm_type: t2.small
 +  stemcell: default
 +  networks:
@@ -148,15 +149,15 @@ index cb64a6c..91528a3 100644
 +        ca_cert: "((consul_agent_ca_cert))"
 +        server_cert: "((consul_agent_server_cert))"
 +        server_key: "((consul_agent_server_key))"
-+  - name: metron_agent
-+    release: loggregator
-+    properties: *4
+   - name: metron_agent
+     release: loggregator
+     properties: *4
 +  networks:
 +  - name: private
  - name: router
    azs:
    - z1
-@@ -1354,6 +1461,8 @@ releases:
+@@ -1354,6 +1462,8 @@ releases:
    url: https://bosh.io/d/github.com/cloudfoundry/staticfile-buildpack-release?v=1.3.13
    version: 1.3.13
    sha1: 0741ad6d39cf258c317151e1227e0ccfe1fd7579
