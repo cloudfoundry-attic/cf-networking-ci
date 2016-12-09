@@ -34,9 +34,13 @@ makeManifest deployment-manifest/cf-with-netman.yml
 
 echo "Checking for updates to var store"
 pushd deployments-repo/environments/$ENVIRONMENT_NAME
-  git status
+
+  #grep returns with exit status 1 if nothing is found
+  set +e
   CHANGED=`git ls-files -m | grep vars-store.yml`
-  if [[ ! -z ${CHANGED} ]]; then
+  set -e
+
+  if [[ ! -z $CHANGED ]]; then
     echo ${CHANGED}
 
     echo "Setting git config"
