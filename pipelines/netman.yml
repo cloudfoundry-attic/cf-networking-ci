@@ -215,8 +215,8 @@ resources:
   - name: cf-deployment
     type: git
     source:
-      branch: old-style
-      uri: https://github.com/cf-container-networking/cf-deployment.git
+      branch: master
+      uri: https://github.com/cloudfoundry/cf-deployment.git
 
 jobs:
   - name: netman-tests-postgres
