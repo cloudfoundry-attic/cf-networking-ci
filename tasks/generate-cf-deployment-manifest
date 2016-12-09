@@ -34,16 +34,17 @@ makeManifest deployment-manifest/cf-with-netman.yml
 
 echo "Checking for updates to var store"
 pushd deployments-repo/environments/$ENVIRONMENT_NAME
-  git ls-files -m
-  # CHANGED=`git ls-files -m | grep vars-store.yml`
+  git status
+  CHANGED=`git ls-files -m | grep vars-store.yml`
+  if [[ ! -z ${CHANGED} ]]; then
+    echo ${CHANGED}
 
-  # if [[ ! -z ${CHANGED} ]]; then
-  #   echo ${CHANGED}
+    echo "Setting git config"
+    git config --global user.email "container-networking+ci@pivotal.io"
+    git config --global user.name "Container Networking Bot"
 
-  #   git config --global user.email "container-networking+ci@pivotal.io"
-  #   git config --global user.name "Container Networking Bot"
-
-  #   git add vars-store.yml
-  #   git commit -m "[${ENVIRONMENT_NAME}] update vars store"
-  # fi
+    git add vars-store.yml
+    git commit -m "[${ENVIRONMENT_NAME}] update vars store"
+  fi
 popd
+echo "Done"
