@@ -45,6 +45,7 @@ pushd deployments-repo/environments/$ENVIRONMENT_NAME
 
     git add vars-store.yml
     git commit -m "[${ENVIRONMENT_NAME}] update vars store"
+    git pull -r
   fi
 popd
 echo "Done"
