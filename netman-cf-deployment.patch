@@ -1,5 +1,5 @@
 diff --git a/cf-deployment.yml b/cf-deployment.yml
-index 199b5e8..9c9d668 100644
+index 199b5e8..c618616 100644
 --- a/cf-deployment.yml
 +++ b/cf-deployment.yml
 @@ -239,6 +239,9 @@ instance_groups:
@@ -47,8 +47,11 @@ index 199b5e8..9c9d668 100644
        uaadb:
          address: 10.0.31.193
          databases:
-@@ -542,6 +557,9 @@ instance_groups:
+@@ -540,8 +555,12 @@ instance_groups:
+         default_container_grace_time: 0
+         deny_networks:
          - 0.0.0.0/0
++        destroy_containers_on_startup: true
          persistent_image_list:
          - "/var/vcap/packages/cflinuxfs2/rootfs"
 +        network_plugin: /var/vcap/packages/runc-cni/bin/garden-external-networker
@@ -57,7 +60,7 @@ index 199b5e8..9c9d668 100644
    - name: rep
      release: diego
      properties:
-@@ -552,6 +570,92 @@ instance_groups:
+@@ -552,6 +571,92 @@ instance_groups:
            - cflinuxfs2:/var/vcap/packages/cflinuxfs2/rootfs
          ssl:
            skip_cert_verify: true
@@ -150,7 +153,7 @@ index 199b5e8..9c9d668 100644
    - name: metron_agent
      release: loggregator
      properties: *metron_agent_properties
-@@ -1370,6 +1474,8 @@ variables:
+@@ -1370,6 +1475,8 @@ variables:
    type: password
  - name: cf_mysql_mysql_seeded_databases_diego_password
    type: password
@@ -159,7 +162,7 @@ index 199b5e8..9c9d668 100644
  - name: cf_mysql_mysql_seeded_databases_routing_password
    type: password
  - name: cf_mysql_mysql_seeded_databases_uaa_password
-@@ -1396,6 +1502,10 @@ variables:
+@@ -1396,6 +1503,10 @@ variables:
    type: password
  - name: uaa_clients_gorouter_secret
    type: password
@@ -170,7 +173,7 @@ index 199b5e8..9c9d668 100644
  - name: uaa_clients_ssh-proxy_secret
    type: password
  - name: uaa_clients_tcp_emitter_secret
-@@ -1414,6 +1524,24 @@ variables:
+@@ -1414,6 +1525,24 @@ variables:
    type: ssh
  - name: uaa_jwt_signing_key
    type: rsa
@@ -195,7 +198,7 @@ index 199b5e8..9c9d668 100644
  - name: etcd_ca
    type: certificate
    options:
-@@ -1591,9 +1719,9 @@ releases:
+@@ -1591,9 +1720,9 @@ releases:
    version: '24'
    sha1: d0feb5494153217f3d62b346f426ad2b2f43511a
  - name: garden-runc
@@ -208,7 +211,7 @@ index 199b5e8..9c9d668 100644
  - name: cflinuxfs2-rootfs
    url: https://bosh.io/d/github.com/cloudfoundry/cflinuxfs2-rootfs-release?v=1.41.0
    version: 1.41.0
-@@ -1638,6 +1766,8 @@ releases:
+@@ -1638,6 +1767,8 @@ releases:
    url: https://bosh.io/d/github.com/cloudfoundry/staticfile-buildpack-release?v=1.3.13
    version: 1.3.13
    sha1: 0741ad6d39cf258c317151e1227e0ccfe1fd7579
