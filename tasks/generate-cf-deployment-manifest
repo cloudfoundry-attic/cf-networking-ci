@@ -35,10 +35,8 @@ makeManifest deployment-manifest/cf-with-netman.yml
 echo "Checking for updates to var store"
 pushd deployments-repo/environments/$ENVIRONMENT_NAME
 
-  #grep returns with exit status 1 if nothing is found
-  set +e
-  CHANGED=`git ls-files -m | grep vars-store.yml`
-  set -e
+  # `|| true` because grep returns with exit status 1 if nothing is found
+  CHANGED=`git ls-files -m | grep vars-store.yml || true`
 
   if [[ ! -z $CHANGED ]]; then
     echo ${CHANGED}
