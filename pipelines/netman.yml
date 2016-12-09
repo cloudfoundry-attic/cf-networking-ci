@@ -68,7 +68,7 @@ resources:
     source:
       uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
       branch: master
-      private_key: {{container-networking-deployments-deploy-key}}
+      private_key: {{container-networking-deployments-push-key}}
       paths: [ environments/pickelhelm ]
   - name: mitre-config
     type: git
@@ -279,6 +279,9 @@ jobs:
           - aws-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
+      - put: pickelhelm-config
+        params:
+          repository: deployments-repo
 
   - name: pickelhelm-test
     serial_groups: [pickelhelm]

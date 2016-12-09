@@ -8,7 +8,7 @@ pushd deployments-repo/environments/$ENVIRONMENT_NAME
   export BOSH_CA_CERT=/tmp/ca.crt
 popd
 
-VAR_FILE=deployments-repo/environments/${ENVIRONMENT_NAME}/deployment-vars.yml
+VARS_STORE=deployments-repo/environments/${ENVIRONMENT_NAME}/vars-store.yml
 MANIFEST_FILE=cf-deployment/cf-deployment.yml
 AWS_OPS_FILE=cf-deployment/opsfiles/change-logging-port-for-aws-elb.yml
 ENVIRONMENT_OPS_FILE=deployments-repo/environments/${ENVIRONMENT_NAME}/opsfile.yml
@@ -16,8 +16,8 @@ DIRECTOR_UUID=$(curl -s --cacert $BOSH_CA_CERT $BOSH_ENVIRONMENT/info | jq -r .u
 
 function makeManifest() {
   outFile=$1
-  bosh-cli build-manifest --var-errs \
-    -l=${VAR_FILE} \
+  bosh-cli interpolate --var-errs \
+    --vars-store=${VARS_STORE} \
     -o ${AWS_OPS_FILE} \
     -o ${ENVIRONMENT_OPS_FILE} \
     ${MANIFEST_FILE} > $outFile
@@ -29,3 +29,13 @@ pushd cf-deployment
 popd
 
 makeManifest deployment-manifest/cf-with-netman.yml
+
+pushd deployments-repo/environments/$ENVIRONMENT_NAME
+  CHANGED=`git ls-files -m | grep vars-store.yml`
+
+  if [[ ! -z ${CHANGED} ]]; then
+    echo ${CHANGED}
+    git add vars-store.yml
+    git commit -m "[${ENVIRONMENT_NAME}] update vars store"
+  fi
+popd

@@ -1,57 +1,54 @@
 diff --git a/cf-deployment.yml b/cf-deployment.yml
-index cb64a6c..e4a473b 100644
+index 199b5e8..9c9d668 100644
 --- a/cf-deployment.yml
 +++ b/cf-deployment.yml
-@@ -235,6 +235,9 @@ instance_groups:
+@@ -239,6 +239,9 @@ instance_groups:
            - name: diego
-             username: "((cf_mysql_mysql_seeded_databases_diego_username))"
+             username: diego
              password: "((cf_mysql_mysql_seeded_databases_diego_password))"
 +          - name: network_policy
-+            username: "((cf_mysql_mysql_seeded_databases_network_policy_username))"
++            username: network_policy
 +            password: "((cf_mysql_mysql_seeded_databases_network_policy_password))"
-           database_startup_timeout: 600
-           cluster_ips:
-           - 10.0.31.193
-@@ -349,6 +352,7 @@ instance_groups:
-             - routing.router_groups.read
+           - name: routing-api
+             username: routing-api
+             password: "((cf_mysql_mysql_seeded_databases_routing_password))"
+@@ -359,6 +362,7 @@ instance_groups:
+             - routing.router_groups.write
              - scim.read
              - scim.write
 +            - network.admin
          login:
            client_secret: "((uaa_login_client_secret))"
          jwt:
-@@ -370,7 +374,7 @@ instance_groups:
+@@ -380,7 +384,7 @@ instance_groups:
              authorized-grant-types: password,refresh_token
              override: true
              refresh-token-validity: 2592000
--            scope: cloud_controller.read,cloud_controller.write,openid,password.write,cloud_controller.admin,scim.read,scim.write,doppler.firehose,uaa.user,routing.router_groups.read
-+            scope: cloud_controller.read,cloud_controller.write,openid,password.write,cloud_controller.admin,scim.read,scim.write,doppler.firehose,uaa.user,routing.router_groups.read,network.admin
+-            scope: cloud_controller.read,cloud_controller.write,openid,password.write,cloud_controller.admin,scim.read,scim.write,doppler.firehose,uaa.user,routing.router_groups.read,routing.router_groups.write
++            scope: network.admin,cloud_controller.read,cloud_controller.write,openid,password.write,cloud_controller.admin,scim.read,scim.write,doppler.firehose,uaa.user,routing.router_groups.read,routing.router_groups.write
            cloud_controller_username_lookup:
              authorities: scim.userids
              authorized-grant-types: client_credentials
-@@ -398,6 +402,17 @@ instance_groups:
+@@ -412,6 +416,17 @@ instance_groups:
              authorities: routing.routes.read,routing.router_groups.read
              authorized-grant-types: client_credentials,refresh_token
              secret: "((uaa_clients_tcp_router_secret))"
 +          network-policy:
 +            authorities: uaa.resource,cloud_controller.admin_read_only
 +            authorized-grant-types: client_credentials,refresh_token
-+            secret: "((network_policy_uaa_client_secret))"
++            secret: "((uaa_clients_network_policy_secret))"
 +          datadog-firehose-nozzle: # for shipping loggregator metrics to datadog
 +            access-token-validity: 1209600
 +            authorized-grant-types: authorization_code,client_credentials,refresh_token
 +            override: true
-+            secret: "((datadog_firehose_nozzle_uaa_client_secret))"
++            secret: "((uaa_clients_datadog_firehose_nozzle_secret))"
 +            scope: openid,oauth.approvals,doppler.firehose
 +            authorities: oauth.login,doppler.firehose
        uaadb:
          address: 10.0.31.193
          databases:
-@@ -524,8 +539,12 @@ instance_groups:
-         default_container_grace_time: 0
-         deny_networks:
+@@ -542,6 +557,9 @@ instance_groups:
          - 0.0.0.0/0
-+        destroy_containers_on_start: true
          persistent_image_list:
          - "/var/vcap/packages/cflinuxfs2/rootfs"
 +        network_plugin: /var/vcap/packages/runc-cni/bin/garden-external-networker
@@ -60,7 +57,7 @@ index cb64a6c..e4a473b 100644
    - name: rep
      release: diego
      properties:
-@@ -536,9 +555,99 @@ instance_groups:
+@@ -552,6 +570,92 @@ instance_groups:
            - cflinuxfs2:/var/vcap/packages/cflinuxfs2/rootfs
          ssl:
            skip_cert_verify: true
@@ -75,10 +72,10 @@ index cb64a6c..e4a473b 100644
 +    properties:
 +      cni-flannel:
 +        etcd_endpoints:
-+          - "((etcd_advertise_urls_dns_suffix))"
-+        etcd_client_cert: "((etcd_client_cert))"
-+        etcd_client_key: "((etcd_client_key))"
-+        etcd_ca_cert: "((etcd_ca_cert))"
++          - etcd.service.cf.internal
++        etcd_client_cert: "((etcd_client.certificate))"
++        etcd_client_key: "((etcd_client.private_key))"
++        etcd_ca_cert: "((etcd_client.ca))"
 +        flannel:
 +          etcd:
 +            require_ssl: "true"
@@ -89,12 +86,12 @@ index cb64a6c..e4a473b 100644
 +    properties:
 +      vxlan-policy-agent:
 +        policy_server_url: https://policy-server.service.cf.internal:4003
-+        ca_cert: "((network_policy_ca_cert))"
-+        client_cert: "((network_policy_client_cert))"
-+        client_key: "((network_policy_client_key))"
++        ca_cert: "((network_policy_client.ca))"
++        client_cert: "((network_policy_client.certificate))"
++        client_key: "((network_policy_client.private_key))"
 +  - name: metron_agent
 +    release: loggregator
-+    properties: *4
++    properties: *metron_agent_properties
 +- name: policy-server
 +  azs:
 +  - z1
@@ -109,14 +106,11 @@ index cb64a6c..e4a473b 100644
 +    release: netman
 +    properties:
 +      policy-server:
-+        uaa_client_secret: "((network_policy_uaa_client_secret))"
++        uaa_client_secret: "((uaa_clients_network_policy_secret))"
 +        skip_ssl_validation: true
-+        ca_cert: "((network_policy_ca_cert))"
-+        server_cert: "((network_policy_server_cert))"
-+        server_key: "((network_policy_server_key))"
-+        database:
-+          type: "((network_policy_db_type))"
-+          connection_string: "((network_policy_db_connection_string))"
++        ca_cert: "((network_policy_server.ca))"
++        server_cert: "((network_policy_server.certificate))"
++        server_key: "((network_policy_server.private_key))"
 +  - name: route_registrar
 +    release: routing
 +    properties:
@@ -126,12 +120,12 @@ index cb64a6c..e4a473b 100644
 +          port: 4002
 +          registration_interval: 20s
 +          uris:
-+          - "((network_policy_server_uri))"
++          - "api.((system_domain))/networking"
 +      nats:
-+        machines: *3
++        machines: *nats_machines
 +        password: "((nats_password))"
 +        port: 4222
-+        user: "((nats_user))"
++        user: nats
 +  - name: consul_agent
 +    release: consul
 +    properties:
@@ -139,28 +133,69 @@ index cb64a6c..e4a473b 100644
 +        agent:
 +          mode: client
 +          domain: cf.internal
-+          servers: *2
++          servers: *consul_machines
 +          services:
 +            policy-server:
 +              name: policy-server
 +              check:
 +                interval: 5s
 +                script: /bin/true
-+        encrypt_keys: "((consul_encrypt_keys))"
-+        agent_cert: "((consul_agent_cert))"
-+        agent_key: "((consul_agent_agent_key))"
-+        ca_cert: "((consul_agent_ca_cert))"
-+        server_cert: "((consul_agent_server_cert))"
-+        server_key: "((consul_agent_server_key))"
++        encrypt_keys:
++        - "((consul_encrypt_key))"
++        agent_cert: "((consul_agent.certificate))"
++        agent_key: "((consul_agent.private_key))"
++        ca_cert: "((consul_agent.ca))"
++        server_cert: "((consul_server.certificate))"
++        server_key: "((consul_server.private_key))"
    - name: metron_agent
      release: loggregator
-     properties: *4
-+  networks:
-+  - name: private
- - name: router
-   azs:
-   - z1
-@@ -1303,9 +1412,9 @@ releases:
+     properties: *metron_agent_properties
+@@ -1370,6 +1474,8 @@ variables:
+   type: password
+ - name: cf_mysql_mysql_seeded_databases_diego_password
+   type: password
++- name: cf_mysql_mysql_seeded_databases_network_policy_password
++  type: password
+ - name: cf_mysql_mysql_seeded_databases_routing_password
+   type: password
+ - name: cf_mysql_mysql_seeded_databases_uaa_password
+@@ -1396,6 +1502,10 @@ variables:
+   type: password
+ - name: uaa_clients_gorouter_secret
+   type: password
++- name: uaa_clients_network_policy_secret
++  type: password
++- name: uaa_clients_datadog_firehose_nozzle_secret
++  type: password
+ - name: uaa_clients_ssh-proxy_secret
+   type: password
+ - name: uaa_clients_tcp_emitter_secret
+@@ -1414,6 +1524,24 @@ variables:
+   type: ssh
+ - name: uaa_jwt_signing_key
+   type: rsa
++- name: network_policy_ca
++  type: certificate
++  options:
++    common_name: networkPolicyCA
++- name: network_policy_server
++  type: certificate
++  options:
++    ca: network_policy_ca
++    common_name: policy-server.service.cf.internal
++    ext_key_usage:
++    - server_auth
++- name: network_policy_client
++  type: certificate
++  options:
++    ca: network_policy_ca
++    common_name: clientName
++    ext_key_usage:
++    - client_auth
+ - name: etcd_ca
+   type: certificate
+   options:
+@@ -1591,9 +1719,9 @@ releases:
    version: '24'
    sha1: d0feb5494153217f3d62b346f426ad2b2f43511a
  - name: garden-runc
@@ -173,7 +208,7 @@ index cb64a6c..e4a473b 100644
  - name: cflinuxfs2-rootfs
    url: https://bosh.io/d/github.com/cloudfoundry/cflinuxfs2-rootfs-release?v=1.41.0
    version: 1.41.0
-@@ -1354,6 +1463,8 @@ releases:
+@@ -1638,6 +1766,8 @@ releases:
    url: https://bosh.io/d/github.com/cloudfoundry/staticfile-buildpack-release?v=1.3.13
    version: 1.3.13
    sha1: 0741ad6d39cf258c317151e1227e0ccfe1fd7579
