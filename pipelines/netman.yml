@@ -225,12 +225,10 @@ jobs:
     plan:
       - aggregate:
         - get: container-networking-ci
-          trigger: false
         - get: config-repo
           resource: container-networking-ci
         - get: deployments-repo
           resource: container-networking-deployments
-          trigger: false
         - get: aws-stemcell
           trigger: true
         - get: cf-deployment
@@ -412,12 +410,10 @@ jobs:
     plan:
       - aggregate:
         - get: container-networking-ci
-          trigger: false
         - get: config-repo
           resource: container-networking-ci
         - get: deployments-repo
           resource: container-networking-deployments
-          trigger: false
         - get: cf-deployment
           trigger: true
         - get: aws-stemcell
