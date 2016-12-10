@@ -11,6 +11,7 @@ inputs:
   - name: cf-deployment
 outputs:
   - name: deployment-manifest
+  - name: deployments-repo-output
 
 run:
   path: container-networking-ci/tasks/generate-cf-deployment-manifest

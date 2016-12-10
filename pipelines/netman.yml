@@ -281,7 +281,7 @@ jobs:
           - tarballs/*.tgz
       - put: pickelhelm-config
         params:
-          repository: deployments-repo
+          repository: deployments-repo-output
 
   - name: pickelhelm-test
     serial_groups: [pickelhelm]
