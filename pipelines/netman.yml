@@ -63,13 +63,6 @@ resources:
   #   source:
   #     uri: https://github.com/cf-container-networking/toque-scaling
   #     paths: [ deploy ]
-  - name: mitre-config
-    type: git
-    source:
-      uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
-      branch: master
-      private_key: {{container-networking-deployments-push-key}}
-      paths: [ environments/mitre ]
   - name: toque-config
     type: git
     source:
@@ -309,7 +302,7 @@ jobs:
         - get: config-repo
           resource: container-networking-ci
         - get: deployments-repo
-          resource: mitre-config
+          resource: container-networking-deployments
         - get: cf-deployment
           passed: [pickelhelm-test]
           trigger: true
@@ -348,17 +341,18 @@ jobs:
           - aws-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
+      - put: container-networking-deployments
+        params:
+          repository: deployments-repo-output
 
   - name: mitre-test
     serial_groups: [mitre]
     plan:
       - aggregate:
         - get: deployments-repo
-          resource: mitre-config
-          trigger: false
+          resource: container-networking-deployments
         - get: test-config
-          resource: mitre-config
-          trigger: false
+          resource: container-networking-deployments
         - get: netman-release
           resource: netman-release-dev
           passed: [mitre-deploy]
@@ -406,7 +400,7 @@ jobs:
         - get: cf-deployment
           passed: [mitre-test]
           trigger: true
-        - get: mitre-config
+        - get: container-networking-deployments
         - get: netman-tarball
           passed: [mitre-test]
         - get: version
