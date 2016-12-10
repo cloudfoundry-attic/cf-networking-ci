@@ -35,6 +35,7 @@ makeManifest deployment-manifest/cf-with-netman.yml
 echo "Checking for updates to var store"
 pushd deployments-repo/environments/$ENVIRONMENT_NAME
 
+  git checkout master
   # `|| true` because grep returns with exit status 1 if nothing is found
   CHANGED=`git ls-files -m | grep vars-store.yml || true`
 
@@ -45,7 +46,6 @@ pushd deployments-repo/environments/$ENVIRONMENT_NAME
     git config --global user.email "container-networking+ci@pivotal.io"
     git config --global user.name "Container Networking Bot"
 
-    git checkout master
     git add vars-store.yml
     git commit -m "[${ENVIRONMENT_NAME}] update vars store"
     git pull -r
