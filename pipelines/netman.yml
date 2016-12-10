@@ -63,13 +63,6 @@ resources:
   #   source:
   #     uri: https://github.com/cf-container-networking/toque-scaling
   #     paths: [ deploy ]
-  - name: toque-config
-    type: git
-    source:
-      uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
-      branch: master
-      private_key: {{container-networking-deployments-push-key}}
-      paths: [ environments/toque ]
   - name: trucker-config
     type: git
     source:
@@ -423,7 +416,7 @@ jobs:
         - get: config-repo
           resource: container-networking-ci
         - get: deployments-repo
-          resource: toque-config
+          resource: container-networking-deployments
           trigger: false
         - get: cf-deployment
           trigger: true
@@ -452,13 +445,16 @@ jobs:
           - aws-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
+      - put: container-networking-deployments
+        params:
+          repository: deployments-repo-output
 
   - name: toque-push
     serial_groups: [toque]
     plan:
       - aggregate:
         - get: deployments-repo
-          resource: toque-config
+          resource: container-networking-deployments
         - get: netman-release
           resource: netman-release-dev
           passed: [toque-deploy]
@@ -483,7 +479,7 @@ jobs:
         - get: every-half-hour
           trigger: true
         - get: deployments-repo
-          resource: toque-config
+          resource: container-networking-deployments
         - get: netman-release
           resource: netman-release-dev
           passed: [toque-push]
