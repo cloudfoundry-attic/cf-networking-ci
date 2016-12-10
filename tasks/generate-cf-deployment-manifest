@@ -36,8 +36,6 @@ echo "Checking for updates to var store"
 git clone deployments-repo deployments-repo-output
 pushd deployments-repo-output/environments/$ENVIRONMENT_NAME
 
-  git checkout master
-  git pull -r
   # `|| true` because grep returns with exit status 1 if nothing is found
   CHANGED=`git ls-files -m | grep vars-store.yml || true`
 

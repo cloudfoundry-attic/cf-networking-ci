@@ -63,13 +63,6 @@ resources:
   #   source:
   #     uri: https://github.com/cf-container-networking/toque-scaling
   #     paths: [ deploy ]
-  - name: pickelhelm-config
-    type: git
-    source:
-      uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
-      branch: master
-      private_key: {{container-networking-deployments-push-key}}
-      paths: [ environments/pickelhelm ]
   - name: mitre-config
     type: git
     source:
@@ -250,11 +243,11 @@ jobs:
         - get: config-repo
           resource: container-networking-ci
         - get: deployments-repo
-          resource: pickelhelm-config
+          resource: container-networking-deployments
           trigger: false
-        - get: cf-deployment
-          trigger: true
         - get: aws-stemcell
+          trigger: true
+        - get: cf-deployment
           trigger: true
         - get: netman-release
           resource: netman-release-dev
@@ -279,7 +272,7 @@ jobs:
           - aws-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
-      - put: pickelhelm-config
+      - put: container-networking-deployments
         params:
           repository: deployments-repo-output
 
@@ -289,11 +282,9 @@ jobs:
       - aggregate:
         - get: container-networking-ci
         - get: deployments-repo
-          resource: pickelhelm-config
-          trigger: false
+          resource: container-networking-deployments
         - get: test-config
-          resource: pickelhelm-config
-          trigger: false
+          resource: container-networking-deployments
         - get: netman-release
           resource: netman-release-dev
           passed: [pickelhelm-deploy]
