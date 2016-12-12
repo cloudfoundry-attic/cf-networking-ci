@@ -21,7 +21,6 @@ function makeManifest() {
     -o ${AWS_OPS_FILE} \
     -o ${ENVIRONMENT_OPS_FILE} \
     ${MANIFEST_FILE} > $outFile
-  echo "director_uuid: ${DIRECTOR_UUID}" >> $outFile
 }
 
 echo "Applying patch"
