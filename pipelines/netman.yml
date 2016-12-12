@@ -225,7 +225,6 @@ jobs:
     plan:
       - aggregate:
         - get: container-networking-ci
-        - get: config-repo
           resource: container-networking-ci
         - get: deployments-repo
           resource: container-networking-deployments
@@ -286,7 +285,6 @@ jobs:
     plan:
       - aggregate:
         - get: container-networking-ci
-        - get: config-repo
           resource: container-networking-ci
         - get: deployments-repo
           resource: container-networking-deployments
@@ -402,7 +400,6 @@ jobs:
     plan:
       - aggregate:
         - get: container-networking-ci
-        - get: config-repo
           resource: container-networking-ci
         - get: deployments-repo
           resource: container-networking-deployments
