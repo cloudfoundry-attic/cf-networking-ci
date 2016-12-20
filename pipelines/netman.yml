@@ -21,9 +21,6 @@ groups:
     - delete-deployment-mitre-cf
     - delete-deployment-pickelhelm-cf
     - delete-deployment-toque-cf
-- name: trucker
-  jobs:
-  - trucker-test-upgrade
 - name: version
   jobs:
   - major-bump
@@ -63,13 +60,6 @@ resources:
   #   source:
   #     uri: https://github.com/cf-container-networking/toque-scaling
   #     paths: [ deploy ]
-  - name: trucker-config
-    type: git
-    source:
-      uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
-      branch: master
-      private_key: {{container-networking-deployments-push-key}}
-      paths: [ environments/trucker ]
   - name: container-networking-deployments
     type: git
     source:
@@ -150,10 +140,6 @@ resources:
     type: time
     source:
       interval: 30m
-  - name: every-24-hours
-    type: time
-    source:
-      interval: 24h
   ####### Tests
   - name: cf-acceptance-tests
     type: git
@@ -508,39 +494,6 @@ jobs:
           DEST_SUFFIX: json
       - put: toque-stats
         params: {repository: stats_output}
-
-  - name: trucker-test-upgrade
-    serial_groups: [trucker]
-    plan:
-      - aggregate:
-        - get: every-24-hours
-          trigger: true
-        - get: test-config
-          resource: trucker-config
-        - get: container-networking-ci
-        - get: deployments-repo
-          resource: trucker-config
-        - get: cf-deployment
-        - get: netman-release
-          resource: netman-release-dev
-          passed: [pickelhelm-test]
-      - task: create-release-tarball
-        file: netman-release/ci/create-release-tarball.yml
-      - task: upload-netman-release
-        file: container-networking-ci/tasks/upload-release-tarball.yml
-        params:
-          ENVIRONMENT_NAME: trucker
-      - task: generate-upgrade-manifests
-        file: container-networking-ci/tasks/generate-upgrade-manifests.yml
-        params:
-          ENVIRONMENT_NAME: trucker
-      - task: test-upgrade
-        file: container-networking-ci/tasks/test-upgrade.yml
-        params:
-          ENVIRONMENT_NAME: trucker
-          BASE_MANIFEST: deployment-manifests/plain.yml
-          UPGRADE_MANIFEST: deployment-manifests/with-netman.yml
-
 
 ##### Human-triggered utilities
   - name: delete-deployment-pickelhelm-cf
