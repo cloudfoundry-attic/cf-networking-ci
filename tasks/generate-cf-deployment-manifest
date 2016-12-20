@@ -10,23 +10,19 @@ popd
 
 VARS_STORE=deployments-repo/environments/${ENVIRONMENT_NAME}/vars-store.yml
 MANIFEST_FILE=cf-deployment/cf-deployment.yml
+NETMAN_OPS_FILE=netman-release/manifest-generation/opsfiles/netman.yml
 AWS_OPS_FILE=cf-deployment/opsfiles/change-logging-port-for-aws-elb.yml
 ENVIRONMENT_OPS_FILE=deployments-repo/environments/${ENVIRONMENT_NAME}/opsfile.yml
-DIRECTOR_UUID=$(curl -s --cacert $BOSH_CA_CERT $BOSH_ENVIRONMENT/info | jq -r .uuid)
 
 function makeManifest() {
   outFile=$1
   bosh-cli interpolate --var-errs \
     --vars-store=${VARS_STORE} \
     -o ${AWS_OPS_FILE} \
+    -o ${NETMAN_OPS_FILE} \
     -o ${ENVIRONMENT_OPS_FILE} \
     ${MANIFEST_FILE} > $outFile
 }
-
-echo "Applying patch"
-pushd cf-deployment
-  git apply ../container-networking-ci/netman-cf-deployment.patch
-popd
 
 echo "Making manifest"
 makeManifest deployment-manifest/cf-with-netman.yml
