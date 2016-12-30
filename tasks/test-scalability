@@ -3,6 +3,10 @@
 set -e -u
 
 environment_path="${PWD}/test-config/environments/${ENVIRONMENT_NAME}"
+pushd ${environment_path}
+  ADMIN_PASSWORD=`grep uaa_scim_users_admin_password vars-store.yml  | cut -d' ' -f2`
+  sed -i -- "s/{{admin-password}}/${ADMIN_PASSWORD}/g" netman-cf-acceptance.json
+popd
 export CONFIG=$environment_path/netman-cf-acceptance.json
 
 export NETWORK_STATS_FILE=$PWD/network-stats/stats.json

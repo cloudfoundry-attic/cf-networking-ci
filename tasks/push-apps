@@ -3,10 +3,17 @@
 set -e -u
 
 environment_path="${PWD}/test-config/environments/${ENVIRONMENT_NAME}"
-export CONFIG=$environment_path/netman-cf-acceptance.json
+
+# replace admin password in test config
+pushd ${environment_path}
+  ADMIN_PASSWORD=`grep uaa_scim_users_admin_password vars-store.yml  | cut -d' ' -f2`
+  sed -i -- "s/{{admin-password}}/${ADMIN_PASSWORD}/g" netman-cf-acceptance.json
+popd
+
 export APPS_DIR=${PWD}/netman-release/src/example-apps
 
 cd netman-release
 export GOPATH=$PWD
 
+export CONFIG=$environment_path/netman-cf-acceptance.json
 go run src/cf-pusher/cmd/cf-pusher/main.go --config "${CONFIG}"
