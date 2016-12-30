@@ -3,7 +3,7 @@
 set -e
 
 # replace admin password in test config
-pushd container-networking-deployments/environments/${ENVIRONMENT_NAME}
+pushd container-networking-deployments/environments/${ENVIRONMENT}
   ADMIN_PASSWORD=`grep uaa_scim_users_admin_password vars-store.yml  | cut -d' ' -f2`
   sed -i -- "s/{{admin-password}}/${ADMIN_PASSWORD}/g" integration_config.json
 popd
