@@ -9,6 +9,7 @@ params:
   ENVIRONMENT: ~
 
 inputs:
+  - name: container-networking-ci
   - name: container-networking-deployments
 
 outputs:
