@@ -27,17 +27,16 @@ function makeManifest() {
 echo "Making manifest"
 makeManifest deployment-manifest/cf-with-netman.yml
 
-echo "Checking for updates to var store"
-git clone deployments-repo deployments-repo-output
-pushd deployments-repo-output/environments/$ENVIRONMENT_NAME
+
+echo "Checking for updates to vars store"
+pushd deployments-repo/environments/$ENVIRONMENT_NAME
 
   # `|| true` because grep returns with exit status 1 if nothing is found
   CHANGED=`git ls-files -m | grep vars-store.yml || true`
+  echo ${CHANGED}
 
   if [[ ! -z $CHANGED ]]; then
-    echo ${CHANGED}
-
-    echo "Setting git config"
+    echo "Committing changes to vars store"
     git config --global user.email "container-networking+ci@pivotal.io"
     git config --global user.name "Container Networking Bot"
 
@@ -45,4 +44,7 @@ pushd deployments-repo-output/environments/$ENVIRONMENT_NAME
     git commit -m "[${ENVIRONMENT_NAME}] update vars store"
   fi
 popd
+
+git clone deployments-repo deployments-repo-output
+
 echo "Done"
