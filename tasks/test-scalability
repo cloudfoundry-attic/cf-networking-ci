@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e -u
+set -o pipefail
 
 environment_path="${PWD}/test-config/environments/${ENVIRONMENT_NAME}"
 export CONFIG=$environment_path/netman-cf-acceptance.json

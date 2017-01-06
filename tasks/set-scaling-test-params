@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -e -u -x
+set -e -u
+set -o pipefail
 
 # replace admin password in test config
 pushd ${PWD}/deployments-repo/environments/${ENVIRONMENT_NAME}
