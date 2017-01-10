@@ -66,10 +66,10 @@ resources:
       uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
       branch: master
       private_key: {{container-networking-deployments-push-key}}
-  - name: runtime-ci
+  - name: cats-concourse-task
     type: git
     source:
-      uri: https://github.com/cloudfoundry/runtime-ci.git
+      uri: https://github.com/cloudfoundry/cats-concourse-task
       branch: master
   ###### BOSH stemcells
   - name: aws-stemcell
@@ -362,8 +362,7 @@ jobs:
         - get: container-networking-ci
         - get: cf-acceptance-tests
           resource: cf-acceptance-tests
-        - get: runtime-ci
-          params: { submodules: none }
+        - get: cats-concourse-task
         - get: netman-release
           resource: netman-release-dev
           passed: [mitre-test]
@@ -381,7 +380,7 @@ jobs:
           ENVIRONMENT: mitre
         file: container-networking-ci/tasks/copy-config.yml
       - task: cats
-        file: runtime-ci/scripts/ci/run-cats/task.yml
+        file: cats-concourse-task/task.yml
         params:
           NODES: 16
 
