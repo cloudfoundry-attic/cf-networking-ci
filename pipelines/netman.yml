@@ -240,6 +240,7 @@ jobs:
       - put: container-networking-deployments
         params:
           repository: deployments-repo-output
+          rebase: true
 
   - name: pickelhelm-test
     serial_groups: [pickelhelm]
@@ -312,6 +313,7 @@ jobs:
       - put: container-networking-deployments
         params:
           repository: deployments-repo-output
+          rebase: true
 
   - name: mitre-test
     serial_groups: [mitre]
@@ -417,6 +419,7 @@ jobs:
       - put: container-networking-deployments
         params:
           repository: deployments-repo-output
+          rebase: true
 
   - name: toque-push
     serial_groups: [toque]
