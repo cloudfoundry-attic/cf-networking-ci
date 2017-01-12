@@ -3,16 +3,15 @@ platform: linux
 
 image_resource:
   type: docker-image
-  source: { repository: c2cnetworking/deploy }
+  source: { repository: c2cnetworking/deploy-light }
 
 inputs:
   - name: container-networking-ci
-  - name: environment
+  - name: deployments-repo
 
 params:
-  BOSH_USER: admin
-  BOSH_PASSWORD: ~
   ERRAND: ~
+  ENVIRONMENT_NAME: ~
 
 run:
   path: container-networking-ci/tasks/run-errand

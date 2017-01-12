@@ -1,7 +1,14 @@
 #!/bin/bash
 
-set -e -u -x
+set -e -u
 
-bosh target $(cat environment/target)
-bosh deployment environment/manifest.yml
-bosh run errand "${ERRAND}"
+pushd deployments-repo/environments/$ENVIRONMENT_NAME
+  export BOSH_ENVIRONMENT=$(bbl director-address)
+  export BOSH_PASSWORD=$(bbl director-password)
+  export BOSH_USER=$(bbl director-username)
+  bbl director-ca-cert > /tmp/ca.crt
+  export BOSH_CA_CERT=/tmp/ca.crt
+  export BOSH_DEPLOYMENT=cf
+popd
+
+bosh-cli run-errand "${ERRAND}"
