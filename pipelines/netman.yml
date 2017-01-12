@@ -7,6 +7,7 @@ groups:
   - pickelhelm-test
   - mitre-deploy
   - mitre-test
+  - mitre-netman-errand
   - mitre-cats
   - netman-shipit
   - netman-bump-minor-version
@@ -354,6 +355,30 @@ jobs:
           DEST_SUFFIX: json
       - put: mitre-stats
         params: {repository: stats_output}
+
+  - name: mitre-netman-errand
+    serial_groups: [mitre]
+    plan:
+      - aggregate:
+        - get: container-networking-ci
+        - get: netman-release
+          resource: netman-release-dev
+          passed: [mitre-test]
+          trigger: true
+        - get: cf-deployment
+          passed: [mitre-test]
+          trigger: true
+        - get: deployments-repo
+          resource: container-networking-deployments
+        - get: netman-tarball
+          passed: [mitre-test]
+        - get: version
+          passed: [mitre-test]
+      - task: run-errand
+        file: container-networking-ci/tasks/run-errand.yml
+        params:
+          ENVIRONMENT_NAME: mitre
+          ERRAND: netman-cf-acceptance
 
   - name: mitre-cats
     serial_groups: [mitre]
