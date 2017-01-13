@@ -12,6 +12,9 @@ groups:
   - netman-shipit
   - netman-bump-minor-version
   - netman-merge-master
+  - toque-deploy
+  - toque-push
+  - toque-test
 - name: toque
   jobs:
   - toque-deploy
