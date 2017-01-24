@@ -1,5 +1,5 @@
 groups:
-- name: netman
+- name: cf-networking
   jobs:
   - mysql-tests
   - postgres-tests
