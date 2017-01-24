@@ -1,8 +1,8 @@
 groups:
 - name: netman
   jobs:
-  - netman-tests-mysql
-  - netman-tests-postgres
+  - mysql-tests
+  - postgres-tests
   - pickelhelm-deploy
   - pickelhelm-test
   - mitre-deploy
@@ -188,7 +188,7 @@ resources:
       uri: https://github.com/cloudfoundry/cf-deployment.git
 
 jobs:
-  - name: netman-tests-postgres
+  - name: postgres-tests
     public: true
     plan:
     - aggregate:
@@ -196,10 +196,10 @@ jobs:
         resource: cf-networking-dev
         trigger: true
     - task: netman-tests
-      file: cf-networking/ci/netman-tests-postgres.yml
+      file: cf-networking/ci/postgres-tests.yml
       privileged: true
 
-  - name: netman-tests-mysql
+  - name: mysql-tests
     public: true
     plan:
     - aggregate:
@@ -207,7 +207,7 @@ jobs:
         resource: cf-networking-dev
         trigger: true
     - task: netman-tests
-      file: cf-networking/ci/netman-tests-mysql.yml
+      file: cf-networking/ci/mysql-tests.yml
       privileged: true
 
   - name: pickelhelm-deploy
@@ -225,7 +225,7 @@ jobs:
         - get: netman-release
           resource: cf-networking-dev
           trigger: true
-          passed: [netman-tests-postgres, netman-tests-mysql]
+          passed: [postgres-tests, mysql-tests]
       - aggregate:
         - task: create-release-tarball
           file: netman-release/ci/create-release-tarball.yml
@@ -427,7 +427,7 @@ jobs:
         - get: netman-release
           resource: cf-networking-dev
           trigger: true
-          passed: [netman-tests-postgres, netman-tests-mysql]
+          passed: [postgres-tests, mysql-tests]
       - aggregate:
         - task: create-release-tarball
           file: netman-release/ci/create-release-tarball.yml
