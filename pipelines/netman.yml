@@ -236,7 +236,7 @@ jobs:
       - put: pickelhelm-cf
         params:
           cleanup: false
-          manifest: deployment-manifest/cf-with-netman.yml
+          manifest: deployment-manifest/cf.yml
           stemcells:
           - aws-stemcell/*.tgz
           releases:
@@ -309,7 +309,7 @@ jobs:
       - put: mitre-cf
         params:
           cleanup: false
-          manifest: deployment-manifest/cf-with-netman.yml
+          manifest: deployment-manifest/cf.yml
           stemcells:
           - aws-stemcell/*.tgz
           releases:
@@ -430,7 +430,7 @@ jobs:
       - put: toque-cf
         params:
           cleanup: false
-          manifest: deployment-manifest/cf-with-netman.yml
+          manifest: deployment-manifest/cf.yml
           stemcells:
           - aws-stemcell/*.tgz
           releases:

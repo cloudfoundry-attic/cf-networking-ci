@@ -10,7 +10,7 @@ popd
 
 VARS_STORE=deployments-repo/environments/${ENVIRONMENT_NAME}/vars-store.yml
 MANIFEST_FILE=cf-deployment/cf-deployment.yml
-NETMAN_OPS_FILE=cf-networking/manifest-generation/opsfiles/netman.yml
+NETMAN_OPS_FILE=cf-networking/manifest-generation/opsfiles/cf-networking.yml
 AWS_OPS_FILE=cf-deployment/opsfiles/change-logging-port-for-aws-elb.yml
 ENVIRONMENT_OPS_FILE=deployments-repo/environments/${ENVIRONMENT_NAME}/opsfile.yml
 
@@ -25,7 +25,7 @@ function makeManifest() {
 }
 
 echo "Making manifest"
-makeManifest deployment-manifest/cf-with-netman.yml
+makeManifest deployment-manifest/cf.yml
 
 
 echo "Checking for updates to vars store"
