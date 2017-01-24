@@ -174,11 +174,11 @@ resources:
       access_key_id: {{aws-access-key-id}}
       secret_access_key: {{aws-secret-access-key}}
   # Github release
-  - name: netman-github-release
+  - name: cf-networking-github-release
     type: github-release
     source:
       user: cloudfoundry-incubator
-      repository: netman-release
+      repository: cf-networking
       access_token: {{github-access-token}}
       drafts: true
   - name: cf-deployment
@@ -192,22 +192,22 @@ jobs:
     public: true
     plan:
     - aggregate:
-      - get: netman-release
+      - get: cf-networking
         resource: cf-networking-dev
         trigger: true
     - task: netman-tests
-      file: netman-release/ci/netman-tests-postgres.yml
+      file: cf-networking/ci/netman-tests-postgres.yml
       privileged: true
 
   - name: netman-tests-mysql
     public: true
     plan:
     - aggregate:
-      - get: netman-release
+      - get: cf-networking
         resource: cf-networking-dev
         trigger: true
     - task: netman-tests
-      file: netman-release/ci/netman-tests-mysql.yml
+      file: cf-networking/ci/netman-tests-mysql.yml
       privileged: true
 
   - name: pickelhelm-deploy
@@ -601,7 +601,7 @@ jobs:
           to: releases/
       - task: build-release-notes
         file: container-networking-ci/tasks/build-release-notes.yml
-      - put: netman-github-release
+      - put: cf-networking-github-release
         params:
           name: version/number
           tag: version/number
