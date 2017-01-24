@@ -222,13 +222,13 @@ jobs:
           trigger: true
         - get: cf-deployment
           trigger: true
-        - get: netman-release
+        - get: cf-networking
           resource: cf-networking-dev
           trigger: true
           passed: [postgres-tests, mysql-tests]
       - aggregate:
         - task: create-release-tarball
-          file: netman-release/ci/create-release-tarball.yml
+          file: cf-networking/ci/create-release-tarball.yml
         - task: generate-pickelhelm-manifest
           file: container-networking-ci/tasks/generate-cf-deployment-manifest.yml
           params:
@@ -286,7 +286,7 @@ jobs:
         - get: aws-stemcell
           passed: [pickelhelm-test]
           trigger: true
-        - get: netman-release
+        - get: cf-networking
           resource: cf-networking-dev
           passed: [pickelhelm-test]
           trigger: true
@@ -295,7 +295,7 @@ jobs:
             pre: rc
       - aggregate:
         - task: create-release-tarball
-          file: netman-release/ci/create-release-tarball.yml
+          file: cf-networking/create-release-tarball.yml
         - task: generate-mitre-manifest
           file: container-networking-ci/tasks/generate-cf-deployment-manifest.yml
           params:
@@ -416,13 +416,13 @@ jobs:
           trigger: true
         - get: aws-stemcell
           trigger: true
-        - get: netman-release
+        - get: cf-networking
           resource: cf-networking-dev
           trigger: true
           passed: [postgres-tests, mysql-tests]
       - aggregate:
         - task: create-release-tarball
-          file: netman-release/ci/create-release-tarball.yml
+          file: cf-networking/ci/create-release-tarball.yml
         - task: generate-toque-manifests
           file: container-networking-ci/tasks/generate-cf-deployment-manifest.yml
           params:

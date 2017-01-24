@@ -6,7 +6,7 @@ image_resource:
 platform: linux
 
 inputs:
-  - name: netman-release
+  - name: cf-networking
   - name: container-networking-ci
   - name: deployments-repo
   - name: cf-deployment
