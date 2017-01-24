@@ -17,7 +17,7 @@ echo $CONFIG
 
 export NETWORK_STATS_FILE=$PWD/network-stats/stats.json
 
-cd netman-release
+cd cf-networking
 export GOPATH=$PWD
 
 go build -o /tmp/bin/network-policy-plugin ./src/cli-plugin

@@ -255,7 +255,7 @@ jobs:
           resource: container-networking-deployments
         - get: test-config
           resource: container-networking-deployments
-        - get: netman-release
+        - get: cf-networking
           resource: cf-networking-dev
           passed: [pickelhelm-deploy]
           trigger: true
@@ -267,8 +267,8 @@ jobs:
           trigger: true
         - get: aws-stemcell
           passed: [pickelhelm-deploy]
-      - task: netman-cf-acceptance
-        file: container-networking-ci/tasks/netman-cf-acceptance.yml
+      - task: acceptance-tests
+        file: container-networking-ci/tasks/acceptance-tests.yml
         params:
           ENVIRONMENT_NAME: pickelhelm
 
@@ -327,7 +327,7 @@ jobs:
           resource: container-networking-deployments
         - get: test-config
           resource: container-networking-deployments
-        - get: netman-release
+        - get: cf-networking
           resource: cf-networking-dev
           passed: [mitre-deploy]
           trigger: true
@@ -343,8 +343,8 @@ jobs:
         - get: mitre-cf
           passed: [mitre-deploy]
           trigger: true
-      - task: netman-cf-acceptance
-        file: container-networking-ci/tasks/netman-cf-acceptance.yml
+      - task: acceptance-tests
+        file: container-networking-ci/tasks/acceptance-tests.yml
         params:
           ENVIRONMENT_NAME: mitre
       - task: commit-stats

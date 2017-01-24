@@ -8,7 +8,7 @@ image_resource:
 inputs:
   - name: container-networking-ci
   - name: test-config
-  - name: netman-release
+  - name: cf-networking
 
 outputs:
   - name: network-stats
@@ -18,4 +18,4 @@ params:
     CONFIG: ~
 
 run:
-  path: container-networking-ci/tasks/netman-cf-acceptance
+  path: container-networking-ci/tasks/acceptance-tests
