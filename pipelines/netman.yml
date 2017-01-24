@@ -9,9 +9,9 @@ groups:
   - mitre-test
   - mitre-acceptance-errand
   - mitre-cats
-  - netman-shipit
-  - netman-bump-minor-version
-  - netman-merge-master
+  - shipit
+  - bump-minor-version
+  - merge-master
   - toque-deploy
   - toque-push
   - toque-test
@@ -555,7 +555,7 @@ jobs:
           BOSH_PASSWORD: {{toque-bosh-password}}
           DEPLOYMENT_NAME: cf
 
-  - name: netman-shipit
+  - name: shipit
     serial_groups: [version]
     plan:
     - do:
@@ -604,19 +604,19 @@ jobs:
           - binaries/network-policy-plugin-*
 
   # bump minor version (i.e. 0.1.0 -> 0.2.0)
-  - name: netman-bump-minor-version
+  - name: bump-minor-version
     serial_groups: [version]
     plan:
     - aggregate:
       - get: version
         trigger: true
-        passed: [netman-shipit]
+        passed: [shipit]
         params: {bump: minor, pre: rc}
     - put: version
       params: {file: version/number}
 
   # merge master back to develop
-  - name: netman-merge-master
+  - name: merge-master
     plan:
     - do:
       - aggregate:
@@ -625,7 +625,7 @@ jobs:
           params:
             submodules: none
             fetch: [develop]
-          passed: [netman-shipit]
+          passed: [shipit]
           trigger: true
         - get: cf-networking-dev
           params: {submodules: none}
