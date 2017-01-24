@@ -295,7 +295,7 @@ jobs:
             pre: rc
       - aggregate:
         - task: create-release-tarball
-          file: cf-networking/create-release-tarball.yml
+          file: cf-networking/ci/create-release-tarball.yml
         - task: generate-mitre-manifest
           file: container-networking-ci/tasks/generate-cf-deployment-manifest.yml
           params:
