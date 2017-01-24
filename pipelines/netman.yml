@@ -165,12 +165,12 @@ resources:
       key: releases/current-version
       access_key_id: {{aws-access-key-id}}
       secret_access_key: {{aws-secret-access-key}}
-  - name: netman-tarball
+  - name: cf-networking-tarball
     type: s3
     source:
       bucket: {{netman-candidate-s3-bucket}}
       region_name: us-west-2
-      regexp: releases/netman-(.*).tgz
+      regexp: releases/cf-networking-(.*).tgz
       access_key_id: {{aws-access-key-id}}
       secret_access_key: {{aws-secret-access-key}}
   # Github release
@@ -300,9 +300,9 @@ jobs:
           file: container-networking-ci/tasks/generate-cf-deployment-manifest.yml
           params:
             ENVIRONMENT_NAME: mitre
-      - put: netman-tarball
+      - put: cf-networking-tarball
         params:
-          from: tarballs/netman-([^/]*).tgz
+          from: tarballs/cf-networking-([^/]*).tgz
           to: releases/
       - put: version
         params: {file: version/number}
@@ -331,7 +331,7 @@ jobs:
           resource: cf-networking-dev
           passed: [mitre-deploy]
           trigger: true
-        - get: netman-tarball
+        - get: cf-networking-tarball
           passed: [mitre-deploy]
         - get: version
           passed: [mitre-deploy]
@@ -366,7 +366,7 @@ jobs:
         - get: container-networking-ci
         - get: deployments-repo
           resource: container-networking-deployments
-        - get: netman-tarball
+        - get: cf-networking-tarball
           passed: [mitre-test]
           trigger: true
       - task: run-errand
@@ -391,7 +391,7 @@ jobs:
           passed: [mitre-test]
           trigger: true
         - get: container-networking-deployments
-        - get: netman-tarball
+        - get: cf-networking-tarball
           passed: [mitre-test]
         - get: version
           passed: [mitre-test]
@@ -574,7 +574,7 @@ jobs:
           passed: [mitre-cats]
         - get: cf-deployment
           passed: [mitre-cats]
-        - get: netman-tarball
+        - get: cf-networking-tarball
           passed: [mitre-cats]
       - task: shipit
         file: container-networking-ci/tasks/shipit.yml
@@ -587,9 +587,9 @@ jobs:
           repository: release/master
           tag: version/number
           tag_prefix: v
-      - put: netman-tarball
+      - put: cf-networking-tarball
         params:
-          from: final-release/netman-([^/]*).tgz
+          from: final-release/cf-networking-([^/]*).tgz
           to: releases/
       - task: build-release-notes
         file: container-networking-ci/tasks/build-release-notes.yml
@@ -600,7 +600,7 @@ jobs:
           body: release-notes/notes.md
           tag_prefix: v
           globs:
-          - final-release/netman-*.tgz
+          - final-release/cf-networking-*.tgz
           - binaries/network-policy-plugin-*
 
   # bump minor version (i.e. 0.1.0 -> 0.2.0)

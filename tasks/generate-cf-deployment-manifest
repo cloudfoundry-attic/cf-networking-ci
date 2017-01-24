@@ -10,7 +10,7 @@ popd
 
 VARS_STORE=deployments-repo/environments/${ENVIRONMENT_NAME}/vars-store.yml
 MANIFEST_FILE=cf-deployment/cf-deployment.yml
-NETMAN_OPS_FILE=cf-networking/manifest-generation/opsfiles/cf-networking.yml
+CF_NETWORKING_OPS_FILE=cf-networking/manifest-generation/opsfiles/cf-networking.yml
 AWS_OPS_FILE=cf-deployment/opsfiles/change-logging-port-for-aws-elb.yml
 ENVIRONMENT_OPS_FILE=deployments-repo/environments/${ENVIRONMENT_NAME}/opsfile.yml
 
@@ -19,7 +19,7 @@ function makeManifest() {
   bosh-cli interpolate --var-errs \
     --vars-store=${VARS_STORE} \
     -o ${AWS_OPS_FILE} \
-    -o ${NETMAN_OPS_FILE} \
+    -o ${CF_NETWORKING_OPS_FILE} \
     -o ${ENVIRONMENT_OPS_FILE} \
     ${MANIFEST_FILE} > $outFile
 }

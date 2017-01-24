@@ -9,7 +9,7 @@ inputs:
   - name: version
   - name: container-networking-ci
   - name: container-networking-deployments
-  - name: netman-tarball
+  - name: cf-networking-tarball
   - name: cf-networking
 
 outputs:
