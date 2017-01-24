@@ -4,9 +4,9 @@ set -e -u
 
 environment_path="${PWD}/test-config/environments/${ENVIRONMENT_NAME}"
 export CONFIG=$environment_path/netman-cf-acceptance.json
-export APPS_DIR=${PWD}/netman-release/src/example-apps
+export APPS_DIR=${PWD}/cf-networking/src/example-apps
 
-cd netman-release
+cd cf-networking
 export GOPATH=$PWD
 
 go run src/cf-pusher/cmd/cf-pusher/main.go --config "${CONFIG}"

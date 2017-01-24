@@ -383,7 +383,7 @@ jobs:
         - get: cf-acceptance-tests
           resource: cf-acceptance-tests
         - get: cats-concourse-task
-        - get: netman-release
+        - get: cf-networking
           resource: cf-networking-dev
           passed: [mitre-test]
           trigger: true
@@ -446,7 +446,7 @@ jobs:
       - aggregate:
         - get: deployments-repo
           resource: container-networking-deployments
-        - get: netman-release
+        - get: cf-networking
           resource: cf-networking-dev
           passed: [toque-deploy]
           trigger: true
@@ -471,7 +471,7 @@ jobs:
           trigger: true
         - get: deployments-repo
           resource: container-networking-deployments
-        - get: netman-release
+        - get: cf-networking
           resource: cf-networking-dev
           passed: [toque-push]
         - get: container-networking-ci

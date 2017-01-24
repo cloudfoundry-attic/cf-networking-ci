@@ -8,7 +8,7 @@ export CONFIG=$environment_path/netman-cf-acceptance.json
 
 export NETWORK_STATS_FILE=$PWD/network-stats/stats.json
 
-cd netman-release
+cd cf-networking
 export GOPATH=$PWD
 
 cd src/netman-cf-scaling

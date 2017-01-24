@@ -8,7 +8,7 @@ image_resource:
 inputs:
   - name: container-networking-ci
   - name: test-config
-  - name: netman-release
+  - name: cf-networking
 
 params:
     ENVIRONMENT_NAME: ~
