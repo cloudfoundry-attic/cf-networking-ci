@@ -3,9 +3,9 @@ set -e -x
 
 export PATH=$GOPATH/bin:$PATH
 
-DEVELOP=$PWD/netman-release-dev
+DEVELOP=$PWD/cf-networking-dev
 
-git clone ./netman-release-master ./release-merged
+git clone ./cf-networking-master ./release-merged
 
 cd release-merged
 

@@ -7,7 +7,7 @@ platform: linux
 
 inputs:
   - name: container-networking-ci
-  - name: netman-release-master
+  - name: cf-networking-master
 
 outputs:
   - name: release-notes
@@ -16,5 +16,5 @@ run:
   path: container-networking-ci/tasks/build-release-notes
 
 params:
-  SOURCE_DIR: netman-release-master
+  SOURCE_DIR: cf-networking-master
   OUTPUT_DIR: release-notes

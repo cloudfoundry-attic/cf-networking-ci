@@ -2,7 +2,7 @@
 
 set -e -u
 
-cd netman-release
+cd cf-networking
 git submodule update --init --recursive
 
 mkdir -p ../binaries

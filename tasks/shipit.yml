@@ -10,7 +10,7 @@ inputs:
   - name: container-networking-ci
   - name: container-networking-deployments
   - name: netman-tarball
-  - name: netman-release
+  - name: cf-networking
 
 outputs:
   - name: final-release

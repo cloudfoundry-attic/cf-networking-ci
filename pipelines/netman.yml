@@ -566,7 +566,7 @@ jobs:
           params:
             bump: final
           passed: [mitre-cats]
-        - get: netman-release
+        - get: cf-networking
           resource: cf-networking-dev
           params:
             fetch: [master]
@@ -579,7 +579,7 @@ jobs:
       - task: shipit
         file: container-networking-ci/tasks/shipit.yml
       - task: build-cli
-        file: container-networking-ci/tasks/netman-build-cli.yml
+        file: container-networking-ci/tasks/build-cli.yml
       - put: version
         params: {file: version/number}
       - put: cf-networking-master

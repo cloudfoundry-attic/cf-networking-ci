@@ -7,10 +7,10 @@ image_resource:
 
 inputs:
   - name: container-networking-ci
-  - name: netman-release
+  - name: cf-networking
 
 outputs:
   - name: binaries
 
 run:
-  path: container-networking-ci/tasks/netman-build-cli
+  path: container-networking-ci/tasks/build-cli

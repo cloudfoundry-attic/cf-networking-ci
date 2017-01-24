@@ -7,8 +7,8 @@ platform: linux
 
 inputs:
   - name: container-networking-ci
-  - name: netman-release-dev
-  - name: netman-release-master
+  - name: cf-networking-dev
+  - name: cf-networking-master
 
 outputs:
   - name: release-merged
