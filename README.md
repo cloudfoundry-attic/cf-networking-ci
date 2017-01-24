@@ -3,7 +3,7 @@ Public config for the Container Networking team's CI
 
 Keep credentials and other private config in our [private repo](https://github.com/cloudfoundry/container-networking-deployments)
 
-The main source code repo is [netman-release](https://github.com/cloudfoundry-incubator/netman-release).
+The main source code repo is [cf-networking](https://github.com/cloudfoundry-incubator/cf-networking).
 
 View our team's [CI dashboard](http://dashboard.c2c.cf-app.com).
 

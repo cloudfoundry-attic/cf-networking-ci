@@ -98,13 +98,13 @@ resources:
       branch: develop
       ignore_paths:
         - docs
-      private_key: {{netman-release-deploy-key}}
+      private_key: {{cf-networking-deploy-key}}
   - name: cf-networking-master
     type: git
     source:
       uri: git@github.com:cloudfoundry-incubator/cf-networking.git
       branch: master
-      private_key: {{netman-release-deploy-key}}
+      private_key: {{cf-networking-deploy-key}}
   ###### BOSH release tarballs
   # - name: rootfs-release-tarball
   #   type: bosh-io-release
