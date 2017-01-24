@@ -91,18 +91,18 @@ resources:
   #   source:
   #     branch: master
   #     uri: https://github.com/cloudfoundry/diego-release.git
-  - name: netman-release-dev
+  - name: cf-networking-dev
     type: git
     source:
-      uri: git@github.com:cloudfoundry-incubator/netman-release.git
+      uri: git@github.com:cloudfoundry-incubator/cf-networking.git
       branch: develop
       ignore_paths:
         - docs
       private_key: {{netman-release-deploy-key}}
-  - name: netman-release-master
+  - name: cf-networking-master
     type: git
     source:
-      uri: git@github.com:cloudfoundry-incubator/netman-release.git
+      uri: git@github.com:cloudfoundry-incubator/cf-networking.git
       branch: master
       private_key: {{netman-release-deploy-key}}
   ###### BOSH release tarballs
@@ -193,7 +193,7 @@ jobs:
     plan:
     - aggregate:
       - get: netman-release
-        resource: netman-release-dev
+        resource: cf-networking-dev
         trigger: true
     - task: netman-tests
       file: netman-release/ci/netman-tests-postgres.yml
@@ -204,7 +204,7 @@ jobs:
     plan:
     - aggregate:
       - get: netman-release
-        resource: netman-release-dev
+        resource: cf-networking-dev
         trigger: true
     - task: netman-tests
       file: netman-release/ci/netman-tests-mysql.yml
@@ -223,7 +223,7 @@ jobs:
         - get: cf-deployment
           trigger: true
         - get: netman-release
-          resource: netman-release-dev
+          resource: cf-networking-dev
           trigger: true
           passed: [netman-tests-postgres, netman-tests-mysql]
       - aggregate:
@@ -256,7 +256,7 @@ jobs:
         - get: test-config
           resource: container-networking-deployments
         - get: netman-release
-          resource: netman-release-dev
+          resource: cf-networking-dev
           passed: [pickelhelm-deploy]
           trigger: true
         - get: cf-deployment
@@ -287,7 +287,7 @@ jobs:
           passed: [pickelhelm-test]
           trigger: true
         - get: netman-release
-          resource: netman-release-dev
+          resource: cf-networking-dev
           passed: [pickelhelm-test]
           trigger: true
         - get: version
@@ -328,7 +328,7 @@ jobs:
         - get: test-config
           resource: container-networking-deployments
         - get: netman-release
-          resource: netman-release-dev
+          resource: cf-networking-dev
           passed: [mitre-deploy]
           trigger: true
         - get: netman-tarball
@@ -365,7 +365,7 @@ jobs:
       - aggregate:
         - get: container-networking-ci
         - get: netman-release
-          resource: netman-release-dev
+          resource: cf-networking-dev
           passed: [mitre-test]
           trigger: true
         - get: cf-deployment
@@ -392,7 +392,7 @@ jobs:
           resource: cf-acceptance-tests
         - get: cats-concourse-task
         - get: netman-release
-          resource: netman-release-dev
+          resource: cf-networking-dev
           passed: [mitre-test]
           trigger: true
         - get: cf-deployment
@@ -425,7 +425,7 @@ jobs:
         - get: aws-stemcell
           trigger: true
         - get: netman-release
-          resource: netman-release-dev
+          resource: cf-networking-dev
           trigger: true
           passed: [netman-tests-postgres, netman-tests-mysql]
       - aggregate:
@@ -455,7 +455,7 @@ jobs:
         - get: deployments-repo
           resource: container-networking-deployments
         - get: netman-release
-          resource: netman-release-dev
+          resource: cf-networking-dev
           passed: [toque-deploy]
           trigger: true
         - get: container-networking-ci
@@ -480,7 +480,7 @@ jobs:
         - get: deployments-repo
           resource: container-networking-deployments
         - get: netman-release
-          resource: netman-release-dev
+          resource: cf-networking-dev
           passed: [toque-push]
         - get: container-networking-ci
         - get: cf-deployment
@@ -575,7 +575,7 @@ jobs:
             bump: final
           passed: [mitre-cats]
         - get: netman-release
-          resource: netman-release-dev
+          resource: cf-networking-dev
           params:
             fetch: [master]
             submodules: none
@@ -590,7 +590,7 @@ jobs:
         file: container-networking-ci/tasks/netman-build-cli.yml
       - put: version
         params: {file: version/number}
-      - put: netman-release-master
+      - put: cf-networking-master
         params:
           repository: release/master
           tag: version/number
@@ -629,17 +629,17 @@ jobs:
     - do:
       - aggregate:
         - get: container-networking-ci
-        - get: netman-release-master
+        - get: cf-networking-master
           params:
             submodules: none
             fetch: [develop]
           passed: [netman-shipit]
           trigger: true
-        - get: netman-release-dev
+        - get: cf-networking-dev
           params: {submodules: none}
       - task: merge-master
         file: container-networking-ci/tasks/merge-master.yml
-      - put: netman-release-dev
+      - put: cf-networking-dev
         params: {repository: release-merged}
 
   # versioning
