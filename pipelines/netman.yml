@@ -195,7 +195,7 @@ jobs:
       - get: cf-networking
         resource: cf-networking-dev
         trigger: true
-    - task: netman-tests
+    - task: unit-and-integration-tests
       file: cf-networking/ci/postgres-tests.yml
       privileged: true
 
@@ -206,7 +206,7 @@ jobs:
       - get: cf-networking
         resource: cf-networking-dev
         trigger: true
-    - task: netman-tests
+    - task: unit-and-integration-tests
       file: cf-networking/ci/mysql-tests.yml
       privileged: true
 
