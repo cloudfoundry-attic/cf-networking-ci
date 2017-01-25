@@ -159,7 +159,7 @@ resources:
   - name: version
     type: semver
     source:
-      bucket: {{netman-release-s3-bucket}}
+      bucket: {{cf-networking-s3-bucket}}
       region_name: us-west-2
       initial_version: 0.2.0-rc.1
       key: releases/current-version
@@ -168,7 +168,7 @@ resources:
   - name: cf-networking-tarball
     type: s3
     source:
-      bucket: {{netman-candidate-s3-bucket}}
+      bucket: {{cf-networking-candidate-s3-bucket}}
       region_name: us-west-2
       regexp: releases/cf-networking-(.*).tgz
       access_key_id: {{aws-access-key-id}}
