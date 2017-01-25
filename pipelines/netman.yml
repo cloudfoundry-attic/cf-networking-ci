@@ -94,7 +94,7 @@ resources:
   - name: cf-networking-dev
     type: git
     source:
-      uri: git@github.com:cloudfoundry-incubator/cf-networking.git
+      uri: git@github.com:cloudfoundry-incubator/cf-networking-release.git
       branch: develop
       ignore_paths:
         - docs
@@ -102,7 +102,7 @@ resources:
   - name: cf-networking-master
     type: git
     source:
-      uri: git@github.com:cloudfoundry-incubator/cf-networking.git
+      uri: git@github.com:cloudfoundry-incubator/cf-networking-release.git
       branch: master
       private_key: {{cf-networking-deploy-key}}
   ###### BOSH release tarballs
@@ -178,7 +178,7 @@ resources:
     type: github-release
     source:
       user: cloudfoundry-incubator
-      repository: cf-networking
+      repository: cf-networking-release
       access_token: {{github-access-token}}
       drafts: true
   - name: cf-deployment
