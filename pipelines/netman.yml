@@ -192,22 +192,22 @@ jobs:
     public: true
     plan:
     - aggregate:
-      - get: cf-networking
+      - get: cf-networking-release
         resource: cf-networking-dev
         trigger: true
     - task: unit-and-integration-tests
-      file: cf-networking/ci/postgres-tests.yml
+      file: cf-networking-release/ci/postgres-tests.yml
       privileged: true
 
   - name: mysql-tests
     public: true
     plan:
     - aggregate:
-      - get: cf-networking
+      - get: cf-networking-release
         resource: cf-networking-dev
         trigger: true
     - task: unit-and-integration-tests
-      file: cf-networking/ci/mysql-tests.yml
+      file: cf-networking-release/ci/mysql-tests.yml
       privileged: true
 
   - name: pickelhelm-deploy
