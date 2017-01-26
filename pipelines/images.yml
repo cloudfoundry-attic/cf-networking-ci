@@ -47,22 +47,6 @@ resources:
     email: {{dockerhub_email}}
     repository: c2cnetworking/deploy
 
-- name: aws-ops-dockerfile
-  type: git
-  source:
-    uri: git://github.com/cloudfoundry-incubator/container-networking-ci
-    branch: master
-    paths:
-      - dockerfiles/aws-ops
-
-- name: aws-ops-image
-  type: docker-image
-  source:
-    username: {{dockerhub_username}}
-    password: {{dockerhub_password}}
-    email: {{dockerhub_email}}
-    repository: c2cnetworking/aws-ops
-
 - name: small-git-dockerfile
   type: git
   source:
@@ -151,14 +135,6 @@ jobs:
   - put: deploy-image
     params:
       build: deploy-dockerfile/dockerfiles/deploy
-
-- name: build-aws-ops-image
-  plan:
-  - get: aws-ops-dockerfile
-    trigger: true
-  - put: aws-ops-image
-    params:
-      build: aws-ops-dockerfile/dockerfiles/aws-ops
 
 - name: build-small-git-image
   plan:
