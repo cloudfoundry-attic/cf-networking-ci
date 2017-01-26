@@ -137,7 +137,7 @@ jobs:
     input_mapping:
       dockerfile: dev-postgres-dockerfile
     params:
-      INPUT_DOCKERFILE_PATH: dev-postgres-dockerfile/dockerfiles/dev-postgres/Dockerfile
+      INPUT_DOCKERFILE_PATH: dockerfile/dockerfiles/dev-postgres/Dockerfile
   - put: dev-postgres-image
     params:
       build: context
