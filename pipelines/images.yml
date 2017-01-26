@@ -111,14 +111,36 @@ resources:
     email: {{dockerhub_email}}
     repository: c2cnetworking/deploy-heavy
 
+- name: golang-1.x-tarball
+  type: s3
+  source:
+    endpoint: storage.googleapis.com
+    bucket: golang
+    regexp: 'go(1\.\d+(\.\d+)?)\.linux-amd64\.tar.gz'
+
+- name: container-networking-ci
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry-incubator/container-networking-ci
+
 jobs:
 - name: build-dev-postgres-image
   plan:
-  - get: dev-postgres-dockerfile
-    trigger: true
+  - aggregate:
+    - get: container-networking-ci
+    - get: dev-postgres-dockerfile
+      trigger: true
+    - get: golang-1.x-tarball
+      trigger: true
+  - task: add-golang
+    file: container-networking-ci/tasks/add-golang-to-docker-context.yml
+    input_mapping:
+      dockerfile: dev-postgres-dockerfile
+    params:
+      INPUT_DOCKERFILE_PATH: dev-postgres-dockerfile/dockerfiles/dev-postgres/Dockerfile
   - put: dev-postgres-image
     params:
-      build: dev-postgres-dockerfile/dockerfiles/dev-postgres
+      build: context
 
 - name: build-dev-mysql-image
   plan:
