@@ -20,5 +20,5 @@ run:
   args:
   - -exuc
   - |
-    cp $INPUT_DOCKERFILE_PATH context/
-    cp golang-1.x-tarball/go* context/
+    cp $INPUT_DOCKERFILE_PATH docker-build-context
+    cp golang-1.x-tarball/go* docker-build-context

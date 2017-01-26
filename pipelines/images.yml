@@ -140,7 +140,7 @@ jobs:
       INPUT_DOCKERFILE_PATH: dockerfile/dockerfiles/dev-postgres/Dockerfile
   - put: dev-postgres-image
     params:
-      build: context
+      build: docker-build-context
 
 - name: build-dev-mysql-image
   plan:
