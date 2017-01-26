@@ -16,7 +16,7 @@ params:
   INPUT_DOCKERFILE_PATH: Dockerfile
 
 run:
-  path: bash
+  path: sh
   args:
   - -exuc
   - |
