@@ -13,9 +13,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
 
 RUN curl -L "https://cli.run.pivotal.io/stable?release=linux64-binary&source=github" | tar -zx && mv cf /usr/local/bin/cf
 
-RUN curl -o /tmp/golang.tgz https://storage.googleapis.com/golang/go1.7.4.linux-amd64.tar.gz \
-    && tar -C /usr/local -xzf /tmp/golang.tgz \
-    && rm /tmp/golang.tgz
+ADD go*.tar.gz /usr/local
 
 ENV GOPATH /gopath
 ENV GOBIN /gopath/bin

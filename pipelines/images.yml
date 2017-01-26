@@ -128,11 +128,21 @@ jobs:
 
 - name: build-dev-mysql-image
   plan:
-  - get: dev-mysql-dockerfile
-    trigger: true
+  - aggregate:
+    - get: container-networking-ci
+    - get: dev-mysql-dockerfile
+      trigger: true
+    - get: golang-1.x-tarball
+      trigger: true
+  - task: add-golang
+    file: container-networking-ci/tasks/add-golang-to-docker-context.yml
+    input_mapping:
+      dockerfile: dev-mysql-dockerfile
+    params:
+      INPUT_DOCKERFILE_PATH: dockerfile/dockerfiles/dev-mysql/Dockerfile
   - put: dev-mysql-image
     params:
-      build: dev-mysql-dockerfile/dockerfiles/dev-mysql
+      build: docker-build-context
 
 - name: build-deploy-image
   plan:
