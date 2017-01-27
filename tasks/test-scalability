@@ -11,5 +11,5 @@ export NETWORK_STATS_FILE=$PWD/network-stats/stats.json
 cd cf-networking
 export GOPATH=$PWD
 
-cd src/netman-cf-scaling
+cd src/test/scaling
 ginkgo -v
