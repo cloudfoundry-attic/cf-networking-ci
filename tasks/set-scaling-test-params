@@ -6,14 +6,14 @@ set -o pipefail
 # replace admin password in test config
 pushd ${PWD}/deployments-repo/environments/${ENVIRONMENT_NAME}
   ADMIN_PASSWORD=`grep uaa_scim_users_admin_password vars-store.yml  | cut -d' ' -f2`
-  sed -i -- "s/{{admin-password}}/${ADMIN_PASSWORD}/g" netman-cf-acceptance.json
+  sed -i -- "s/{{admin-password}}/${ADMIN_PASSWORD}/g" test-config.json
 popd
 
 mkdir -p ${PWD}/test-config/environments/${ENVIRONMENT_NAME}
 input_test_params=${PWD}/scaling-test-params/test-params/params.json
 internal_config_params=${PWD}/scaling-test-params/test-params/internal_config.json
-existing_test_params=${PWD}/deployments-repo/environments/${ENVIRONMENT_NAME}/netman-cf-acceptance.json
-output_test_params=${PWD}/test-config/environments/${ENVIRONMENT_NAME}/netman-cf-acceptance.json
+existing_test_params=${PWD}/deployments-repo/environments/${ENVIRONMENT_NAME}/test-config.json
+output_test_params=${PWD}/test-config/environments/${ENVIRONMENT_NAME}/test-config.json
 
 set +x
 jq -s '.[0] * .[1] * .[2]' $existing_test_params $input_test_params $internal_config_params > $output_test_params
