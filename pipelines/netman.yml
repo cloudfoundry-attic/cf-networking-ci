@@ -373,7 +373,7 @@ jobs:
         file: container-networking-ci/tasks/run-errand.yml
         params:
           ENVIRONMENT_NAME: mitre
-          ERRAND: netman-cf-acceptance
+          ERRAND: cf-networking-acceptance
 
   - name: mitre-cats
     serial_groups: [mitre]
