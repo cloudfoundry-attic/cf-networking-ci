@@ -13,4 +13,4 @@ View our team's [CI dashboard](http://dashboard.c2c.cf-app.com).
 ```bash
 ./reconfigure $PIPELINE_NAME
 ```
-where `$PIPELINE_NAME` might be `netman`, `images`, etc.
+where `$PIPELINE_NAME` might be `cf-networking`, `images`, etc.
