@@ -8,6 +8,7 @@ groups:
   - mitre-deploy
   - mitre-test
   - mitre-acceptance-errand
+  - mitre-smoke
   - mitre-cats
   - shipit
   - bump-minor-version
