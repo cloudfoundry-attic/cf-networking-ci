@@ -375,6 +375,25 @@ jobs:
           ENVIRONMENT_NAME: mitre
           ERRAND: cf-networking-acceptance
 
+  - name: mitre-smoke
+    serial_groups: [mitre]
+    plan:
+      - aggregate:
+        - get: test-config
+          resource: container-networking-deployments
+        - get: cf-networking
+          resource: cf-networking-dev
+          passed: [mitre-test]
+          trigger: true
+        - get: container-networking-ci
+        - get: cf-deployment
+          passed: [mitre-test]
+          trigger: true
+      - task: smoke-tests
+        file: container-networking-ci/tasks/smoke-tests.yml
+        params:
+          ENVIRONMENT_NAME: mitre
+
   - name: mitre-cats
     serial_groups: [mitre]
     plan:
