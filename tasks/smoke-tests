@@ -29,9 +29,9 @@ CURRENT_TIME=$(date +%s)
 curl -X POST -H "Content-type: application/json" \
   -d "{ \"series\" :
          [{\"metric\":\"cf-networking-smoke.status\",
-          \"points\":[[$currenttime, $EXIT_STATUS]],
+          \"points\":[[$CURRENT_TIME, $EXIT_STATUS]],
           \"type\":\"gauge\",
-          \"tags\":[\"deployment:$deployment\"]
+          \"tags\":[\"deployment:$ENVIRONMENT_NAME\"]
         }]
       }" \
 "https://app.datadoghq.com/api/v1/series?api_key=${DATADOG_API_KEY}"
