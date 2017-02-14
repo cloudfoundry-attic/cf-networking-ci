@@ -21,7 +21,9 @@ cf install-plugin -f /tmp/bin/network-policy-plugin
 
 cd src/test/smoke
 export APPS_DIR=../../example-apps
+set +e
 ginkgo -r -v
+set -e
 
 EXIT_STATUS=$?
 CURRENT_TIME=$(date +%s)
