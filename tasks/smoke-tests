@@ -23,9 +23,9 @@ cd src/test/smoke
 export APPS_DIR=../../example-apps
 set +e
 ginkgo -r -v
+EXIT_STATUS=$?
 set -e
 
-EXIT_STATUS=$?
 CURRENT_TIME=$(date +%s)
 
 curl -X POST -H "Content-type: application/json" \
