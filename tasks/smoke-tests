@@ -22,3 +22,18 @@ cf install-plugin -f /tmp/bin/network-policy-plugin
 cd src/test/smoke
 export APPS_DIR=../../example-apps
 ginkgo -r -v
+
+EXIT_STATUS=$?
+CURRENT_TIME=$(date +%s)
+
+curl -X POST -H "Content-type: application/json" \
+  -d "{ \"series\" :
+         [{\"metric\":\"cf-networking-smoke.status\",
+          \"points\":[[$currenttime, $EXIT_STATUS]],
+          \"type\":\"gauge\",
+          \"tags\":[\"deployment:$deployment\"]
+        }]
+      }" \
+"https://app.datadoghq.com/api/v1/series?api_key=${DATADOG_API_KEY}"
+
+exit $EXIT_STATUS

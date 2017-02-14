@@ -394,6 +394,7 @@ jobs:
         file: container-networking-ci/tasks/smoke-tests.yml
         params:
           ENVIRONMENT_NAME: mitre
+          DATADOG_API_KEY: {{datadog_api_key}}
 
   - name: mitre-cats
     serial_groups: [mitre]

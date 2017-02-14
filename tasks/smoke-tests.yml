@@ -13,6 +13,7 @@ inputs:
 params:
     ENVIRONMENT_NAME: ~
     CONFIG: ~
+    DATADOG_API_KEY: ~
 
 run:
   path: container-networking-ci/tasks/smoke-tests
