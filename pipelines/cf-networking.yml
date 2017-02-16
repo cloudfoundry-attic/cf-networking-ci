@@ -237,7 +237,7 @@ jobs:
         - task: generate-pickelhelm-manifest
           file: container-networking-ci/tasks/generate-cf-deployment-manifest.yml
           params:
-            ENVIRONMENT_NAME: pickelhelm-gcp
+            ENVIRONMENT_NAME: pickelhelm
             IAAS: GCP
       - put: pickelhelm-cf
         params:
@@ -276,7 +276,7 @@ jobs:
       - task: acceptance-tests
         file: container-networking-ci/tasks/acceptance-tests.yml
         params:
-          ENVIRONMENT_NAME: pickelhelm-gcp
+          ENVIRONMENT_NAME: pickelhelm
 
   - name: mitre-deploy
     serial_groups: [mitre, version]
