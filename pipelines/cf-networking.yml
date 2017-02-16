@@ -81,6 +81,10 @@ resources:
     type: bosh-io-stemcell
     source:
       name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+  - name: gcp-stemcell
+    type: bosh-io-stemcell
+    source:
+      name: bosh-google-kvm-ubuntu-trusty-go_agent
   ###### BOSH release repos
   # - name: cf-release-master
   #   type: git
@@ -219,7 +223,7 @@ jobs:
           resource: container-networking-ci
         - get: deployments-repo
           resource: container-networking-deployments
-        - get: aws-stemcell
+        - get: gcp-stemcell
           trigger: true
         - get: cf-deployment
           trigger: true
@@ -233,13 +237,14 @@ jobs:
         - task: generate-pickelhelm-manifest
           file: container-networking-ci/tasks/generate-cf-deployment-manifest.yml
           params:
-            ENVIRONMENT_NAME: pickelhelm
+            ENVIRONMENT_NAME: pickelhelm-gcp
+            IAAS: GCP
       - put: pickelhelm-cf
         params:
           cleanup: false
           manifest: deployment-manifest/cf.yml
           stemcells:
-          - aws-stemcell/*.tgz
+          - gcp-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
       - put: container-networking-deployments
@@ -266,12 +271,12 @@ jobs:
         - get: pickelhelm-cf
           passed: [pickelhelm-deploy]
           trigger: true
-        - get: aws-stemcell
+        - get: gcp-stemcell
           passed: [pickelhelm-deploy]
       - task: acceptance-tests
         file: container-networking-ci/tasks/acceptance-tests.yml
         params:
-          ENVIRONMENT_NAME: pickelhelm
+          ENVIRONMENT_NAME: pickelhelm-gcp
 
   - name: mitre-deploy
     serial_groups: [mitre, version]
@@ -285,7 +290,6 @@ jobs:
           passed: [pickelhelm-test]
           trigger: true
         - get: aws-stemcell
-          passed: [pickelhelm-test]
           trigger: true
         - get: cf-networking
           resource: cf-networking-dev
