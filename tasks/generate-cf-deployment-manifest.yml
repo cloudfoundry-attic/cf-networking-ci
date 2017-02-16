@@ -19,3 +19,4 @@ run:
 
 params:
   ENVIRONMENT_NAME: ~
+  IAAS: AWS

@@ -11,21 +11,30 @@ popd
 VARS_STORE=deployments-repo/environments/${ENVIRONMENT_NAME}/vars-store.yml
 MANIFEST_FILE=cf-deployment/cf-deployment.yml
 CF_NETWORKING_OPS_FILE=cf-networking/manifest-generation/opsfiles/cf-networking.yml
-AWS_OPS_FILE=cf-deployment/operations/change-logging-port-for-aws-elb.yml
 ENVIRONMENT_OPS_FILE=deployments-repo/environments/${ENVIRONMENT_NAME}/opsfile.yml
+
+AWS_OPS_FILE=cf-deployment/operations/change-logging-port-for-aws-elb.yml
+GCP_OPS_FILE=cf-deployment/operations/gcp.yml
 
 function makeManifest() {
   outFile=$1
+  iaasOpsfile=$2
   bosh-cli interpolate --var-errs \
     --vars-store=${VARS_STORE} \
-    -o ${AWS_OPS_FILE} \
+    -o ${iaasOpsfile} \
     -o ${CF_NETWORKING_OPS_FILE} \
     -o ${ENVIRONMENT_OPS_FILE} \
     ${MANIFEST_FILE} > $outFile
 }
 
+if [ $IAAS == "GCP" ]; then
+  IAAS_OPS_FILE=$GCP_OPS_FILE
+else
+  IAAS_OPS_FILE=$AWS_OPS_FILE
+fi
+
 echo "Making manifest"
-makeManifest deployment-manifest/cf.yml
+makeManifest deployment-manifest/cf.yml ${IAAS_OPS_FILE}
 
 
 echo "Checking for updates to vars store"
