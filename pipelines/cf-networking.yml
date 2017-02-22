@@ -506,6 +506,7 @@ jobs:
       - aggregate:
         - get: toque-lock
           passed: [toque-push]
+          trigger: true
         - get: every-half-hour
           trigger: true
         - get: deployments-repo
