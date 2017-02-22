@@ -21,6 +21,7 @@ groups:
   - toque-deploy
   - toque-push
   - toque-test
+  - release-lock
 - name: cleanup
   jobs:
     - delete-deployment-mitre-cf
@@ -144,6 +145,15 @@ resources:
       uri: "git@github.com:cf-container-networking/toque-stats.git"
       branch: master
       private_key: {{container-networking-bot-key}}
+  ####### Locks
+  - name: toque-lock
+    type: pool
+    source:
+      uri: "git@github.com:cf-container-networking/environment-locks.git"
+      branch: master
+      pool: toque
+      private_key: {{environment-lock-key}}
+      retry_delay: 60s
   ####### Timers
   - name: every-half-hour
     type: time
@@ -469,6 +479,8 @@ jobs:
     serial_groups: [toque]
     plan:
       - aggregate:
+        - put: toque-lock
+          params: {acquire: true}
         - get: deployments-repo
           resource: container-networking-deployments
         - get: cf-networking
@@ -492,6 +504,8 @@ jobs:
     serial_groups: [toque]
     plan:
       - aggregate:
+        - get: toque-lock
+          passed: [toque-push]
         - get: every-half-hour
           trigger: true
         - get: deployments-repo
@@ -530,6 +544,8 @@ jobs:
           PRIORITY: normal
           AWS_ENV: toque.c2c.cf-app.com
           DATADOG_API_KEY: {{datadog_api_key}}
+      - put: toque-lock
+        params: {release: toque-lock}
       - task: commit-stats
         file: container-networking-ci/tasks/commit-new-file.yml
         input_mapping:
@@ -543,6 +559,13 @@ jobs:
         params: {repository: stats_output}
 
 ##### Human-triggered utilities
+  - name: release-lock
+    serial_groups: [toque]
+    plan:
+      - get: toque-lock
+      - put: toque-lock
+        params: {release: toque-lock}
+
   - name: delete-deployment-pickelhelm-cf
     public: true
     serial_groups: [pickelhelm]
