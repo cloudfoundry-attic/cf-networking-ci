@@ -63,11 +63,6 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry-incubator/container-networking-ci
-  # - name: toque-scaling-deploy
-  #   type: git
-  #   source:
-  #     uri: https://github.com/cf-container-networking/toque-scaling
-  #     paths: [ deploy ]
   - name: container-networking-deployments
     type: git
     source:
@@ -94,16 +89,6 @@ resources:
     source:
       name: bosh-google-kvm-ubuntu-trusty-go_agent
   ###### BOSH release repos
-  # - name: cf-release-master
-  #   type: git
-  #   source:
-  #     branch: master
-  #     uri: https://github.com/cloudfoundry/cf-release.git
-  # - name: diego-release
-  #   type: git
-  #   source:
-  #     branch: master
-  #     uri: https://github.com/cloudfoundry/diego-release.git
   - name: cf-networking-dev
     type: git
     source:
@@ -118,27 +103,6 @@ resources:
       uri: git@github.com:cloudfoundry-incubator/cf-networking-release.git
       branch: master
       private_key: {{cf-networking-deploy-key}}
-  ###### BOSH release tarballs
-  # - name: rootfs-release-tarball
-  #   type: bosh-io-release
-  #   source:
-  #     repository: cloudfoundry/cflinuxfs2-rootfs-release
-  # - name: etcd-release-tarball
-  #   type: bosh-io-release
-  #   source:
-  #     repository: cloudfoundry-incubator/etcd-release
-  # - name: diego-release-tarball
-  #   type: bosh-io-release
-  #   source:
-  #     repository: cloudfoundry/diego-release
-  # - name: cf-release-tarball
-  #   type: bosh-io-release
-  #   source:
-  #     repository: cloudfoundry/cf-release
-  # - name: garden-runc-release-tarball
-  #   type: bosh-io-release
-  #   source:
-  #     repository: cloudfoundry/garden-runc-release
   ####### Stats
   - name: mitre-stats
     type: git
