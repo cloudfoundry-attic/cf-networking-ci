@@ -16,6 +16,9 @@ groups:
   - toque-deploy
   - toque-push
   - toque-test
+- name: trucker
+  jobs:
+  - bbl-up-trucker
 - name: toque
   jobs:
   - toque-deploy
@@ -75,6 +78,11 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry/cats-concourse-task
+      branch: master
+  - name: cf-deployment-concourse-tasks
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks
       branch: master
   ###### BOSH stemcells
   - name: aws-stemcell
@@ -193,6 +201,31 @@ resources:
       uri: https://github.com/cloudfoundry/cf-deployment.git
 
 jobs:
+  - name: bbl-up-trucker
+    serial_groups: [trucker]
+    plan:
+    - aggregate:
+      - get: cf-deployment-concourse-tasks
+      - get: bbl-state
+        resource: container-networking-deployments
+    - task: bbl-up
+      file: cf-deployment-concourse-tasks/bbl-up/task.yml
+      params:
+        BBL_GCP_SERVICE_ACCOUNT_KEY: ../gcp/service-account.key.json
+        BBL_GCP_PROJECT_ID: cf-container-networking-gcp
+        BBL_GCP_REGION: us-east1
+        BBL_GCP_ZONE: us-east1-c
+        BBL_STATE_DIR: environments/trucker/
+        BBL_IAAS: gcp
+        BBL_LB_CERT: {{trucker-lb-cert}}
+        BBL_LB_KEY: {{trucker-lb-key}}
+        LB_DOMAIN: trucker.c2c.cf-app.com
+        BBL_ENV_NAME: trucker
+    - put: container-networking-deployments
+      params:
+        repository: updated-bbl-state
+        rebase: true
+
   - name: postgres-tests
     public: true
     plan:
