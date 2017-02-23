@@ -19,6 +19,7 @@ groups:
 - name: trucker
   jobs:
   - bbl-up-trucker
+  - trucker-deploy
 - name: toque
   jobs:
   - toque-deploy
@@ -188,6 +189,34 @@ jobs:
     - put: container-networking-deployments
       params:
         repository: updated-bbl-state
+        rebase: true
+
+  - name: trucker-deploy
+    serial_groups: [trucker]
+    plan:
+    - aggregate:
+      - get: cf-deployment-concourse-tasks
+      - get: bbl-state
+        resource: container-networking-deployments
+        passed: [bbl-up-trucker]
+      - get: cf-deployment
+      - get: vars-store
+        resource: container-networking-deployments
+      - get: ops-files
+        resource: cf-deployment
+    - task: upload-stemcell
+      file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
+      params:
+        BBL_STATE_DIR: environments/trucker/
+    - task: deploy-vanilla
+      file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
+      params:
+        BBL_STATE_DIR: environments/trucker/
+        SYSTEM_DOMAIN: trucker.c2c.cf-app.com
+        VARS_STORE_FILE: environments/trucker/vars-store.yml
+    - put: container-networking-deployments
+      params:
+        repository: updated-vars-store
         rebase: true
 
   - name: postgres-tests
