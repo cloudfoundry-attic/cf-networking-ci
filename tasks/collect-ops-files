@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -e -u
+
+cp cf-deployment/operations/gcp.yml ops-files/
+cp cf-networking-release/manifest-generation/opsfiles/cf-networking.yml ops-files/
+cp deployments-repo/environments/${ENVIRONMENT_NAME}/opsfile.yml ops-files/ || true # if we don't have an env specific opsfile
