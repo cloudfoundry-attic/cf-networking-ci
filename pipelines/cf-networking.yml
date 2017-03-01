@@ -195,6 +195,7 @@ jobs:
     serial_groups: [trucker]
     plan:
     - aggregate:
+      - get: container-networking-ci
       - get: cf-deployment-concourse-tasks
       - get: bbl-state
         resource: container-networking-deployments
@@ -202,17 +203,24 @@ jobs:
       - get: cf-deployment
       - get: vars-store
         resource: container-networking-deployments
-      - get: ops-files
-        resource: cf-deployment
+      - get: deployments-repo
+        resource: container-networking-deployments
+      - get: cf-networking-release
+        resource: cf-networking-dev
     - task: upload-stemcell
       file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/trucker/
+    - task: collect-ops-files
+      file: container-networking-ci/tasks/collect-ops-files.yml
+      params:
+        ENVIRONMENT_NAME: trucker
     - task: deploy-vanilla
       file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
       params:
         BBL_STATE_DIR: environments/trucker/
         SYSTEM_DOMAIN: trucker.c2c.cf-app.com
+        OPS_FILES: gcp.yml
         VARS_STORE_FILE: environments/trucker/vars-store.yml
     - put: container-networking-deployments
       params:
