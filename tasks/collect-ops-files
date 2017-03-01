@@ -3,5 +3,8 @@
 set -e -u
 
 cp cf-deployment/operations/gcp.yml ops-files/
+cp cf-deployment/operations/tcp-routing-gcp.yml ops-files/
+cp cf-deployment/operations/workarounds/use-3-azs-for-router.yml ops-files/
+cp cf-deployment/operations/workarounds/use-4-azs-for-router.yml ops-files/
 cp cf-networking-release/manifest-generation/opsfiles/cf-networking.yml ops-files/
 cp deployments-repo/environments/${ENVIRONMENT_NAME}/opsfile.yml ops-files/ || true # if we don't have an env specific opsfile
