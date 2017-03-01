@@ -20,6 +20,7 @@ groups:
   jobs:
   - bbl-up-trucker
   - trucker-deploy
+  - trucker-cats
 - name: toque
   jobs:
   - toque-deploy
@@ -226,6 +227,33 @@ jobs:
       params:
         repository: updated-vars-store
         rebase: true
+
+  - name: trucker-cats
+    serial_groups: [trucker]
+    plan:
+      - aggregate:
+        - get: container-networking-ci
+        - get: cats-concourse-task
+        - get: cf-deployment-concourse-tasks
+        - get: vars-store
+          resource: container-networking-deployments
+          passed: [trucker-deploy]
+          trigger: true
+        - get: integration-configs
+          resource: container-networking-deployments
+        - get: cf-acceptance-tests
+      - task: update-cats-config
+        file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
+        params:
+          CATS_INTEGRATION_CONFIG_FILE: environments/trucker/integration_config.json
+          VARS_STORE_FILE: environments/trucker/vars-store.yml
+      - task: cats
+        file: cats-concourse-task/task.yml
+        input_mapping:
+          integration-config: updated-integration-configs
+        params:
+          NODES: 16
+          CONFIG_FILE_PATH: environments/trucker/integration_config.json
 
   - name: postgres-tests
     public: true
@@ -440,7 +468,6 @@ jobs:
       - aggregate:
         - get: container-networking-ci
         - get: cf-acceptance-tests
-          resource: cf-acceptance-tests
         - get: cats-concourse-task
         - get: cf-networking
           resource: cf-networking-dev
