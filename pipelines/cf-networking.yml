@@ -187,14 +187,14 @@ jobs:
         resource: container-networking-deployments
         passed: [bbl-up-trucker]
       - get: cf-deployment
-        trigger: false
+        trigger: true
       - get: vars-store
         resource: container-networking-deployments
       - get: deployments-repo
         resource: container-networking-deployments
       - get: cf-networking-release
         resource: cf-networking-dev
-        trigger: false
+        trigger: true
     - task: delete-deployment
       file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
       params:
