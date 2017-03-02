@@ -33,7 +33,7 @@ groups:
   jobs:
     - delete-deployment-mitre-cf
     - delete-deployment-pickelhelm-cf
-    - delete-deployment-toque-cf
+    - delete-toque-deployment
 - name: version
   jobs:
   - major-bump
@@ -55,13 +55,6 @@ resources:
       target: {{mitre-bosh-host}}
       username: {{mitre-bosh-user}}
       password: {{mitre-bosh-password}}
-      deployment: cf
-  - name: toque-cf
-    type: bosh-deployment
-    source:
-      target: {{toque-bosh-host}}
-      username: {{toque-bosh-user}}
-      password: {{toque-bosh-password}}
       deployment: cf
   ###### Control plane
   - name: container-networking-ci
@@ -618,15 +611,8 @@ jobs:
           trigger: true
         - get: gcp-stemcell
           trigger: true
-        - get: cf-networking
-          resource: cf-networking-dev
-          trigger: true
-          passed: [postgres-tests, mysql-tests]
         - get: cf-networking-release
           resource: cf-networking-dev
-          trigger: false
-      - task: create-release-tarball
-        file: cf-networking/ci/create-release-tarball.yml
       - task: upload-stemcell
         file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
         params:
@@ -636,23 +622,17 @@ jobs:
         params:
           ENVIRONMENT_NAME: toque
       - task: deploy-cf
-        file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
+        file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
         params:
           BBL_STATE_DIR: environments/toque/
           SYSTEM_DOMAIN: toque.c2c.cf-app.com
           OPS_FILES: gcp.yml tcp-routing-gcp.yml use-3-azs-for-router.yml cf-networking.yml opsfile.yml
           VARS_STORE_FILE: environments/toque/vars-store.yml
-      - put: toque-cf
-        params:
-          cleanup: false
-          manifest: deployment-manifest/cf.yml
-          stemcells:
-          - gcp-stemcell/*.tgz
-          releases:
-          - tarballs/*.tgz
+        input_mapping:
+          release: cf-networking-release
       - put: container-networking-deployments
         params:
-          repository: deployments-repo-output
+          repository: updated-vars-store
           rebase: true
 
   - name: toque-push
@@ -690,8 +670,6 @@ jobs:
           resource: cf-networking-dev
           passed: [toque-push]
         - get: container-networking-ci
-        - get: cf-deployment
-          resource: toque-cf
         - get: scaling-test-params
           resource: toque-scaling-test-params
           passed: [toque-push]
@@ -735,6 +713,7 @@ jobs:
           BOSH_USER: {{pickelhelm-bosh-user}}
           BOSH_PASSWORD: {{pickelhelm-bosh-password}}
           DEPLOYMENT_NAME: cf
+
   - name: delete-deployment-mitre-cf
     public: true
     serial_groups: [mitre]
@@ -747,18 +726,21 @@ jobs:
           BOSH_USER: {{mitre-bosh-user}}
           BOSH_PASSWORD: {{mitre-bosh-password}}
           DEPLOYMENT_NAME: cf
-  - name: delete-deployment-toque-cf
+
+  - name: delete-toque-deployment
     public: true
     serial_groups: [toque]
     plan:
-      - get: container-networking-ci
-      - task: delete-deployment
-        file: container-networking-ci/tasks/delete-deployment.yml
-        params:
-          BOSH_TARGET: {{toque-bosh-host}}
-          BOSH_USER: {{toque-bosh-user}}
-          BOSH_PASSWORD: {{toque-bosh-password}}
-          DEPLOYMENT_NAME: cf
+    - aggregate:
+      - get: bbl-state
+        resource: container-networking-deployments
+        trigger: false
+      - get: cf-deployment-concourse-tasks
+        trigger: false
+    - task: delete-deployment
+      file: cf-deployment-concourse-tasks/delete-deployment/task.yml
+      params:
+        BBL_STATE_DIR: environments/toque/
 
   - name: shipit
     serial_groups: [version]
