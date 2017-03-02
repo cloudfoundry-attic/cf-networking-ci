@@ -741,7 +741,7 @@ jobs:
       - get: cf-deployment-concourse-tasks
         trigger: false
     - task: delete-deployment
-      file: cf-deployment-concourse-tasks/delete-deployment/task.yml
+      file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/toque/
 
