@@ -20,7 +20,10 @@ groups:
   jobs:
   - bbl-up-trucker
   - trucker-deploy
-  - trucker-cats
+  - trucker-vanilla-cats
+  - trucker-upgrade
+  - trucker-upgrade-cats
+  - delete-trucker-deployment
 - name: toque
   jobs:
   - toque-deploy
@@ -202,12 +205,18 @@ jobs:
         resource: container-networking-deployments
         passed: [bbl-up-trucker]
       - get: cf-deployment
+        trigger: false
       - get: vars-store
         resource: container-networking-deployments
       - get: deployments-repo
         resource: container-networking-deployments
       - get: cf-networking-release
         resource: cf-networking-dev
+        trigger: false
+    - task: delete-deployment
+      file: cf-deployment-concourse-tasks/delete-deployment/task.yml
+      params:
+        BBL_STATE_DIR: environments/trucker/
     - task: upload-stemcell
       file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
       params:
@@ -223,37 +232,140 @@ jobs:
         SYSTEM_DOMAIN: trucker.c2c.cf-app.com
         OPS_FILES: gcp.yml
         VARS_STORE_FILE: environments/trucker/vars-store.yml
+        REGENERATE_VARS_STORE: true
     - put: container-networking-deployments
       params:
         repository: updated-vars-store
         rebase: true
 
-  - name: trucker-cats
+  - name: trucker-vanilla-cats
     serial_groups: [trucker]
     plan:
-      - aggregate:
-        - get: container-networking-ci
-        - get: cats-concourse-task
-        - get: cf-deployment-concourse-tasks
-        - get: vars-store
-          resource: container-networking-deployments
-          passed: [trucker-deploy]
-          trigger: true
-        - get: integration-configs
-          resource: container-networking-deployments
-        - get: cf-acceptance-tests
-      - task: update-cats-config
-        file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
-        params:
-          CATS_INTEGRATION_CONFIG_FILE: environments/trucker/integration_config.json
-          VARS_STORE_FILE: environments/trucker/vars-store.yml
-      - task: cats
-        file: cats-concourse-task/task.yml
-        input_mapping:
-          integration-config: updated-integration-configs
-        params:
-          NODES: 16
-          CONFIG_FILE_PATH: environments/trucker/integration_config.json
+    - aggregate:
+      - get: bbl-state
+        resource: container-networking-deployments
+        passed: [trucker-deploy]
+        trigger: true
+      - get: container-networking-ci
+      - get: cats-concourse-task
+      - get: cf-deployment
+        passed: [trucker-deploy]
+      - get: cf-deployment-concourse-tasks
+      - get: vars-store
+        resource: container-networking-deployments
+        passed: [trucker-deploy]
+        trigger: true
+      - get: integration-configs
+        resource: container-networking-deployments
+      - get: cf-acceptance-tests
+    - task: update-cats-config
+      file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
+      params:
+        CATS_INTEGRATION_CONFIG_FILE: environments/trucker/integration_config.json
+        VARS_STORE_FILE: environments/trucker/vars-store.yml
+    - task: cats
+      file: cats-concourse-task/task.yml
+      input_mapping:
+        integration-config: updated-integration-configs
+      params:
+        NODES: 16
+        CONFIG_FILE_PATH: environments/trucker/integration_config.json
+
+  - name: trucker-upgrade
+    serial_groups: [trucker]
+    plan:
+    - aggregate:
+      - get: container-networking-ci
+      - get: cf-deployment-concourse-tasks
+      - get: bbl-state
+        resource: container-networking-deployments
+        passed: [trucker-vanilla-cats]
+        trigger: true
+      - get: cf-deployment
+        passed: [trucker-vanilla-cats]
+      - get: vars-store
+        resource: container-networking-deployments
+        passed: [trucker-vanilla-cats]
+      - get: deployments-repo
+        resource: container-networking-deployments
+      - get: cf-networking-release
+        resource: cf-networking-dev
+    - task: collect-ops-files
+      file: container-networking-ci/tasks/collect-ops-files.yml
+      params:
+        ENVIRONMENT_NAME: trucker
+    - task: deploy-upgrade
+      file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
+      params:
+        BBL_STATE_DIR: environments/trucker/
+        OPS_FILES: gcp.yml cf-networking.yml
+        SYSTEM_DOMAIN: trucker.c2c.cf-app.com
+        VARS_STORE_FILE: environments/trucker/vars-store.yml
+      input_mapping:
+        release: cf-networking-release
+    - put: container-networking-deployments
+      params:
+        repository: updated-vars-store
+        rebase: true
+
+  - name: trucker-upgrade-cats
+    serial_groups: [trucker]
+    plan:
+    - aggregate:
+      - get: bbl-state
+        resource: container-networking-deployments
+        passed: [trucker-upgrade]
+        trigger: true
+      - get: container-networking-ci
+      - get: cats-concourse-task
+      - get: cf-deployment-concourse-tasks
+      - get: vars-store
+        resource: container-networking-deployments
+        passed: [trucker-upgrade]
+      - get: integration-configs
+        resource: container-networking-deployments
+      - get: cf-acceptance-tests
+    - task: update-cats-config
+      file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
+      params:
+        CATS_INTEGRATION_CONFIG_FILE: environments/trucker/integration_config.json
+        VARS_STORE_FILE: environments/trucker/vars-store.yml
+    - task: include-container-networking
+      config:
+        image_resource:
+          type: docker-image
+          source: { repository: golang }
+        platform: linux
+        inputs:
+          - name: updated-integration-configs
+        outputs:
+          - name: integration-config-with-cf-networking
+        run:
+          path: /bin/bash
+          args:
+            - -c
+            - cat updated-integration-configs/integration_config.json | jq ".include_container_networking=true" > integration-config-with-cf-networking/integration_config.json
+    - task: cats
+      file: cats-concourse-task/task.yml
+      input_mapping:
+        integration-config: integration-config-with-cf-networking
+      params:
+        NODES: 16
+        CONFIG_FILE_PATH: environments/trucker/integration_config.json
+
+  - name: delete-trucker-deployment
+    serial_groups: [trucker]
+    plan:
+    - aggregate:
+      - get: bbl-state
+        resource: container-networking-deployments
+        passed: [trucker-upgrade-cats]
+        trigger: true
+      - get: cf-deployment-concourse-tasks
+    - task: delete-deployment
+      file: cf-deployment-concourse-tasks/delete-deployment/task.yml
+      params:
+        BBL_STATE_DIR: environments/trucker/
 
   - name: postgres-tests
     public: true
