@@ -610,6 +610,10 @@ jobs:
         - get: cf-deployment-concourse-tasks
         - get: deployments-repo
           resource: container-networking-deployments
+        - get: bbl-state
+          resource: container-networking-deployments
+        - get: vars-store
+          resource: container-networking-deployments
         - get: cf-deployment
           trigger: true
         - get: gcp-stemcell
@@ -618,6 +622,9 @@ jobs:
           resource: cf-networking-dev
           trigger: true
           passed: [postgres-tests, mysql-tests]
+        - get: cf-networking-release
+          resource: cf-networking-dev
+          trigger: false
       - task: create-release-tarball
         file: cf-networking/ci/create-release-tarball.yml
       - task: upload-stemcell
