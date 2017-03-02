@@ -640,7 +640,7 @@ jobs:
           cleanup: false
           manifest: deployment-manifest/cf.yml
           stemcells:
-          - aws-stemcell/*.tgz
+          - gcp-stemcell/*.tgz
           releases:
           - tarballs/*.tgz
       - put: container-networking-deployments
