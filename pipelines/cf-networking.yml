@@ -32,7 +32,7 @@ groups:
 - name: cleanup
   jobs:
     - delete-deployment-mitre-cf
-    - delete-deployment-pickelhelm-cf
+    - delete-pickelhelm-deployment
     - delete-toque-deployment
 - name: version
   jobs:
@@ -42,13 +42,6 @@ groups:
 
 resources:
   ###### Deployments
-  - name: pickelhelm-cf
-    type: bosh-deployment
-    source:
-      target: {{pickelhelm-bosh-host}}
-      username: {{pickelhelm-bosh-user}}
-      password: {{pickelhelm-bosh-password}}
-      deployment: cf
   - name: mitre-cf
     type: bosh-deployment
     source:
@@ -82,10 +75,6 @@ resources:
     type: bosh-io-stemcell
     source:
       name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
-  - name: gcp-stemcell
-    type: bosh-io-stemcell
-    source:
-      name: bosh-google-kvm-ubuntu-trusty-go_agent
   ###### BOSH release repos
   - name: cf-networking-dev
     type: git
@@ -387,36 +376,39 @@ jobs:
     plan:
       - aggregate:
         - get: container-networking-ci
-          resource: container-networking-ci
+        - get: cf-deployment-concourse-tasks
         - get: deployments-repo
           resource: container-networking-deployments
-        - get: gcp-stemcell
-          trigger: true
+        - get: bbl-state
+          resource: container-networking-deployments
+        - get: vars-store
+          resource: container-networking-deployments
         - get: cf-deployment
           trigger: true
-        - get: cf-networking
+        - get: cf-networking-release
           resource: cf-networking-dev
           trigger: true
           passed: [postgres-tests, mysql-tests]
-      - aggregate:
-        - task: create-release-tarball
-          file: cf-networking/ci/create-release-tarball.yml
-        - task: generate-pickelhelm-manifest
-          file: container-networking-ci/tasks/generate-cf-deployment-manifest.yml
-          params:
-            ENVIRONMENT_NAME: pickelhelm
-            IAAS: GCP
-      - put: pickelhelm-cf
+      - task: upload-stemcell
+        file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
         params:
-          cleanup: false
-          manifest: deployment-manifest/cf.yml
-          stemcells:
-          - gcp-stemcell/*.tgz
-          releases:
-          - tarballs/*.tgz
+          BBL_STATE_DIR: environments/pickelhelm/
+      - task: collect-ops-files
+        file: container-networking-ci/tasks/collect-ops-files.yml
+        params:
+          ENVIRONMENT_NAME: pickelhelm
+      - task: deploy-cf
+        file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
+        params:
+          BBL_STATE_DIR: environments/pickelhelm/
+          SYSTEM_DOMAIN: pickelhelm.c2c.cf-app.com
+          OPS_FILES: change-logging-port-for-aws-elb.yml cf-networking.yml opsfile.yml
+          VARS_STORE_FILE: environments/pickelhelm/vars-store.yml
+        input_mapping:
+          release: cf-networking-release
       - put: container-networking-deployments
         params:
-          repository: deployments-repo-output
+          repository: updated-vars-store
           rebase: true
 
   - name: pickelhelm-test
@@ -424,22 +416,14 @@ jobs:
     plan:
       - aggregate:
         - get: container-networking-ci
-        - get: deployments-repo
-          resource: container-networking-deployments
         - get: test-config
           resource: container-networking-deployments
+        - get: cf-deployment
+          passed: [pickelhelm-deploy]
         - get: cf-networking
           resource: cf-networking-dev
           passed: [pickelhelm-deploy]
           trigger: true
-        - get: cf-deployment
-          passed: [pickelhelm-deploy]
-          trigger: true
-        - get: pickelhelm-cf
-          passed: [pickelhelm-deploy]
-          trigger: true
-        - get: gcp-stemcell
-          passed: [pickelhelm-deploy]
       - task: acceptance-tests
         file: container-networking-ci/tasks/acceptance-tests.yml
         params:
@@ -609,8 +593,6 @@ jobs:
           resource: container-networking-deployments
         - get: cf-deployment
           trigger: true
-        - get: gcp-stemcell
-          trigger: true
         - get: cf-networking-release
           resource: cf-networking-dev
           passed: [mysql-tests, postgres-tests]
@@ -704,18 +686,20 @@ jobs:
 
 ##### Human-triggered utilities
 
-  - name: delete-deployment-pickelhelm-cf
+  - name: delete-pickelhelm-deployment
     public: true
     serial_groups: [pickelhelm]
     plan:
-      - get: container-networking-ci
-      - task: delete-deployment
-        file: container-networking-ci/tasks/delete-deployment.yml
-        params:
-          BOSH_TARGET: {{pickelhelm-bosh-host}}
-          BOSH_USER: {{pickelhelm-bosh-user}}
-          BOSH_PASSWORD: {{pickelhelm-bosh-password}}
-          DEPLOYMENT_NAME: cf
+    - aggregate:
+      - get: bbl-state
+        resource: container-networking-deployments
+        trigger: false
+      - get: cf-deployment-concourse-tasks
+        trigger: false
+    - task: delete-deployment
+      file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+      params:
+        BBL_STATE_DIR: environments/pickelhelm/
 
   - name: delete-deployment-mitre-cf
     public: true
