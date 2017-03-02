@@ -207,7 +207,7 @@ jobs:
         resource: cf-networking-dev
         trigger: false
     - task: delete-deployment
-      file: cf-deployment-concourse-tasks/delete-deployment/task.yml
+      file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/trucker/
     - task: upload-stemcell
@@ -356,7 +356,7 @@ jobs:
         trigger: true
       - get: cf-deployment-concourse-tasks
     - task: delete-deployment
-      file: cf-deployment-concourse-tasks/delete-deployment/task.yml
+      file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/trucker/
 
