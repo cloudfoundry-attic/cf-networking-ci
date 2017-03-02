@@ -641,6 +641,7 @@ jobs:
       - aggregate:
         - get: deployments-repo
           resource: container-networking-deployments
+          passed: [toque-deploy]
         - get: cf-networking
           resource: cf-networking-dev
           passed: [toque-deploy]
@@ -666,6 +667,7 @@ jobs:
           trigger: true
         - get: deployments-repo
           resource: container-networking-deployments
+          passed: [toque-push]
         - get: cf-networking
           resource: cf-networking-dev
           passed: [toque-push]
