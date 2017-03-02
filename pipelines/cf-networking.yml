@@ -608,7 +608,6 @@ jobs:
       - aggregate:
         - get: container-networking-ci
         - get: cf-deployment-concourse-tasks
-          resource: container-networking-ci
         - get: deployments-repo
           resource: container-networking-deployments
         - get: cf-deployment
