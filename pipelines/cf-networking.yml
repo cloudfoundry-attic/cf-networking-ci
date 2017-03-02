@@ -693,9 +693,7 @@ jobs:
     - aggregate:
       - get: bbl-state
         resource: container-networking-deployments
-        trigger: false
       - get: cf-deployment-concourse-tasks
-        trigger: false
     - task: delete-deployment
       file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
       params:
@@ -705,14 +703,14 @@ jobs:
     public: true
     serial_groups: [mitre]
     plan:
-      - get: container-networking-ci
-      - task: delete-deployment
-        file: container-networking-ci/tasks/delete-deployment.yml
-        params:
-          BOSH_TARGET: {{mitre-bosh-host}}
-          BOSH_USER: {{mitre-bosh-user}}
-          BOSH_PASSWORD: {{mitre-bosh-password}}
-          DEPLOYMENT_NAME: cf
+    - aggregate:
+      - get: bbl-state
+        resource: container-networking-deployments
+      - get: cf-deployment-concourse-tasks
+    - task: delete-deployment
+      file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+      params:
+        BBL_STATE_DIR: environments/mitre/
 
   - name: delete-toque-deployment
     public: true
@@ -721,9 +719,7 @@ jobs:
     - aggregate:
       - get: bbl-state
         resource: container-networking-deployments
-        trigger: false
       - get: cf-deployment-concourse-tasks
-        trigger: false
     - task: delete-deployment
       file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
       params:
