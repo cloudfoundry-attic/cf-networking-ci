@@ -612,19 +612,29 @@ jobs:
           resource: container-networking-deployments
         - get: cf-deployment
           trigger: true
-        - get: aws-stemcell
+        - get: gcp-stemcell
           trigger: true
         - get: cf-networking
           resource: cf-networking-dev
           trigger: true
           passed: [postgres-tests, mysql-tests]
-      - aggregate:
-        - task: create-release-tarball
-          file: cf-networking/ci/create-release-tarball.yml
-        - task: generate-toque-manifests
-          file: container-networking-ci/tasks/generate-cf-deployment-manifest.yml
-          params:
-            ENVIRONMENT_NAME: toque
+      - task: create-release-tarball
+        file: cf-networking/ci/create-release-tarball.yml
+      - task: upload-stemcell
+        file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
+        params:
+          BBL_STATE_DIR: environments/toque/
+      - task: collect-ops-files
+        file: container-networking-ci/tasks/collect-ops-files.yml
+        params:
+          ENVIRONMENT_NAME: toque
+      - task: deploy-cf
+        file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
+        params:
+          BBL_STATE_DIR: environments/toque/
+          SYSTEM_DOMAIN: toque.c2c.cf-app.com
+          OPS_FILES: gcp.yml tcp-routing-gcp.yml use-3-azs-for-router.yml cf-networking.yml opsfile.yml
+          VARS_STORE_FILE: environments/toque/vars-store.yml
       - put: toque-cf
         params:
           cleanup: false
