@@ -19,9 +19,9 @@ groups:
   - toque-test
   - bbl-up-trucker
   - trucker-deploy
-  - trucker-vanilla-cats
+  - trucker-push
   - trucker-upgrade
-  - trucker-upgrade-cats
+  - trucker-post-upgrade-ping
   - delete-trucker-deployment
 - name: pickelhelm
   jobs:
@@ -39,9 +39,9 @@ groups:
   jobs:
   - bbl-up-trucker
   - trucker-deploy
-  - trucker-vanilla-cats
+  - trucker-push
   - trucker-upgrade
-  - trucker-upgrade-cats
+  - trucker-post-upgrade-ping
   - delete-trucker-deployment
 - name: toque
   jobs:
@@ -240,38 +240,44 @@ jobs:
         repository: updated-vars-store
         rebase: true
 
-  - name: trucker-vanilla-cats
+  - name: trucker-push
     serial_groups: [trucker]
     plan:
     - aggregate:
-      - get: bbl-state
-        resource: container-networking-deployments
+      - get: container-networking-deployments
+        passed: [trucker-deploy]
+      - get: cf-networking-dev
         passed: [trucker-deploy]
         trigger: true
-      - get: container-networking-ci
-      - get: cats-concourse-task
-      - get: cf-deployment
-        passed: [trucker-deploy]
-      - get: cf-deployment-concourse-tasks
-      - get: vars-store
-        resource: container-networking-deployments
-        passed: [trucker-deploy]
-        trigger: true
-      - get: integration-configs
-        resource: container-networking-deployments
-      - get: cf-acceptance-tests
-    - task: update-cats-config
-      file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
-      params:
-        CATS_INTEGRATION_CONFIG_FILE: environments/trucker/integration_config.json
-        VARS_STORE_FILE: environments/trucker/vars-store.yml
-    - task: cats
-      file: cats-concourse-task/task.yml
-      input_mapping:
-        integration-config: updated-integration-configs
-      params:
-        NODES: 16
-        CONFIG_FILE_PATH: environments/trucker/integration_config.json
+    - task: push-app
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source: {repository: c2cnetworking/deploy-light}
+        inputs:
+          - name: container-networking-deployments
+          - name: cf-networking-dev
+        params:
+          ENVIRONMENT: trucker
+        run:
+          path: /bin/bash
+          args:
+          - -ceu
+          - |
+            set -o pipefail
+            cf api api.${ENVIRONMENT}.c2c.cf-app.com --skip-ssl-validation
+            pushd container-networking-deployments/environments/${ENVIRONMENT}
+              ADMIN_PASSWORD=$(grep uaa_scim_users_admin_password vars-store.yml  | cut -d ' ' -f2)
+            popd
+            cd cf-networking-dev/src/example-apps/proxy
+            cf auth admin ${ADMIN_PASSWORD}
+            cf create-org test-org || true
+            cf target -o test-org
+            cf create-space test-space || true
+            cf target -s test-space
+            cf push proxy
+            curl -v -f http://proxy.${ENVIRONMENT}.c2c.cf-app.com
 
   - name: trucker-upgrade
     serial_groups: [trucker]
@@ -281,13 +287,11 @@ jobs:
       - get: cf-deployment-concourse-tasks
       - get: bbl-state
         resource: container-networking-deployments
-        passed: [trucker-vanilla-cats]
         trigger: true
       - get: cf-deployment
-        passed: [trucker-vanilla-cats]
       - get: vars-store
         resource: container-networking-deployments
-        passed: [trucker-vanilla-cats]
+        passed: [trucker-push]
       - get: deployments-repo
         resource: container-networking-deployments
       - get: cf-networking-release
@@ -310,37 +314,28 @@ jobs:
         repository: updated-vars-store
         rebase: true
 
-  - name: trucker-upgrade-cats
+  - name: trucker-post-upgrade-ping
     serial_groups: [trucker]
     plan:
     - aggregate:
-      - get: bbl-state
-        resource: container-networking-deployments
+      - get: container-networking-deployments
         passed: [trucker-upgrade]
         trigger: true
-      - get: container-networking-ci
-      - get: cats-concourse-task
-      - get: cf-deployment-concourse-tasks
-      - get: vars-store
-        resource: container-networking-deployments
-        passed: [trucker-upgrade]
-      - get: integration-configs
-        resource: container-networking-deployments
-      - get: cf-acceptance-tests
-    - task: update-cats-config
-      file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
-      params:
-        CATS_INTEGRATION_CONFIG_FILE: environments/trucker/integration_config.json
-        VARS_STORE_FILE: environments/trucker/vars-store.yml
-    - task: include-container-networking
-      file: container-networking-ci/tasks/include-container-networking.yml
-    - task: cats
-      file: cats-concourse-task/task.yml
-      input_mapping:
-        integration-config: integration-config-with-cf-networking
-      params:
-        NODES: 16
-        CONFIG_FILE_PATH: integration_config.json
+    - task: ping-app
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source: {repository: c2cnetworking/deploy-light}
+        params:
+          ENVIRONMENT: trucker
+        run:
+          path: /bin/bash
+          args:
+          - -ceu
+          - |
+            set -o pipefail
+            curl -f -v http://proxy.${ENVIRONMENT}.c2c.cf-app.com
 
   - name: delete-trucker-deployment
     serial_groups: [trucker]
@@ -348,7 +343,7 @@ jobs:
     - aggregate:
       - get: bbl-state
         resource: container-networking-deployments
-        passed: [trucker-upgrade-cats]
+        passed: [trucker-post-upgrade-ping]
         trigger: true
       - get: cf-deployment-concourse-tasks
     - task: delete-deployment
