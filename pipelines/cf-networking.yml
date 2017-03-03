@@ -232,7 +232,7 @@ jobs:
       params:
         BBL_STATE_DIR: environments/trucker/
         SYSTEM_DOMAIN: trucker.c2c.cf-app.com
-        OPS_FILES: gcp.yml
+        OPS_FILES: gcp.yml opsfile.yml
         VARS_STORE_FILE: environments/trucker/vars-store.yml
         REGENERATE_VARS_STORE: true
     - put: container-networking-deployments
@@ -300,7 +300,7 @@ jobs:
       file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
       params:
         BBL_STATE_DIR: environments/trucker/
-        OPS_FILES: gcp.yml cf-networking.yml
+        OPS_FILES: gcp.yml opsfile.yml cf-networking.yml
         SYSTEM_DOMAIN: trucker.c2c.cf-app.com
         VARS_STORE_FILE: environments/trucker/vars-store.yml
       input_mapping:
