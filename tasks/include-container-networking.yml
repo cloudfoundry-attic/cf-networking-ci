@@ -20,5 +20,5 @@ run:
       jq ".include_container_networking=true" | \
       jq ".include_diego_ssh=false" | \
       jq ".include_internet_dependent=false" | \
-      jq ".include_routing=false" | \
+      jq ".include_routing=false" \
       > integration-config-with-cf-networking/integration_config.json
