@@ -15,4 +15,10 @@ run:
   path: /bin/bash
   args:
     - -c
-    - cat updated-integration-configs/environments/trucker/integration_config.json | jq ".include_container_networking=true" > integration-config-with-cf-networking/integration_config.json
+    - |
+      cat updated-integration-configs/environments/trucker/integration_config.json | \
+      jq ".include_container_networking=true" | \
+      jq ".include_diego_ssh=false" | \
+      jq ".include_internet_dependent=false" | \
+      jq ".include_routing=false" | \
+      > integration-config-with-cf-networking/integration_config.json
