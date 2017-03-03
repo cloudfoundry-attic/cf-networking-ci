@@ -17,6 +17,24 @@ groups:
   - toque-deploy
   - toque-push
   - toque-test
+  - bbl-up-trucker
+  - trucker-deploy
+  - trucker-vanilla-cats
+  - trucker-upgrade
+  - trucker-upgrade-cats
+  - delete-trucker-deployment
+- name: pickelhelm
+  jobs:
+  - bbl-up-pickelhelm
+  - pickelhelm-deploy
+  - pickelhelm-test
+- name: mitre
+  jobs:
+  - mitre-deploy
+  - mitre-test
+  - mitre-acceptance-errand
+  - mitre-smoke
+  - mitre-cats
 - name: trucker
   jobs:
   - bbl-up-trucker
