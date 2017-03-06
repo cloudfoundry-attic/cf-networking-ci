@@ -194,10 +194,11 @@ jobs:
         BBL_LB_KEY: {{trucker-lb-key}}
         LB_DOMAIN: trucker.c2c.cf-app.com
         BBL_ENV_NAME: trucker
-    - put: container-networking-deployments
-      params:
-        repository: updated-bbl-state
-        rebase: true
+      ensure:
+        put: container-networking-deployments
+        params:
+          repository: updated-bbl-state
+          rebase: true
 
   - name: trucker-deploy
     serial_groups: [trucker]
@@ -396,10 +397,11 @@ jobs:
         BBL_LB_KEY: {{pickelhelm-lb-key}}
         LB_DOMAIN: pickelhelm.c2c.cf-app.com
         BBL_ENV_NAME: pickelhelm
-    - put: container-networking-deployments
-      params:
-        repository: updated-bbl-state
-        rebase: true
+      ensure:
+        put: container-networking-deployments
+        params:
+          repository: updated-bbl-state
+          rebase: true
 
   - name: pickelhelm-deploy
     serial_groups: [pickelhelm]
