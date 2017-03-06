@@ -630,10 +630,11 @@ jobs:
         BBL_LB_KEY: {{toque-lb-key}}
         LB_DOMAIN: toque.c2c.cf-app.com
         BBL_ENV_NAME: toque
-    - put: container-networking-deployments
-      params:
-        repository: updated-bbl-state
-        rebase: true
+      ensure:
+        put: container-networking-deployments
+        params:
+          repository: updated-bbl-state
+          rebase: true
 
   - name: toque-deploy
     serial_groups: [toque]
