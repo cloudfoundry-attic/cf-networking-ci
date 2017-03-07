@@ -136,6 +136,11 @@ resources:
     type: bosh-io-stemcell
     source:
       name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+  ###### bosh.io releases
+  - name: datadog-firehose-nozzle-release
+    type: bosh-io-release
+    source:
+      repository: cloudfoundry-incubator/datadog-firehose-nozzle-release
   ###### BOSH release repos
   - name: cf-networking-dev
     type: git
@@ -898,6 +903,7 @@ jobs:
         - get: cf-networking-release
           resource: cf-networking-dev
           passed: [mysql-tests, postgres-tests]
+        - get: datadog-firehose-nozzle-release
       - task: upload-stemcell
         file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
         input_mapping:
@@ -925,6 +931,23 @@ jobs:
         params:
           repository: updated-vars-store
           rebase: true
+      - task: upload-datadog-firehose-nozzle-release
+        file: container-networking-ci/tasks/upload-release-tarball.yml
+        input_mapping:
+          tarballs: datadog-firehose-nozzle-release
+        params:
+          ENVIRONMENT_NAME: toque
+      - task: deploy-datadog-firehose-nozzle
+        file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
+        input_mapping:
+          cf-deployment: container-networking-deployments
+          vars-store: container-networking-deployments
+        params:
+          BBL_STATE_DIR: container-networking-deployments/environments/toque
+          MANIFEST_FILE: firehose-nozzles.yml
+          OPS_FILES: ~
+          SYSTEM_DOMAIN: toque.c2c.cf-app.com
+          VARS_STORE_FILE: environments/toque/vars-store.yml
 
   - name: toque-push
     serial_groups: [toque]
