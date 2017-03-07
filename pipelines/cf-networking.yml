@@ -48,9 +48,9 @@ groups:
   jobs:
   - sombrero-bbl-up
   - sombrero-deploy-pinned
-  - sombrero-push
+  - sombrero-test-pinned
   - sombrero-upgrade
-  - sombrero-post-upgrade-ping
+  - sombrero-test-upgrade
   - delete-sombrero-deployment
 - name: toque
   jobs:
@@ -143,7 +143,7 @@ resources:
       uri: git@github.com:cloudfoundry-incubator/cf-networking-release.git
       branch: master
       private_key: {{cf-networking-deploy-key}}
-  ###### Oldest compatible versions
+  ###### Pinned versions
   - name: cf-networking-pinned
     type: git
     source:
@@ -160,6 +160,17 @@ resources:
     source:
       branch: pinned
       uri: https://github.com/cf-container-networking/cf-deployment.git
+  - name: container-networking-ci-pinned
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry-incubator/container-networking-ci
+      tag_filter: pinned
+  - name: container-networking-deployments-pinned
+    type: git
+    source:
+      uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
+      private_key: {{container-networking-deployments-push-key}}
+      tag_filter: pinned
   ####### Stats
   - name: mitre-stats
     type: git
@@ -479,44 +490,24 @@ jobs:
         repository: updated-vars-store
         rebase: true
 
-  - name: sombrero-push
+  - name: sombrero-test-pinned
     serial_groups: [sombrero]
     plan:
     - aggregate:
-      - get: container-networking-deployments
+      - get: container-networking-ci
+        resource: container-networking-ci-pinned
+      - get: test-config
+        resource: container-networking-deployments-pinned
+      - get: cf-networking
+        resource: cf-networking-pinned
         passed: [sombrero-deploy-pinned]
       - get: cf-networking-dev
         passed: [sombrero-deploy-pinned]
         trigger: true
-    - task: push-app
-      config:
-        platform: linux
-        image_resource:
-          type: docker-image
-          source: {repository: c2cnetworking/deploy-light}
-        inputs:
-          - name: container-networking-deployments
-          - name: cf-networking-dev
-        params:
-          ENVIRONMENT: sombrero
-        run:
-          path: /bin/bash
-          args:
-          - -ceu
-          - |
-            set -o pipefail
-            cf api api.${ENVIRONMENT}.c2c.cf-app.com --skip-ssl-validation
-            pushd container-networking-deployments/environments/${ENVIRONMENT}
-              ADMIN_PASSWORD=$(grep uaa_scim_users_admin_password vars-store.yml  | cut -d ' ' -f2)
-            popd
-            cd cf-networking-dev/src/example-apps/proxy
-            cf auth admin ${ADMIN_PASSWORD}
-            cf create-org test-org || true
-            cf target -o test-org
-            cf create-space test-space || true
-            cf target -s test-space
-            cf push proxy
-            curl -v -f http://proxy.${ENVIRONMENT}.c2c.cf-app.com
+    - task: acceptance-tests
+      file: container-networking-ci/tasks/acceptance-tests.yml
+      params:
+        ENVIRONMENT_NAME: sombrero
 
   - name: sombrero-upgrade
     serial_groups: [sombrero]
@@ -529,12 +520,11 @@ jobs:
       - get: cf-deployment
       - get: vars-store
         resource: container-networking-deployments
-        passed: [sombrero-push]
       - get: deployments-repo
         resource: container-networking-deployments
       - get: cf-networking-release
         resource: cf-networking-dev
-        passed: [sombrero-push]
+        passed: [sombrero-test-pinned]
         trigger: true
     - task: collect-ops-files
       file: container-networking-ci/tasks/collect-ops-files.yml
@@ -558,31 +548,21 @@ jobs:
         repository: updated-vars-store
         rebase: true
 
-  - name: sombrero-post-upgrade-ping
+  - name: sombrero-test-upgrade
     serial_groups: [sombrero]
     plan:
     - aggregate:
-      - get: container-networking-deployments
-        passed: [sombrero-upgrade]
-      - get: cf-networking-release
+      - get: container-networking-ci
+      - get: test-config
+        resource: container-networking-deployments
+      - get: cf-networking
         resource: cf-networking-dev
         passed: [sombrero-upgrade]
         trigger: true
-    - task: ping-app
-      config:
-        platform: linux
-        image_resource:
-          type: docker-image
-          source: {repository: c2cnetworking/deploy-light}
-        params:
-          ENVIRONMENT: sombrero
-        run:
-          path: /bin/bash
-          args:
-          - -ceu
-          - |
-            set -o pipefail
-            curl -f -v http://proxy.${ENVIRONMENT}.c2c.cf-app.com
+    - task: acceptance-tests
+      file: container-networking-ci/tasks/acceptance-tests.yml
+      params:
+        ENVIRONMENT_NAME: sombrero
 
   - name: delete-sombrero-deployment
     serial_groups: [sombrero]
@@ -590,11 +570,11 @@ jobs:
     - aggregate:
       - get: bbl-state
         resource: container-networking-deployments
-        passed: [sombrero-post-upgrade-ping]
+        passed: [sombrero-test-upgrade]
       - get: cf-deployment-concourse-tasks
       - get: cf-networking-release
         resource: cf-networking-dev
-        passed: [sombrero-post-upgrade-ping]
+        passed: [sombrero-test-upgrade]
         trigger: true
     - task: delete-deployment
       file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
@@ -936,8 +916,7 @@ jobs:
           resource: container-networking-deployments
         - get: toque-env-vars-store
           passed: [toque-deploy]
-        - get: cf-networking
-          resource: cf-networking-dev
+        - get: cf-networking-dev
           passed: [toque-deploy]
           trigger: true
         - get: scaling-test-params
