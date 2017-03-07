@@ -92,6 +92,24 @@ resources:
     source:
       uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks
       branch: master
+  ###### ENV
+  - name: toque-env-bbl-state
+    type: git
+    source:
+      uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
+      branch: master
+      private_key: {{container-networking-deployments-push-key}}
+      paths:
+      - environments/toque/bbl-state.json
+      - environments/gcp/service-account.key.json
+  - name: toque-env-vars-store
+    type: git
+    source:
+      uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
+      branch: master
+      private_key: {{container-networking-deployments-push-key}}
+      paths:
+      - environments/toque/vars-store.yml
   ###### BOSH stemcells
   - name: aws-stemcell
     type: bosh-io-stemcell
@@ -617,8 +635,7 @@ jobs:
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: bbl-state
-        resource: container-networking-deployments
+      - get: toque-env-bbl-state
     - task: bbl-up
       file: cf-deployment-concourse-tasks/bbl-up/task.yml
       params:
@@ -632,8 +649,10 @@ jobs:
         BBL_LB_KEY: {{toque-lb-key}}
         LB_DOMAIN: toque.c2c.cf-app.com
         BBL_ENV_NAME: toque
+      input_mapping:
+        bbl-state: toque-env-bbl-state
       ensure:
-        put: container-networking-deployments
+        put: toque-env-bbl-state
         params:
           repository: updated-bbl-state
           rebase: true
@@ -642,24 +661,20 @@ jobs:
     serial_groups: [toque]
     plan:
       - aggregate:
-        - get: container-networking-ci
         - get: cf-deployment-concourse-tasks
-        - get: deployments-repo
-          resource: container-networking-deployments
-          passed: [toque-bbl-up]
-        - get: bbl-state
-          resource: container-networking-deployments
-        - get: vars-store
-          resource: container-networking-deployments
         - get: cf-deployment
-          trigger: true
+        - get: container-networking-ci
+        - get: toque-env-bbl-state
+          passed: [toque-bbl-up]
+        - get: toque-env-vars-store
         - get: cf-networking-release
           resource: cf-networking-dev
           passed: [mysql-tests, postgres-tests]
       - task: upload-stemcell
         file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
-        params:
-          BBL_STATE_DIR: environments/toque/
+        input_mapping:
+          bbl-state: toque-env-bbl-state
+          cf-deployment: cf-deployment
       - task: collect-ops-files
         file: container-networking-ci/tasks/collect-ops-files.yml
         params:
@@ -667,13 +682,14 @@ jobs:
       - task: deploy-cf
         file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
         params:
-          BBL_STATE_DIR: environments/toque/
           SYSTEM_DOMAIN: toque.c2c.cf-app.com
           OPS_FILES: gcp.yml tcp-routing-gcp.yml use-3-azs-for-router.yml cf-networking.yml opsfile.yml
-          VARS_STORE_FILE: environments/toque/vars-store.yml
         input_mapping:
+          bbl-state: toque-env-bbl-state
+          cf-deployment: cf-deployment
           release: cf-networking-release
-      - put: container-networking-deployments
+          vars-store: toque-env-vars-store
+      - put: toque-env-vars-store
         params:
           repository: updated-vars-store
           rebase: true
@@ -682,14 +698,12 @@ jobs:
     serial_groups: [toque]
     plan:
       - aggregate:
-        - get: deployments-repo
-          resource: container-networking-deployments
+        - get: container-networking-ci
+        - get: toque-env-vars-store
           passed: [toque-deploy]
-        - get: cf-networking
-          resource: cf-networking-dev
+        - get: cf-networking-dev
           passed: [toque-deploy]
           trigger: true
-        - get: container-networking-ci
         - get: scaling-test-params
           resource: toque-scaling-test-params
           trigger: true
@@ -708,8 +722,7 @@ jobs:
       - aggregate:
         - get: every-half-hour
           trigger: true
-        - get: deployments-repo
-          resource: container-networking-deployments
+        - get: toque-env-vars-store
           passed: [toque-push]
         - get: cf-networking
           resource: cf-networking-dev
