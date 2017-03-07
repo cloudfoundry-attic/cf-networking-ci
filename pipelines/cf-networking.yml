@@ -917,7 +917,8 @@ jobs:
           resource: container-networking-deployments
         - get: toque-env-vars-store
           passed: [toque-deploy]
-        - get: cf-networking-dev
+        - get: cf-networking
+          resource: cf-networking-dev
           passed: [toque-deploy]
           trigger: true
         - get: scaling-test-params
