@@ -3,10 +3,11 @@
 set -e
 
 # replace admin password and secret in test config
+VARS_STORE=${PWD}/vars-store/environments/${ENVIRONMENT_NAME}/vars-store.yml
 pushd test-config/environments/${ENVIRONMENT_NAME}
-  ADMIN_PASSWORD=`grep uaa_scim_users_admin_password vars-store.yml  | cut -d' ' -f2`
+  ADMIN_PASSWORD=`grep uaa_scim_users_admin_password ${VARS_STORE} | cut -d' ' -f2`
   sed -i -- "s/{{admin-password}}/${ADMIN_PASSWORD}/g" test-config.json
-  ADMIN_SECRET=`grep uaa_admin_client_secret vars-store.yml  | cut -d' ' -f2`
+  ADMIN_SECRET=`grep uaa_admin_client_secret ${VARS_STORE} | cut -d' ' -f2`
   sed -i -- "s/{{admin-secret}}/${ADMIN_SECRET}/g" test-config.json
 popd
 
