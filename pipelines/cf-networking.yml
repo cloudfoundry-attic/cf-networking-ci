@@ -496,8 +496,9 @@ jobs:
     - aggregate:
       - get: container-networking-ci
         resource: container-networking-ci-pinned
-      - get: test-config
-        resource: container-networking-deployments-pinned
+      - get: container-networking-deployments-pinned
+      - get: container-networking-deployments
+        passed: [sombrero-deploy-pinned]
       - get: cf-networking
         resource: cf-networking-pinned
         passed: [sombrero-deploy-pinned]
@@ -506,6 +507,9 @@ jobs:
         trigger: true
     - task: acceptance-tests
       file: container-networking-ci/tasks/acceptance-tests.yml
+      input_mapping:
+        test-config: container-networking-deployments-pinned
+        vars-store: container-networking-deployments
       params:
         ENVIRONMENT_NAME: sombrero
 
@@ -553,14 +557,16 @@ jobs:
     plan:
     - aggregate:
       - get: container-networking-ci
-      - get: test-config
-        resource: container-networking-deployments
+      - get: container-networking-deployments
       - get: cf-networking
         resource: cf-networking-dev
         passed: [sombrero-upgrade]
         trigger: true
     - task: acceptance-tests
       file: container-networking-ci/tasks/acceptance-tests.yml
+      input_mapping:
+        test-config: container-networking-deployments
+        vars-store: container-networking-deployments
       params:
         ENVIRONMENT_NAME: sombrero
 
@@ -675,8 +681,7 @@ jobs:
     plan:
       - aggregate:
         - get: container-networking-ci
-        - get: test-config
-          resource: container-networking-deployments
+        - get: container-networking-deployments
         - get: cf-deployment
           passed: [pickelhelm-deploy]
         - get: cf-networking
@@ -685,6 +690,9 @@ jobs:
           trigger: true
       - task: acceptance-tests
         file: container-networking-ci/tasks/acceptance-tests.yml
+        input_mapping:
+          test-config: container-networking-deployments
+          vars-store: container-networking-deployments
         params:
           ENVIRONMENT_NAME: pickelhelm
 
@@ -740,8 +748,7 @@ jobs:
       - aggregate:
         - get: deployments-repo
           resource: container-networking-deployments
-        - get: test-config
-          resource: container-networking-deployments
+        - get: container-networking-deployments
         - get: cf-networking
           resource: cf-networking-dev
           passed: [mitre-deploy]
@@ -760,6 +767,9 @@ jobs:
           trigger: true
       - task: acceptance-tests
         file: container-networking-ci/tasks/acceptance-tests.yml
+        input_mapping:
+          test-config: container-networking-deployments
+          vars-store: container-networking-deployments
         params:
           ENVIRONMENT_NAME: mitre
       - task: commit-stats
@@ -917,8 +927,7 @@ jobs:
           resource: container-networking-deployments
         - get: toque-env-vars-store
           passed: [toque-deploy]
-        - get: cf-networking
-          resource: cf-networking-dev
+        - get: cf-networking-dev
           passed: [toque-deploy]
           trigger: true
         - get: scaling-test-params
