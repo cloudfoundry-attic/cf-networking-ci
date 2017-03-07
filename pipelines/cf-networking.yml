@@ -865,6 +865,8 @@ jobs:
         input_mapping:
           bbl-state: toque-env-bbl-state
           cf-deployment: cf-deployment
+        params:
+          BBL_STATE_DIR: environments/toque
       - task: collect-ops-files
         file: container-networking-ci/tasks/collect-ops-files.yml
         params:
