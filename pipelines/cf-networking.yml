@@ -3,7 +3,6 @@ groups:
   jobs:
   - mysql-tests
   - postgres-tests
-  - pickelhelm-bbl-up
   - pickelhelm-deploy
   - pickelhelm-test
   - mitre-deploy
@@ -14,16 +13,17 @@ groups:
   - shipit
   - bump-minor-version
   - merge-master
-  - toque-bbl-up
   - toque-deploy
   - toque-push
   - toque-test
-  - trucker-bbl-up
   - trucker-deploy
   - trucker-push
   - trucker-upgrade
-  - trucker-post-upgrade-ping
-  - delete-trucker-deployment
+  - trucker-test-upgrade
+  - sombrero-deploy-pinned
+  - sombrero-test-pinned
+  - sombrero-upgrade
+  - sombrero-test-upgrade
 - name: pickelhelm
   jobs:
   - pickelhelm-bbl-up
@@ -42,7 +42,7 @@ groups:
   - trucker-deploy
   - trucker-push
   - trucker-upgrade
-  - trucker-post-upgrade-ping
+  - trucker-test-upgrade
   - delete-trucker-deployment
 - name: sombrero
   jobs:
@@ -59,11 +59,19 @@ groups:
   - toque-push
   - toque-test
   - delete-toque-deployment
+- name: bbl-up
+  jobs:
+  - pickelhelm-bbl-up
+  - toque-bbl-up
+  - trucker-bbl-up
+  - sombrero-bbl-up
 - name: cleanup
   jobs:
     - delete-deployment-mitre-cf
     - delete-pickelhelm-deployment
     - delete-toque-deployment
+    - delete-trucker-deployment
+    - delete-sombrero-deployment
 - name: version
   jobs:
   - major-bump
@@ -372,7 +380,7 @@ jobs:
         repository: updated-vars-store
         rebase: true
 
-  - name: trucker-post-upgrade-ping
+  - name: trucker-test-upgrade
     serial_groups: [trucker]
     plan:
     - aggregate:
@@ -405,11 +413,11 @@ jobs:
     - aggregate:
       - get: bbl-state
         resource: container-networking-deployments
-        passed: [trucker-post-upgrade-ping]
+        passed: [trucker-test-upgrade]
       - get: cf-deployment-concourse-tasks
       - get: cf-networking-release
         resource: cf-networking-dev
-        passed: [trucker-post-upgrade-ping]
+        passed: [trucker-test-upgrade]
         trigger: true
     - task: delete-deployment
       file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
@@ -1040,7 +1048,7 @@ jobs:
           params:
             fetch: [master]
             submodules: none
-          passed: [mitre-cats]
+          passed: [mitre-cats, trucker-test-upgrade, sombrero-test-upgrade]
         - get: cf-deployment
           passed: [mitre-cats]
         - get: cf-networking-tarball
