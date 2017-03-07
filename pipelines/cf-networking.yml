@@ -44,6 +44,14 @@ groups:
   - trucker-upgrade
   - trucker-post-upgrade-ping
   - delete-trucker-deployment
+- name: sombrero
+  jobs:
+  - bbl-up-sombrero
+  - sombrero-deploy-ocv
+  - sombrero-push
+  - sombrero-upgrade
+  - sombrero-post-upgrade-ping
+  - delete-sombrero-deployment
 - name: toque
   jobs:
   - toque-bbl-up
@@ -130,6 +138,12 @@ resources:
       uri: git@github.com:cloudfoundry-incubator/cf-networking-release.git
       branch: master
       private_key: {{cf-networking-deploy-key}}
+  - name: cf-networking-v0.15
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry-incubator/cf-networking-release
+      branch: master
+      tag_filter: v0.15.0
   ####### Stats
   - name: mitre-stats
     type: git
@@ -372,6 +386,182 @@ jobs:
       file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/trucker/
+
+  - name: bbl-up-sombrero
+    serial_groups: [sombrero]
+    plan:
+    - aggregate:
+      - get: cf-deployment-concourse-tasks
+      - get: bbl-state
+        resource: container-networking-deployments
+    - task: bbl-up
+      file: cf-deployment-concourse-tasks/bbl-up/task.yml
+      params:
+        BBL_GCP_SERVICE_ACCOUNT_KEY: ../gcp/service-account.key.json
+        BBL_GCP_PROJECT_ID: cf-container-networking-gcp
+        BBL_GCP_REGION: us-east1
+        BBL_GCP_ZONE: us-east1-c
+        BBL_STATE_DIR: environments/sombrero/
+        BBL_IAAS: gcp
+        BBL_LB_CERT: {{sombrero-lb-cert}}
+        BBL_LB_KEY: {{sombrero-lb-key}}
+        LB_DOMAIN: sombrero.c2c.cf-app.com
+        BBL_ENV_NAME: sombrero
+      ensure:
+        put: container-networking-deployments
+        params:
+          repository: updated-bbl-state
+          rebase: true
+
+  - name: sombrero-deploy-ocv
+    serial_groups: [sombrero]
+    plan:
+    - aggregate:
+      - get: container-networking-ci
+      - get: cf-deployment-concourse-tasks
+      - get: bbl-state
+        resource: container-networking-deployments
+        passed: [bbl-up-sombrero]
+      - get: cf-deployment
+        trigger: true
+      - get: vars-store
+        resource: container-networking-deployments
+      - get: deployments-repo
+        resource: container-networking-deployments
+      - get: cf-networking-release
+        resource: cf-networking-v0.15
+      - get: cf-networking-dev
+        passed: [postgres-tests, mysql-tests]
+        trigger: true
+    - task: collect-ops-files
+      file: container-networking-ci/tasks/collect-ops-files.yml
+      params:
+        ENVIRONMENT_NAME: sombrero
+    - task: deploy-oldest-compatible-version
+      file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
+      params:
+        BBL_STATE_DIR: environments/sombrero/
+        OPS_FILES: gcp.yml opsfile.yml cf-networking.yml
+        SYSTEM_DOMAIN: sombrero.c2c.cf-app.com
+        VARS_STORE_FILE: environments/sombrero/vars-store.yml
+        REGENERATE_VARS_STORE: true
+      input_mapping:
+        release: cf-networking-release
+    - put: container-networking-deployments
+      params:
+        repository: updated-vars-store
+        rebase: true
+
+  - name: sombrero-push
+    serial_groups: [sombrero]
+    plan:
+    - aggregate:
+      - get: container-networking-deployments
+        passed: [sombrero-deploy-ocv]
+      - get: cf-networking-dev
+        passed: [sombrero-deploy-ocv]
+        trigger: true
+    - task: push-app
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source: {repository: c2cnetworking/deploy-light}
+        inputs:
+          - name: container-networking-deployments
+          - name: cf-networking-dev
+        params:
+          ENVIRONMENT: sombrero
+        run:
+          path: /bin/bash
+          args:
+          - -ceu
+          - |
+            set -o pipefail
+            cf api api.${ENVIRONMENT}.c2c.cf-app.com --skip-ssl-validation
+            pushd container-networking-deployments/environments/${ENVIRONMENT}
+              ADMIN_PASSWORD=$(grep uaa_scim_users_admin_password vars-store.yml  | cut -d ' ' -f2)
+            popd
+            cd cf-networking-dev/src/example-apps/proxy
+            cf auth admin ${ADMIN_PASSWORD}
+            cf create-org test-org || true
+            cf target -o test-org
+            cf create-space test-space || true
+            cf target -s test-space
+            cf push proxy
+            curl -v -f http://proxy.${ENVIRONMENT}.c2c.cf-app.com
+
+  - name: sombrero-upgrade
+    serial_groups: [sombrero]
+    plan:
+    - aggregate:
+      - get: container-networking-ci
+      - get: cf-deployment-concourse-tasks
+      - get: bbl-state
+        resource: container-networking-deployments
+        trigger: true
+      - get: cf-deployment
+      - get: vars-store
+        resource: container-networking-deployments
+        passed: [sombrero-push]
+      - get: deployments-repo
+        resource: container-networking-deployments
+      - get: cf-networking-release
+        resource: cf-networking-dev
+    - task: collect-ops-files
+      file: container-networking-ci/tasks/collect-ops-files.yml
+      params:
+        ENVIRONMENT_NAME: sombrero
+    - task: deploy-upgrade
+      file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
+      params:
+        BBL_STATE_DIR: environments/sombrero/
+        OPS_FILES: gcp.yml opsfile.yml cf-networking.yml
+        SYSTEM_DOMAIN: sombrero.c2c.cf-app.com
+        VARS_STORE_FILE: environments/sombrero/vars-store.yml
+      input_mapping:
+        release: cf-networking-release
+    - put: container-networking-deployments
+      params:
+        repository: updated-vars-store
+        rebase: true
+
+  - name: sombrero-post-upgrade-ping
+    serial_groups: [sombrero]
+    plan:
+    - aggregate:
+      - get: container-networking-deployments
+        passed: [sombrero-upgrade]
+        trigger: true
+    - task: ping-app
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source: {repository: c2cnetworking/deploy-light}
+        params:
+          ENVIRONMENT: sombrero
+        run:
+          path: /bin/bash
+          args:
+          - -ceu
+          - |
+            set -o pipefail
+            curl -f -v http://proxy.${ENVIRONMENT}.c2c.cf-app.com
+
+  - name: delete-sombrero-deployment
+    serial_groups: [sombrero]
+    plan:
+    - aggregate:
+      - get: bbl-state
+        resource: container-networking-deployments
+        passed: [sombrero-post-upgrade-ping]
+        trigger: true
+      - get: cf-deployment-concourse-tasks
+    - task: delete-deployment
+      file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+      params:
+        BBL_STATE_DIR: environments/sombrero/
 
   - name: postgres-tests
     public: true
