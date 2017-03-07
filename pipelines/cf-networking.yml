@@ -19,6 +19,7 @@ groups:
   - trucker-deploy
   - trucker-push
   - trucker-upgrade
+  - toque-deploy-firehose-nozzle
   - trucker-test-upgrade
   - sombrero-deploy-pinned
   - sombrero-test-pinned
@@ -58,6 +59,7 @@ groups:
   - toque-deploy
   - toque-push
   - toque-test
+  - toque-deploy-firehose-nozzle
   - delete-toque-deployment
 - name: bbl-up
   jobs:
@@ -931,23 +933,35 @@ jobs:
         params:
           repository: updated-vars-store
           rebase: true
-      - task: upload-datadog-firehose-nozzle-release
-        file: container-networking-ci/tasks/upload-release-tarball.yml
-        input_mapping:
-          tarballs: datadog-firehose-nozzle-release
-        params:
-          ENVIRONMENT_NAME: toque
-      - task: deploy-datadog-firehose-nozzle
-        file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
-        input_mapping:
-          cf-deployment: container-networking-deployments
-          vars-store: container-networking-deployments
-        params:
-          BBL_STATE_DIR: container-networking-deployments/environments/toque
-          MANIFEST_FILE: firehose-nozzles.yml
-          OPS_FILES: ~
-          SYSTEM_DOMAIN: toque.c2c.cf-app.com
-          VARS_STORE_FILE: environments/toque/vars-store.yml
+  - name: toque-deploy-firehose-nozzle
+    serial_groups: [toque]
+    plan:
+    - aggregate:
+      - get: cf-deployment-concourse-tasks
+      - get: container-networking-ci
+      - get: deployments-repo
+        resource: container-networking-deployments
+        passed: [toque-deploy]
+      - get: datadog-firehose-nozzle-release
+    - task: upload-datadog-firehose-nozzle-release
+      file: container-networking-ci/tasks/upload-release-tarball.yml
+      input_mapping:
+        tarballs: datadog-firehose-nozzle-release
+      params:
+        ENVIRONMENT_NAME: toque
+    - task: deploy-datadog-firehose-nozzle
+      file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
+      input_mapping:
+        cf-deployment: deployments-repo
+        vars-store: deployments-repo
+        bbl-state: deployments-repo
+        ops-files: deployments-repo
+      params:
+        BBL_STATE_DIR: environments/toque
+        MANIFEST_FILE: firehose-nozzles.yml
+        OPS_FILES: ""
+        SYSTEM_DOMAIN: toque.c2c.cf-app.com
+        VARS_STORE_FILE: environments/toque/vars-store.yml
 
   - name: toque-push
     serial_groups: [toque]
