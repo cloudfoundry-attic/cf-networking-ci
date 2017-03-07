@@ -876,6 +876,7 @@ jobs:
       - task: deploy-cf
         file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
         params:
+          BBL_STATE_DIR: environments/toque
           SYSTEM_DOMAIN: toque.c2c.cf-app.com
           OPS_FILES: gcp.yml tcp-routing-gcp.yml use-3-azs-for-router.yml cf-networking.yml opsfile.yml
         input_mapping:
