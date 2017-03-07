@@ -456,6 +456,10 @@ jobs:
       file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/sombrero/
+    - task: upload-stemcell
+      file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
+      params:
+        BBL_STATE_DIR: environments/sombrero/
     - task: collect-ops-files
       file: container-networking-ci/tasks/collect-ops-files.yml
       params:
@@ -536,6 +540,10 @@ jobs:
       file: container-networking-ci/tasks/collect-ops-files.yml
       params:
         ENVIRONMENT_NAME: sombrero
+    - task: upload-stemcell
+      file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
+      params:
+        BBL_STATE_DIR: environments/sombrero/
     - task: deploy-upgrade
       file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
       params:
