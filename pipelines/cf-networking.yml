@@ -3,7 +3,7 @@ groups:
   jobs:
   - mysql-tests
   - postgres-tests
-  - bbl-up-pickelhelm
+  - pickelhelm-bbl-up
   - pickelhelm-deploy
   - pickelhelm-test
   - mitre-deploy
@@ -18,7 +18,7 @@ groups:
   - toque-deploy
   - toque-push
   - toque-test
-  - bbl-up-trucker
+  - trucker-bbl-up
   - trucker-deploy
   - trucker-push
   - trucker-upgrade
@@ -26,7 +26,7 @@ groups:
   - delete-trucker-deployment
 - name: pickelhelm
   jobs:
-  - bbl-up-pickelhelm
+  - pickelhelm-bbl-up
   - pickelhelm-deploy
   - pickelhelm-test
 - name: mitre
@@ -38,7 +38,7 @@ groups:
   - mitre-cats
 - name: trucker
   jobs:
-  - bbl-up-trucker
+  - trucker-bbl-up
   - trucker-deploy
   - trucker-push
   - trucker-upgrade
@@ -46,7 +46,7 @@ groups:
   - delete-trucker-deployment
 - name: sombrero
   jobs:
-  - bbl-up-sombrero
+  - sombrero-bbl-up
   - sombrero-deploy-ocv
   - sombrero-push
   - sombrero-upgrade
@@ -100,6 +100,11 @@ resources:
     source:
       uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks
       branch: master
+  - name: cf-deployment
+    type: git
+    source:
+      branch: master
+      uri: https://github.com/cloudfoundry/cf-deployment.git
   ###### ENV
   - name: toque-env-bbl-state
     type: git
@@ -199,14 +204,9 @@ resources:
       repository: cf-networking-release
       access_token: {{github-access-token}}
       drafts: true
-  - name: cf-deployment
-    type: git
-    source:
-      branch: master
-      uri: https://github.com/cloudfoundry/cf-deployment.git
 
 jobs:
-  - name: bbl-up-trucker
+  - name: trucker-bbl-up
     serial_groups: [trucker]
     plan:
     - aggregate:
@@ -240,7 +240,7 @@ jobs:
       - get: cf-deployment-concourse-tasks
       - get: bbl-state
         resource: container-networking-deployments
-        passed: [bbl-up-trucker]
+        passed: [trucker-bbl-up]
       - get: cf-deployment
         trigger: true
       - get: vars-store
@@ -387,7 +387,7 @@ jobs:
       params:
         BBL_STATE_DIR: environments/trucker/
 
-  - name: bbl-up-sombrero
+  - name: sombrero-bbl-up
     serial_groups: [sombrero]
     plan:
     - aggregate:
@@ -421,7 +421,7 @@ jobs:
       - get: cf-deployment-concourse-tasks
       - get: bbl-state
         resource: container-networking-deployments
-        passed: [bbl-up-sombrero]
+        passed: [sombrero-bbl-up]
       - get: cf-deployment
         trigger: true
       - get: vars-store
@@ -585,7 +585,7 @@ jobs:
       file: cf-networking-release/ci/mysql-tests.yml
       privileged: true
 
-  - name: bbl-up-pickelhelm
+  - name: pickelhelm-bbl-up
     serial_groups: [pickelhelm]
     plan:
     - aggregate:
@@ -621,7 +621,7 @@ jobs:
           resource: container-networking-deployments
         - get: bbl-state
           resource: container-networking-deployments
-          passed: [bbl-up-pickelhelm]
+          passed: [pickelhelm-bbl-up]
         - get: vars-store
           resource: container-networking-deployments
         - get: cf-deployment
