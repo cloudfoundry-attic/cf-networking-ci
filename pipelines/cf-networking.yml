@@ -39,6 +39,7 @@ groups:
   - mitre-acceptance-errand
   - mitre-smoke
   - mitre-cats
+  - delete-deployment-mitre-cf
 - name: trucker
   jobs:
   - trucker-bbl-up
