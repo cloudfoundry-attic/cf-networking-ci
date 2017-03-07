@@ -857,6 +857,8 @@ jobs:
         - get: toque-env-bbl-state
           passed: [toque-bbl-up]
         - get: toque-env-vars-store
+        - get: deployments-repo
+          resource: container-networking-deployments
         - get: cf-networking-release
           resource: cf-networking-dev
           passed: [mysql-tests, postgres-tests]
