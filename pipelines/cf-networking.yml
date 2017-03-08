@@ -1040,10 +1040,13 @@ jobs:
         resource: toque-scaling-test-params
         passed: [toque-push]
       - get: toque-stats
+      - get: deployments-repo
+        resource: container-networking-deployments
     - task: set-scaling-test-params
       file: container-networking-ci/tasks/set-scaling-test-params.yml
       params:
         ENVIRONMENT_NAME: toque
+
     - task: emit-datadog-test-start
       file: container-networking-ci/tasks/emit-datadog-event.yml
       params:
