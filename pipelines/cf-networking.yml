@@ -1003,6 +1003,8 @@ jobs:
     plan:
       - aggregate:
         - get: container-networking-ci
+        - get: cf-networking
+          resource: cf-networking-dev
         - get: deployments-repo
           resource: container-networking-deployments
         - get: toque-env-vars-store
