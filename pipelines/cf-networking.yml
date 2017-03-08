@@ -1001,28 +1001,28 @@ jobs:
   - name: toque-push
     serial_groups: [toque]
     plan:
-      - aggregate:
-        - get: container-networking-ci
-        - get: cf-networking
-          resource: cf-networking-dev
-        - get: deployments-repo
-          resource: container-networking-deployments
-        - get: toque-env-vars-store
-          passed: [toque-deploy]
-        - get: cf-networking-dev
-          passed: [toque-deploy]
-          trigger: true
-        - get: scaling-test-params
-          resource: toque-scaling-test-params
-          trigger: true
-      - task: set-scaling-test-params
-        file: container-networking-ci/tasks/set-scaling-test-params.yml
-        params:
-          ENVIRONMENT_NAME: toque
-      - task: push-apps
-        file: container-networking-ci/tasks/push-apps.yml
-        params:
-          ENVIRONMENT_NAME: toque
+    - aggregate:
+      - get: container-networking-ci
+      - get: cf-networking
+        resource: cf-networking-dev
+      - get: deployments-repo
+        resource: container-networking-deployments
+      - get: toque-env-vars-store
+        passed: [toque-deploy]
+      - get: cf-networking-dev
+        passed: [toque-deploy]
+        trigger: true
+      - get: scaling-test-params
+        resource: toque-scaling-test-params
+        trigger: true
+    - task: set-scaling-test-params
+      file: container-networking-ci/tasks/set-scaling-test-params.yml
+      params:
+        ENVIRONMENT_NAME: toque
+    - task: push-apps
+      file: container-networking-ci/tasks/push-apps.yml
+      params:
+        ENVIRONMENT_NAME: toque
 
   - name: toque-test
     serial_groups: [toque]
