@@ -1046,7 +1046,6 @@ jobs:
       file: container-networking-ci/tasks/set-scaling-test-params.yml
       params:
         ENVIRONMENT_NAME: toque
-
     - task: emit-datadog-test-start
       file: container-networking-ci/tasks/emit-datadog-event.yml
       params:
@@ -1059,14 +1058,15 @@ jobs:
       file: container-networking-ci/tasks/test-scalability.yml
       params:
         ENVIRONMENT_NAME: toque
-    - task: emit-datadog-test-stop
-      file: container-networking-ci/tasks/emit-datadog-event.yml
-      params:
-        TITLE: test_end
-        TEXT: test_end
-        PRIORITY: normal
-        AWS_ENV: toque.c2c.cf-app.com
-        DATADOG_API_KEY: {{datadog_api_key}}
+      ensure:
+        task: emit-datadog-test-stop
+        file: container-networking-ci/tasks/emit-datadog-event.yml
+        params:
+          TITLE: test_end
+          TEXT: test_end
+          PRIORITY: normal
+          AWS_ENV: toque.c2c.cf-app.com
+          DATADOG_API_KEY: {{datadog_api_key}}
 
 ##### Human-triggered utilities
 
