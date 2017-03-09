@@ -25,6 +25,17 @@ groups:
   - sombrero-test-pinned
   - sombrero-upgrade
   - sombrero-test-upgrade
+- name: classic
+  jobs:
+  - mysql-tests
+  - postgres-tests
+  - pickelhelm-deploy
+  - pickelhelm-test
+  - mitre-deploy
+  - mitre-test
+  - mitre-smoke
+  - mitre-cats
+  - mitre-acceptance-errand
 - name: pickelhelm
   jobs:
   - pickelhelm-bbl-up
