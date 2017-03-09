@@ -17,6 +17,7 @@
       .row--tall  { height: 40%; }
       .row--short { height: 60%; }
       .row--full  { height: 100%; }
+      .row--one-third  { height: 33%; }
 
       .col--left {
         width: 50%;
@@ -36,12 +37,39 @@
         width: 100%;
         float: left;
       }
+
+      .col--75pct {
+        width: 75%;
+        float: left;
+        border-right: 5px solid #1A252F;
+        box-sizing: border-box;
+      }
+
+      .col--25pct {
+        width: 25%;
+        float: left;
+        border-right: 5px solid #1A252F;
+        box-sizing: border-box;
+      }
     </style>
   </head>
   <body>
-    <div class="row--full">
+    <div class="row--one-third">
       <div class="col--full">
-        <iframe src="https://c2c.ci.cf-app.com/teams/main/pipelines/cf-networking?groups=toque&groups=cf-networking"></iframe>
+        <iframe src="https://c2c.ci.cf-app.com/teams/main/pipelines/cf-networking?groups=classic"></iframe>
+      </div>
+    </div>
+    <div class="row--one-third">
+      <div class="col--75pct">
+        <iframe src="https://c2c.ci.cf-app.com/teams/main/pipelines/cf-networking?groups=toque"></iframe>
+      </div>
+      <div class="col--25pct">
+        <iframe src="https://c2c.ci.cf-app.com/teams/main/pipelines/silk"></iframe>
+      </div>
+    </div>
+    <div class="row--one-third">
+      <div class="col--full">
+        <iframe src="https://c2c.ci.cf-app.com/teams/main/pipelines/cf-networking?groups=trucker&groups=sombrero"></iframe>
       </div>
     </div>
     <!-- <div class="row--short">
