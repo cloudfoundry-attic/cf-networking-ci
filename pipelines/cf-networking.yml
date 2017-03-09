@@ -1025,8 +1025,8 @@ jobs:
       - get: toque-env-vars-store
         passed: [toque-deploy]
       - get: cf-networking-dev
-        passed: [toque-deploy]
-        trigger: true
+        # passed: [toque-deploy]
+        # trigger: true
       - get: scaling-test-params
         resource: toque-scaling-test-params
         # trigger: true
