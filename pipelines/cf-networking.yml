@@ -1014,7 +1014,7 @@ jobs:
         trigger: true
       - get: scaling-test-params
         resource: toque-scaling-test-params
-        trigger: true
+        # trigger: true
     - task: set-scaling-test-params
       file: container-networking-ci/tasks/set-scaling-test-params.yml
       params:
@@ -1034,11 +1034,11 @@ jobs:
         passed: [toque-push]
       - get: cf-networking
         resource: cf-networking-dev
-        passed: [toque-push]
+        # passed: [toque-push]
       - get: container-networking-ci
       - get: scaling-test-params
         resource: toque-scaling-test-params
-        passed: [toque-push]
+        # passed: [toque-push]
       - get: toque-stats
       - get: deployments-repo
         resource: container-networking-deployments
