@@ -166,8 +166,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry-incubator/cf-networking-release.git
-      branch: develop
-      tag_filter: pinned # change this to v0.18.0 after it is released and remove the pinned tag
+      branch: pinned
   - name: cf-deployment-concourse-tasks-pinned
     type: git
     source:
@@ -182,13 +181,13 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry-incubator/container-networking-ci
-      tag_filter: pinned
+      branch: pinned
   - name: container-networking-deployments-pinned
     type: git
     source:
       uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
       private_key: {{container-networking-deployments-push-key}}
-      tag_filter: pinned
+      branch: pinned
   ####### Stats
   - name: mitre-stats
     type: git
