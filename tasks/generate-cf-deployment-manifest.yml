@@ -6,7 +6,7 @@ image_resource:
 platform: linux
 
 inputs:
-  - name: cf-networking
+  - name: cf-networking-release
   - name: container-networking-ci
   - name: deployments-repo
   - name: cf-deployment
