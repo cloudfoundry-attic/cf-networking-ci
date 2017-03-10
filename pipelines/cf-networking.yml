@@ -792,6 +792,9 @@ jobs:
         resource: cf-networking-dev
         trigger: true
         passed: [pickelhelm-test]
+      - get: cf-networking
+        resource: cf-networking-dev
+        passed: [pickelhelm-test]
       - get: version
         params:
           pre: rc
@@ -818,8 +821,6 @@ jobs:
         rebase: true
     - task: create-release-tarball
       file: cf-networking/ci/create-release-tarball.yml
-      input_mapping:
-        cf-networking: cf-networking-release
     - put: cf-networking-tarball
       params:
         from: tarballs/cf-networking-([^/]*).tgz
