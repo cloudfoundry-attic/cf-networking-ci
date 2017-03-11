@@ -517,7 +517,8 @@ jobs:
     serial_groups: [sombrero]
     plan:
     - aggregate:
-      - get: container-networking-ci-pinned
+      - get: container-networking-ci
+        resource: container-networking-ci-pinned
       - get: container-networking-deployments-pinned
       - get: container-networking-deployments
         passed: [sombrero-deploy-pinned]
@@ -530,7 +531,6 @@ jobs:
     - task: acceptance-tests
       file: container-networking-ci/tasks/acceptance-tests.yml
       input_mapping:
-        container-networking-ci: container-networking-ci-pinned
         test-config: container-networking-deployments-pinned
         vars-store: container-networking-deployments
         cf-networking: cf-networking-pinned
