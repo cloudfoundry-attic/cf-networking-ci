@@ -278,7 +278,6 @@ jobs:
       - get: container-networking-ci
       - get: cf-deployment-concourse-tasks
       - get: container-networking-deployments
-        passed: [trucker-bbl-up]
       - get: cf-deployment
       - get: cf-networking-dev
         passed: [postgres-tests, mysql-tests]
@@ -472,7 +471,6 @@ jobs:
       - get: cf-deployment-concourse-tasks
         resource: cf-deployment-concourse-tasks-pinned
       - get: container-networking-deployments
-        passed: [sombrero-bbl-up]
       - get: cf-deployment
         resource: cf-deployment-pinned
       - get: cf-networking-pinned
