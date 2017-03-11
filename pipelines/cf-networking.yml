@@ -471,17 +471,11 @@ jobs:
       - get: container-networking-ci
       - get: cf-deployment-concourse-tasks
         resource: cf-deployment-concourse-tasks-pinned
-      - get: bbl-state
-        resource: container-networking-deployments
+      - get: container-networking-deployments
         passed: [sombrero-bbl-up]
       - get: cf-deployment
         resource: cf-deployment-pinned
-      - get: vars-store
-        resource: container-networking-deployments
-      - get: deployments-repo
-        resource: container-networking-deployments
-      - get: cf-networking-release
-        resource: cf-networking-pinned
+      - get: cf-networking-pinned
       - get: cf-networking-dev
         passed: [postgres-tests, mysql-tests]
         trigger: true
@@ -489,14 +483,21 @@ jobs:
       file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/sombrero/
+      input_mapping:
+        bbl-state: container-networking-deployments
     - task: upload-stemcell
       file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/sombrero/
+      input_mapping:
+        bbl-state: container-networking-deployments
     - task: collect-ops-files
       file: container-networking-ci/tasks/collect-ops-files.yml
       params:
         ENVIRONMENT_NAME: sombrero
+      input_mapping:
+        cf-networking-release: cf-networking-pinned
+        deployments-repo: container-networking-deployments
     - task: deploy-oldest-compatible-version
       file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
       params:
@@ -506,7 +507,9 @@ jobs:
         VARS_STORE_FILE: environments/sombrero/vars-store.yml
         REGENERATE_VARS_STORE: true
       input_mapping:
-        release: cf-networking-release
+        release: cf-networking-pinned
+        vars-store: container-networking-deployments
+        bbl-state: container-networking-deployments
     - put: container-networking-deployments
       params:
         repository: updated-vars-store
@@ -516,13 +519,12 @@ jobs:
     serial_groups: [sombrero]
     plan:
     - aggregate:
-      - get: container-networking-ci
-        resource: container-networking-ci-pinned
+      - get: container-networking-ci-pinned
       - get: container-networking-deployments-pinned
       - get: container-networking-deployments
         passed: [sombrero-deploy-pinned]
-      - get: cf-networking
-        resource: cf-networking-pinned
+        trigger: true
+      - get: cf-networking-pinned
         passed: [sombrero-deploy-pinned]
       - get: cf-networking-dev
         passed: [sombrero-deploy-pinned]
@@ -530,8 +532,10 @@ jobs:
     - task: acceptance-tests
       file: container-networking-ci/tasks/acceptance-tests.yml
       input_mapping:
+        container-networking-ci: container-networking-ci-pinned
         test-config: container-networking-deployments-pinned
         vars-store: container-networking-deployments
+        cf-networking: cf-networking-pinned
       params:
         ENVIRONMENT_NAME: sombrero
 
@@ -541,25 +545,26 @@ jobs:
     - aggregate:
       - get: container-networking-ci
       - get: cf-deployment-concourse-tasks
-      - get: bbl-state
-        resource: container-networking-deployments
       - get: cf-deployment
-      - get: vars-store
-        resource: container-networking-deployments
-      - get: deployments-repo
-        resource: container-networking-deployments
-      - get: cf-networking-release
-        resource: cf-networking-dev
+      - get: container-networking-deployments
+        passed: [sombrero-test-pinned]
+        trigger: true
+      - get: cf-networking-dev
         passed: [sombrero-test-pinned]
         trigger: true
     - task: collect-ops-files
       file: container-networking-ci/tasks/collect-ops-files.yml
       params:
         ENVIRONMENT_NAME: sombrero
+      input_mapping:
+        cf-networking-release: cf-networking-dev
+        deployments-repo: container-networking-deployments
     - task: upload-stemcell
       file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/sombrero/
+      input_mapping:
+        bbl-state: container-networking-deployments
     - task: deploy-upgrade
       file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
       params:
@@ -568,7 +573,9 @@ jobs:
         SYSTEM_DOMAIN: sombrero.c2c.cf-app.com
         VARS_STORE_FILE: environments/sombrero/vars-store.yml
       input_mapping:
-        release: cf-networking-release
+        release: cf-networking-dev
+        vars-store: container-networking-deployments
+        bbl-state: container-networking-deployments
     - put: container-networking-deployments
       params:
         repository: updated-vars-store
@@ -580,6 +587,8 @@ jobs:
     - aggregate:
       - get: container-networking-ci
       - get: container-networking-deployments
+        passed: [sombrero-upgrade]
+        trigger: true
       - get: cf-networking
         resource: cf-networking-dev
         passed: [sombrero-upgrade]
@@ -596,9 +605,9 @@ jobs:
     serial_groups: [sombrero]
     plan:
     - aggregate:
-      - get: bbl-state
-        resource: container-networking-deployments
+      - get: container-networking-deployments
         passed: [sombrero-test-upgrade]
+        trigger: true
       - get: cf-deployment-concourse-tasks
       - get: cf-networking-release
         resource: cf-networking-dev
@@ -608,6 +617,8 @@ jobs:
       file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/sombrero/
+      input_mapping:
+        bbl-state: container-networking-deployments
 
   - name: postgres-tests
     public: true
