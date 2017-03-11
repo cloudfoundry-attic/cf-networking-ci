@@ -277,30 +277,31 @@ jobs:
     - aggregate:
       - get: container-networking-ci
       - get: cf-deployment-concourse-tasks
-      - get: bbl-state
-        resource: container-networking-deployments
+      - get: container-networking-deployments
         passed: [trucker-bbl-up]
       - get: cf-deployment
-      - get: vars-store
-        resource: container-networking-deployments
-      - get: deployments-repo
-        resource: container-networking-deployments
-      - get: cf-networking-release
-        resource: cf-networking-dev
+      - get: cf-networking-dev
         passed: [postgres-tests, mysql-tests]
         trigger: true
     - task: delete-deployment
       file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/trucker/
+      input_mapping:
+        bbl-state: container-networking-deployments
     - task: upload-stemcell
       file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/trucker/
+      input_mapping:
+        bbl-state: container-networking-deployments
     - task: collect-ops-files
       file: container-networking-ci/tasks/collect-ops-files.yml
       params:
         ENVIRONMENT_NAME: trucker
+      input_mapping:
+        cf-networking-release: cf-networking-dev
+        deployments-repo: container-networking-deployments
     - task: deploy-vanilla
       file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
       params:
@@ -309,6 +310,9 @@ jobs:
         OPS_FILES: gcp.yml opsfile.yml
         VARS_STORE_FILE: environments/trucker/vars-store.yml
         REGENERATE_VARS_STORE: true
+      input_mapping:
+        vars-store: container-networking-deployments
+        bbl-state: container-networking-deployments
     - put: container-networking-deployments
       params:
         repository: updated-vars-store
@@ -320,6 +324,7 @@ jobs:
     - aggregate:
       - get: container-networking-deployments
         passed: [trucker-deploy]
+        trigger: true
       - get: cf-networking-dev
         passed: [trucker-deploy]
         trigger: true
@@ -359,22 +364,20 @@ jobs:
     - aggregate:
       - get: container-networking-ci
       - get: cf-deployment-concourse-tasks
-      - get: bbl-state
-        resource: container-networking-deployments
       - get: cf-deployment
-      - get: vars-store
-        resource: container-networking-deployments
+      - get: container-networking-deployments
         passed: [trucker-push]
-      - get: deployments-repo
-        resource: container-networking-deployments
-      - get: cf-networking-release
-        resource: cf-networking-dev
+        trigger: true
+      - get: cf-networking-dev
         passed: [trucker-push]
         trigger: true
     - task: collect-ops-files
       file: container-networking-ci/tasks/collect-ops-files.yml
       params:
         ENVIRONMENT_NAME: trucker
+      input_mapping:
+        cf-networking-release: cf-networking-dev
+        deployments-repo: container-networking-deployments
     - task: deploy-upgrade
       file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
       params:
@@ -383,7 +386,9 @@ jobs:
         SYSTEM_DOMAIN: trucker.c2c.cf-app.com
         VARS_STORE_FILE: environments/trucker/vars-store.yml
       input_mapping:
-        release: cf-networking-release
+        release: cf-networking-dev
+        vars-store: container-networking-deployments
+        bbl-state: container-networking-deployments
     - put: container-networking-deployments
       params:
         repository: updated-vars-store
@@ -396,8 +401,7 @@ jobs:
       - get: container-networking-deployments
         passed: [trucker-upgrade]
         trigger: true
-      - get: cf-networking-release
-        resource: cf-networking-dev
+      - get: cf-networking-dev
         passed: [trucker-upgrade]
         trigger: true
     - task: ping-app
@@ -420,18 +424,19 @@ jobs:
     serial_groups: [trucker]
     plan:
     - aggregate:
-      - get: bbl-state
-        resource: container-networking-deployments
+      - get: container-networking-deployments
         passed: [trucker-test-upgrade]
+        trigger: true
       - get: cf-deployment-concourse-tasks
-      - get: cf-networking-release
-        resource: cf-networking-dev
+      - get: cf-networking-dev
         passed: [trucker-test-upgrade]
         trigger: true
     - task: delete-deployment
       file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/trucker/
+      input_mapping:
+        bbl-state: container-networking-deployments
 
   - name: sombrero-bbl-up
     serial_groups: [sombrero]
