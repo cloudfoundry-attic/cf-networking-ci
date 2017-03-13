@@ -631,10 +631,10 @@ jobs:
       - get: cf-networking-dev
         trigger: true
     - task: unit-and-integration-tests
-      file: cf-networking-release/ci/postgres-tests.yml
       privileged: true
       input_mapping:
         cf-networking-release: cf-networking-dev
+      file: cf-networking-dev/ci/postgres-tests.yml
 
   - name: mysql-tests
     public: true
@@ -643,7 +643,7 @@ jobs:
       - get: cf-networking-dev
         trigger: true
     - task: unit-and-integration-tests
-      file: cf-networking-release/ci/mysql-tests.yml
+      file: cf-networking-dev/ci/mysql-tests.yml
       privileged: true
       input_mapping:
         cf-networking-release: cf-networking-dev
@@ -710,7 +710,7 @@ jobs:
         VARS_STORE_FILE: environments/pickelhelm/vars-store.yml
       input_mapping:
         bbl-state: container-networking-deployments
-        release: cf-networking-release
+        release: cf-networking-dev
         vars-store: container-networking-deployments
     - put: container-networking-deployments
       params:
@@ -833,7 +833,9 @@ jobs:
         OPS_FILES: gcp.yml tcp-routing-gcp.yml use-3-azs-for-router.yml cf-networking.yml opsfile.yml
         VARS_STORE_FILE: environments/mitre/vars-store.yml
       input_mapping:
-        release: cf-networking-release
+        bbl-state: container-networking-deployments
+        vars-store: container-networking-deployments
+        release: cf-networking-dev
     - put: container-networking-deployments
       params:
         repository: updated-vars-store
