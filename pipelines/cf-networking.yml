@@ -123,24 +123,6 @@ resources:
     source:
       branch: master
       uri: https://github.com/cloudfoundry/cf-deployment.git
-  ###### ENV
-  - name: toque-env-bbl-state
-    type: git
-    source:
-      uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
-      branch: master
-      private_key: {{container-networking-deployments-push-key}}
-      paths:
-      - environments/toque/bbl-state.json
-      - environments/gcp/service-account.key.json
-  - name: toque-env-vars-store
-    type: git
-    source:
-      uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
-      branch: master
-      private_key: {{container-networking-deployments-push-key}}
-      paths:
-      - environments/toque/vars-store.yml
   ###### bosh.io releases
   - name: datadog-firehose-nozzle-release
     type: bosh-io-release
@@ -478,19 +460,20 @@ jobs:
         passed: [postgres-tests, mysql-tests]
         trigger: true
     - task: delete-deployment
-      file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+      file: cf-deployment-concourse-tasks-pinned/bosh-delete-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/sombrero/
       input_mapping:
         bbl-state: container-networking-deployments
         cf-deployment-concourse-tasks: cf-deployment-concourse-tasks-pinned
     - task: upload-stemcell
-      file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
+      file: cf-deployment-concourse-tasks-pinned/bosh-upload-stemcell-from-cf-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/sombrero/
       input_mapping:
         bbl-state: container-networking-deployments
         cf-deployment: cf-deployment-pinned
+        cf-deployment-concourse-tasks: cf-deployment-concourse-tasks-pinned
     - task: collect-ops-files
       file: container-networking-ci/tasks/collect-ops-files.yml
       params:
@@ -500,7 +483,7 @@ jobs:
         cf-networking-release: cf-networking-pinned
         deployments-repo: container-networking-deployments
     - task: deploy-oldest-compatible-version
-      file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
+      file: cf-deployment-concourse-tasks-pinned/bosh-deploy-with-created-release/task.yml
       params:
         BBL_STATE_DIR: environments/sombrero/
         OPS_FILES: gcp.yml opsfile.yml cf-networking.yml
@@ -842,9 +825,9 @@ jobs:
         bbl-state: container-networking-deployments
         vars-store: container-networking-deployments
     - task: create-release-tarball
-      file: cf-networking-release/ci/create-release-tarball.yml
+      file: cf-networking-dev/ci/create-release-tarball.yml
       input_mapping:
-        cf-networking: cf-networking-release
+        cf-networking: cf-networking-dev
     - put: cf-networking-tarball
       params:
         from: tarballs/cf-networking-([^/]*).tgz
@@ -961,7 +944,7 @@ jobs:
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: toque-env-bbl-state
+      - get: container-networking-deployments
     - task: bbl-up
       file: cf-deployment-concourse-tasks/bbl-up/task.yml
       params:
@@ -976,9 +959,9 @@ jobs:
         LB_DOMAIN: toque.c2c.cf-app.com
         BBL_ENV_NAME: toque
       input_mapping:
-        bbl-state: toque-env-bbl-state
+        bbl-state: container-networking-deployments
       ensure:
-        put: toque-env-bbl-state
+        put: container-networking-deployments
         params:
           repository: updated-bbl-state
           rebase: true
@@ -990,9 +973,6 @@ jobs:
       - get: cf-deployment-concourse-tasks
       - get: cf-deployment
       - get: container-networking-ci
-      - get: toque-env-bbl-state
-        passed: [toque-bbl-up]
-      - get: toque-env-vars-store
       - get: container-networking-deployments
       - get: cf-networking-dev
         passed: [mysql-tests, postgres-tests]
@@ -1000,7 +980,7 @@ jobs:
     - task: upload-stemcell
       file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
       input_mapping:
-        bbl-state: toque-env-bbl-state
+        bbl-state: container-networking-deployments
         cf-deployment: cf-deployment
       params:
         BBL_STATE_DIR: environments/toque
@@ -1019,11 +999,11 @@ jobs:
         OPS_FILES: gcp.yml tcp-routing-gcp.yml use-3-azs-for-router.yml cf-networking.yml opsfile.yml
         VARS_STORE_FILE: environments/toque/vars-store.yml
       input_mapping:
-        bbl-state: toque-env-bbl-state
+        bbl-state: container-networking-deployments
         cf-deployment: cf-deployment
         release: cf-networking-dev
-        vars-store: toque-env-vars-store
-    - put: toque-env-vars-store
+        vars-store: container-networking-deployments
+    - put: container-networking-deployments
       params:
         repository: updated-vars-store
         rebase: true
@@ -1064,7 +1044,6 @@ jobs:
     - aggregate:
       - get: container-networking-ci
       - get: container-networking-deployments
-      - get: toque-env-vars-store
         passed: [toque-deploy]
       - get: cf-networking-dev
         passed: [toque-deploy]
@@ -1084,7 +1063,7 @@ jobs:
         ENVIRONMENT_NAME: toque
       input_mapping:
         cf-networking: cf-networking-dev
-        test-config: container-networking-deployments
+        test-config: test-config
 
   - name: toque-test
     serial_groups: [toque]
@@ -1092,8 +1071,6 @@ jobs:
     - aggregate:
       - get: every-half-hour
         trigger: true
-      - get: toque-env-vars-store
-        passed: [toque-push]
       - get: cf-networking-dev
         passed: [toque-push]
       - get: container-networking-ci
@@ -1101,6 +1078,7 @@ jobs:
         passed: [toque-push]
       - get: toque-stats
       - get: container-networking-deployments
+        passed: [toque-push]
     - task: set-scaling-test-params
       file: container-networking-ci/tasks/set-scaling-test-params.yml
       params:
@@ -1122,7 +1100,7 @@ jobs:
         ENVIRONMENT_NAME: toque
       input_mapping:
         cf-networking: cf-networking-dev
-        test-config: container-networking-deployments
+        test-config: test-config
       ensure:
         task: emit-datadog-test-stop
         file: container-networking-ci/tasks/emit-datadog-event.yml
