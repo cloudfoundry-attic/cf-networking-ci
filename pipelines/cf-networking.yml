@@ -682,7 +682,6 @@ jobs:
       - get: container-networking-ci
       - get: cf-deployment-concourse-tasks
       - get: container-networking-deployments
-        passed: [pickelhelm-bbl-up]
       - get: cf-deployment
         trigger: true
       - get: cf-networking-dev
@@ -802,7 +801,6 @@ jobs:
       - get: container-networking-ci
       - get: cf-deployment-concourse-tasks
       - get: container-networking-deployments
-        passed: [mitre-bbl-up]
       - get: cf-deployment
         passed: [pickelhelm-test]
         trigger: true
@@ -844,7 +842,7 @@ jobs:
         bbl-state: container-networking-deployments
         vars-store: container-networking-deployments
     - task: create-release-tarball
-      file: cf-networking/ci/create-release-tarball.yml
+      file: cf-networking-release/ci/create-release-tarball.yml
       input_mapping:
         cf-networking: cf-networking-release
     - put: cf-networking-tarball
