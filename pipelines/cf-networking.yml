@@ -10,16 +10,17 @@ groups:
   - mitre-acceptance-errand
   - mitre-smoke
   - mitre-cats
+  - mitre-deploy-firehose-nozzle
   - shipit
   - bump-minor-version
   - merge-master
   - toque-deploy
   - toque-push
   - toque-test
+  - toque-deploy-firehose-nozzle
   - trucker-deploy
   - trucker-push
   - trucker-upgrade
-  - toque-deploy-firehose-nozzle
   - trucker-test-upgrade
   - sombrero-deploy-pinned
   - sombrero-test-pinned
@@ -51,6 +52,7 @@ groups:
   - mitre-acceptance-errand
   - mitre-smoke
   - mitre-cats
+  - mitre-deploy-firehose-nozzle
   - delete-deployment-mitre-cf
 - name: trucker
   jobs:
@@ -880,6 +882,36 @@ jobs:
     - put: mitre-stats
       params: {repository: stats_output}
 
+  - name: mitre-deploy-firehose-nozzle
+    serial_groups: [mitre]
+    plan:
+    - aggregate:
+      - get: cf-deployment-concourse-tasks
+      - get: container-networking-ci
+      - get: container-networking-deployments
+        passed: [mitre-deploy]
+      - get: datadog-firehose-nozzle-release
+    - task: upload-datadog-firehose-nozzle-release
+      file: container-networking-ci/tasks/upload-release-tarball.yml
+      input_mapping:
+        deployments-repo: container-networking-deployments
+        tarballs: datadog-firehose-nozzle-release
+      params:
+        ENVIRONMENT_NAME: mitre
+    - task: deploy-datadog-firehose-nozzle
+      file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
+      input_mapping:
+        cf-deployment: container-networking-deployments
+        vars-store: container-networking-deployments
+        bbl-state: container-networking-deployments
+        ops-files: container-networking-deployments
+      params:
+        BBL_STATE_DIR: environments/mitre
+        MANIFEST_FILE: firehose-nozzles.yml
+        OPS_FILES: ""
+        SYSTEM_DOMAIN: mitre.c2c.cf-app.com
+        VARS_STORE_FILE: environments/mitre/vars-store.yml
+
   - name: mitre-acceptance-errand
     serial_groups: [mitre]
     plan:
@@ -1034,10 +1066,10 @@ jobs:
     - task: deploy-datadog-firehose-nozzle
       file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
       input_mapping:
-        cf-deployment: deployments-repo
-        vars-store: deployments-repo
-        bbl-state: deployments-repo
-        ops-files: deployments-repo
+        cf-deployment: container-networking-deployments
+        vars-store: container-networking-deployments
+        bbl-state: container-networking-deployments
+        ops-files: container-networking-deployments
       params:
         BBL_STATE_DIR: environments/toque
         MANIFEST_FILE: firehose-nozzles.yml
