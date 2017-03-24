@@ -18,9 +18,6 @@ groups:
   - toque-push
   - toque-test
   - toque-deploy-firehose-nozzle
-  - trucker-deploy
-  - trucker-push
-  - trucker-upgrade
   - trucker-test-upgrade
   - sombrero-test-upgrade
 - name: classic
@@ -54,9 +51,6 @@ groups:
 - name: trucker
   jobs:
   - trucker-bbl-up
-  - trucker-deploy
-  - trucker-push
-  - trucker-upgrade
   - trucker-test-upgrade
   - delete-trucker-deployment
 - name: sombrero
@@ -257,7 +251,7 @@ jobs:
           repository: updated-bbl-state
           rebase: true
 
-  - name: trucker-deploy
+  - name: trucker-test-upgrade
     serial_groups: [trucker]
     plan:
     - aggregate:
@@ -298,21 +292,6 @@ jobs:
       input_mapping:
         vars-store: container-networking-deployments
         bbl-state: container-networking-deployments
-    - put: container-networking-deployments
-      params:
-        repository: updated-vars-store
-        rebase: true
-
-  - name: trucker-push
-    serial_groups: [trucker]
-    plan:
-    - aggregate:
-      - get: container-networking-deployments
-        passed: [trucker-deploy]
-        trigger: true
-      - get: cf-networking-dev
-        passed: [trucker-deploy]
-        trigger: true
     - task: push-app
       config:
         platform: linux
@@ -342,20 +321,6 @@ jobs:
             cf target -s test-space
             cf push proxy
             curl -v -f http://proxy.${ENVIRONMENT}.c2c.cf-app.com
-
-  - name: trucker-upgrade
-    serial_groups: [trucker]
-    plan:
-    - aggregate:
-      - get: container-networking-ci
-      - get: cf-deployment-concourse-tasks
-      - get: cf-deployment
-      - get: container-networking-deployments
-        passed: [trucker-push]
-        trigger: true
-      - get: cf-networking-dev
-        passed: [trucker-push]
-        trigger: true
     - task: collect-ops-files
       file: container-networking-ci/tasks/collect-ops-files.yml
       params:
@@ -372,23 +337,8 @@ jobs:
         VARS_STORE_FILE: environments/trucker/vars-store.yml
       input_mapping:
         release: cf-networking-dev
-        vars-store: container-networking-deployments
+        vars-store: updated-vars-store
         bbl-state: container-networking-deployments
-    - put: container-networking-deployments
-      params:
-        repository: updated-vars-store
-        rebase: true
-
-  - name: trucker-test-upgrade
-    serial_groups: [trucker]
-    plan:
-    - aggregate:
-      - get: container-networking-deployments
-        passed: [trucker-upgrade]
-        trigger: true
-      - get: cf-networking-dev
-        passed: [trucker-upgrade]
-        trigger: true
     - task: ping-app
       config:
         platform: linux
@@ -404,6 +354,12 @@ jobs:
           - |
             set -o pipefail
             curl -f -v http://proxy.${ENVIRONMENT}.c2c.cf-app.com
+    - task: delete-deployment
+      file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+      params:
+        BBL_STATE_DIR: environments/trucker/
+      input_mapping:
+        bbl-state: container-networking-deployments
 
   - name: delete-trucker-deployment
     serial_groups: [trucker]
