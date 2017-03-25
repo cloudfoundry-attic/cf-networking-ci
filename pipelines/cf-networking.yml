@@ -299,8 +299,8 @@ jobs:
           type: docker-image
           source: {repository: c2cnetworking/deploy-light}
         inputs:
-          - name: container-networking-deployments
           - name: cf-networking-dev
+          - name: updated-vars-store
         params:
           ENVIRONMENT: trucker
         run:
@@ -310,7 +310,7 @@ jobs:
           - |
             set -o pipefail
             cf api api.${ENVIRONMENT}.c2c.cf-app.com --skip-ssl-validation
-            pushd container-networking-deployments/environments/${ENVIRONMENT}
+            pushd updated-vars-store/environments/${ENVIRONMENT}
               ADMIN_PASSWORD=$(grep uaa_scim_users_admin_password vars-store.yml  | cut -d ' ' -f2)
             popd
             cd cf-networking-dev/src/example-apps/proxy
