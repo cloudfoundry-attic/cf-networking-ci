@@ -17,7 +17,6 @@ groups:
   - toque-deploy
   - toque-push
   - toque-test
-  - toque-deploy-firehose-nozzle
   - trucker-test-upgrade
   - sombrero-test-upgrade
 - name: classic
