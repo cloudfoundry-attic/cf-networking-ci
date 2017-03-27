@@ -18,5 +18,5 @@ run:
   args:
     - -c
     - |
-      bosh create release --version $(date "+%s") --with-tarball --name diego --dir diego-release \
+      bosh create-release --timestamp-version --tarball=diego-release/dev_releases/diego/diego-release.tgz --name diego --dir diego-release \
        && cp diego-release/dev_releases/diego/*.tgz diego-release-tarball
