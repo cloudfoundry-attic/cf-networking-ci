@@ -285,7 +285,7 @@ jobs:
       params:
         BBL_STATE_DIR: environments/trucker/
         SYSTEM_DOMAIN: trucker.c2c.cf-app.com
-        OPS_FILES: gcp.yml opsfile.yml
+        OPS_FILES: gcp.yml opsfile.yml use-3-azs-for-router.yml
         VARS_STORE_FILE: environments/trucker/vars-store.yml
         REGENERATE_VARS_STORE: true
       input_mapping:
@@ -331,7 +331,7 @@ jobs:
       file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
       params:
         BBL_STATE_DIR: environments/trucker/
-        OPS_FILES: gcp.yml opsfile.yml cf-networking.yml
+        OPS_FILES: gcp.yml opsfile.yml cf-networking.yml use-3-azs-for-router.yml
         SYSTEM_DOMAIN: trucker.c2c.cf-app.com
         VARS_STORE_FILE: environments/trucker/vars-store.yml
       input_mapping:
@@ -448,7 +448,7 @@ jobs:
       file: cf-deployment-concourse-tasks-pinned/bosh-deploy-with-created-release/task.yml
       params:
         BBL_STATE_DIR: environments/sombrero/
-        OPS_FILES: gcp.yml opsfile.yml cf-networking.yml
+        OPS_FILES: gcp.yml opsfile.yml cf-networking.yml use-3-azs-for-router.yml
         SYSTEM_DOMAIN: sombrero.c2c.cf-app.com
         VARS_STORE_FILE: environments/sombrero/vars-store.yml
         REGENERATE_VARS_STORE: true
@@ -484,7 +484,7 @@ jobs:
       file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
       params:
         BBL_STATE_DIR: environments/sombrero/
-        OPS_FILES: gcp.yml opsfile.yml cf-networking.yml
+        OPS_FILES: gcp.yml opsfile.yml cf-networking.yml use-3-azs-for-router.yml
         SYSTEM_DOMAIN: sombrero.c2c.cf-app.com
         VARS_STORE_FILE: environments/sombrero/vars-store.yml
       input_mapping:
