@@ -11,4 +11,4 @@ pushd deployments-repo/environments/$ENVIRONMENT_NAME
   export BOSH_DEPLOYMENT=cf
 popd
 
-bosh-cli run-errand "${ERRAND}"
+bosh run-errand "${ERRAND}"
