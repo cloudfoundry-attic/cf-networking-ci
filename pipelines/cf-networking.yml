@@ -746,7 +746,7 @@ jobs:
         bbl-state: container-networking-deployments
         vars-store: container-networking-deployments
     - task: create-release-tarball
-      file: cf-networking-dev/ci/create-release-tarball.yml
+      file: container-networking-ci/tasks/create-release-tarball.yml
       input_mapping:
         cf-networking: cf-networking-dev
     - put: cf-networking-tarball
