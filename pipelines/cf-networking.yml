@@ -532,11 +532,12 @@ jobs:
     - aggregate:
       - get: cf-networking-dev
         trigger: true
+      - get: container-networking-ci
     - task: unit-and-integration-tests
+      file: container-networking-ci/tasks/postgres-tests.yml
       privileged: true
       input_mapping:
         cf-networking-release: cf-networking-dev
-      file: cf-networking-dev/ci/postgres-tests.yml
 
   - name: mysql-tests
     public: true
@@ -544,8 +545,9 @@ jobs:
     - aggregate:
       - get: cf-networking-dev
         trigger: true
+      - get: container-networking-ci
     - task: unit-and-integration-tests
-      file: cf-networking-dev/ci/mysql-tests.yml
+      file: container-networking-ci/tasks/mysql-tests.yml
       privileged: true
       input_mapping:
         cf-networking-release: cf-networking-dev
