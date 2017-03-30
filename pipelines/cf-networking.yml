@@ -676,7 +676,7 @@ jobs:
       params:
         BBL_STATE_DIR: environments/pickelhelm/
         SYSTEM_DOMAIN: pickelhelm.c2c.cf-app.com
-        OPS_FILES: gcp.yml use-3-azs-for-router.yml cf-networking.yml opsfile.yml
+        OPS_FILES: gcp.yml use-3-azs-for-router.yml cf-networking.yml network-daemon.yml opsfile.yml
         VARS_STORE_FILE: environments/pickelhelm/vars-store.yml
       input_mapping:
         bbl-state: container-networking-deployments
@@ -817,7 +817,7 @@ jobs:
       params:
         BBL_STATE_DIR: environments/mitre/
         SYSTEM_DOMAIN: mitre.c2c.cf-app.com
-        OPS_FILES: gcp.yml use-3-azs-for-router.yml cf-networking.yml opsfile.yml
+        OPS_FILES: gcp.yml use-3-azs-for-router.yml cf-networking.yml network-daemon.yml opsfile.yml
         VARS_STORE_FILE: environments/mitre/vars-store.yml
       input_mapping:
         bbl-state: container-networking-deployments
