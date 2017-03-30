@@ -33,6 +33,7 @@ groups:
 - name: pickelhelm
   jobs:
   - pickelhelm-bbl-up
+  - pickelhelm-bbl-destroy
   - pickelhelm-deploy
   - pickelhelm-test
   - pickelhelm-deploy-firehose-nozzle
@@ -40,6 +41,7 @@ groups:
 - name: mitre
   jobs:
   - mitre-bbl-up
+  - mitre-bbl-destroy
   - mitre-deploy
   - mitre-test
   - mitre-acceptance-errand
@@ -50,16 +52,19 @@ groups:
 - name: trucker
   jobs:
   - trucker-bbl-up
+  - trucker-bbl-destroy
   - trucker-test-upgrade
   - delete-trucker-deployment
 - name: sombrero
   jobs:
   - sombrero-bbl-up
+  - sombrero-bbl-destroy
   - sombrero-test-upgrade
   - delete-sombrero-deployment
 - name: toque
   jobs:
   - toque-bbl-up
+  - toque-bbl-destroy
   - toque-deploy
   - toque-push
   - toque-test
@@ -78,6 +83,14 @@ groups:
   - trucker-bbl-up
   - sombrero-bbl-up
   - slouch-bbl-up
+- name: bbl-destroy
+  jobs:
+  - pickelhelm-bbl-destroy
+  - mitre-bbl-destroy
+  - toque-bbl-destroy
+  - trucker-bbl-destroy
+  - sombrero-bbl-destroy
+  - slouch-bbl-destroy
 - name: cleanup
   jobs:
   - delete-deployment-mitre-cf
@@ -250,6 +263,24 @@ jobs:
           repository: updated-bbl-state
           rebase: true
 
+  - name: trucker-bbl-destroy
+    serial_groups: [trucker]
+    plan:
+    - aggregate:
+      - get: cf-deployment-concourse-tasks
+      - get: container-networking-deployments
+    - task: bbl-destroy
+      file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+      params:
+        BBL_STATE_DIR: environments/trucker/
+      input_mapping:
+        bbl-state: container-networking-deployments
+      ensure:
+        put: container-networking-deployments
+        params:
+          repository: updated-bbl-state
+          rebase: true
+
   - name: trucker-test-upgrade
     serial_groups: [trucker]
     plan:
@@ -285,7 +316,7 @@ jobs:
       params:
         BBL_STATE_DIR: environments/trucker/
         SYSTEM_DOMAIN: trucker.c2c.cf-app.com
-        OPS_FILES: gcp.yml opsfile.yml use-3-azs-for-router.yml
+        OPS_FILES: gcp.yml use-3-azs-for-router.yml opsfile.yml
         VARS_STORE_FILE: environments/trucker/vars-store.yml
         REGENERATE_VARS_STORE: true
       input_mapping:
@@ -331,7 +362,7 @@ jobs:
       file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
       params:
         BBL_STATE_DIR: environments/trucker/
-        OPS_FILES: gcp.yml opsfile.yml cf-networking.yml use-3-azs-for-router.yml
+        OPS_FILES: gcp.yml use-3-azs-for-router.yml cf-networking.yml opsfile.yml
         SYSTEM_DOMAIN: trucker.c2c.cf-app.com
         VARS_STORE_FILE: environments/trucker/vars-store.yml
       input_mapping:
@@ -405,6 +436,24 @@ jobs:
           repository: updated-bbl-state
           rebase: true
 
+  - name: sombrero-bbl-destroy
+    serial_groups: [sombrero]
+    plan:
+    - aggregate:
+      - get: cf-deployment-concourse-tasks
+      - get: container-networking-deployments
+    - task: bbl-destroy
+      file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+      params:
+        BBL_STATE_DIR: environments/sombrero/
+      input_mapping:
+        bbl-state: container-networking-deployments
+      ensure:
+        put: container-networking-deployments
+        params:
+          repository: updated-bbl-state
+          rebase: true
+
   - name: sombrero-test-upgrade
     serial_groups: [sombrero]
     plan:
@@ -448,7 +497,7 @@ jobs:
       file: cf-deployment-concourse-tasks-pinned/bosh-deploy-with-created-release/task.yml
       params:
         BBL_STATE_DIR: environments/sombrero/
-        OPS_FILES: gcp.yml opsfile.yml cf-networking.yml use-3-azs-for-router.yml
+        OPS_FILES: gcp.yml use-3-azs-for-router.yml cf-networking.yml opsfile.yml
         SYSTEM_DOMAIN: sombrero.c2c.cf-app.com
         VARS_STORE_FILE: environments/sombrero/vars-store.yml
         REGENERATE_VARS_STORE: true
@@ -484,7 +533,7 @@ jobs:
       file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
       params:
         BBL_STATE_DIR: environments/sombrero/
-        OPS_FILES: gcp.yml opsfile.yml cf-networking.yml use-3-azs-for-router.yml
+        OPS_FILES: gcp.yml use-3-azs-for-router.yml cf-networking.yml opsfile.yml
         SYSTEM_DOMAIN: sombrero.c2c.cf-app.com
         VARS_STORE_FILE: environments/sombrero/vars-store.yml
       input_mapping:
@@ -579,6 +628,24 @@ jobs:
           repository: updated-bbl-state
           rebase: true
 
+  - name: pickelhelm-bbl-destroy
+    serial_groups: [pickelhelm]
+    plan:
+    - aggregate:
+      - get: cf-deployment-concourse-tasks
+      - get: container-networking-deployments
+    - task: bbl-destroy
+      file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+      params:
+        BBL_STATE_DIR: environments/pickelhelm/
+      input_mapping:
+        bbl-state: container-networking-deployments
+      ensure:
+        put: container-networking-deployments
+        params:
+          repository: updated-bbl-state
+          rebase: true
+
   - name: pickelhelm-deploy
     serial_groups: [pickelhelm]
     plan:
@@ -609,7 +676,7 @@ jobs:
       params:
         BBL_STATE_DIR: environments/pickelhelm/
         SYSTEM_DOMAIN: pickelhelm.c2c.cf-app.com
-        OPS_FILES: gcp.yml tcp-routing-gcp.yml use-3-azs-for-router.yml cf-networking.yml opsfile.yml
+        OPS_FILES: gcp.yml use-3-azs-for-router.yml cf-networking.yml opsfile.yml
         VARS_STORE_FILE: environments/pickelhelm/vars-store.yml
       input_mapping:
         bbl-state: container-networking-deployments
@@ -698,6 +765,24 @@ jobs:
           repository: updated-bbl-state
           rebase: true
 
+  - name: mitre-bbl-destroy
+    serial_groups: [mitre]
+    plan:
+    - aggregate:
+      - get: cf-deployment-concourse-tasks
+      - get: container-networking-deployments
+    - task: bbl-destroy
+      file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+      params:
+        BBL_STATE_DIR: environments/mitre/
+      input_mapping:
+        bbl-state: container-networking-deployments
+      ensure:
+        put: container-networking-deployments
+        params:
+          repository: updated-bbl-state
+          rebase: true
+
   - name: mitre-deploy
     serial_groups: [mitre, version]
     plan:
@@ -732,7 +817,7 @@ jobs:
       params:
         BBL_STATE_DIR: environments/mitre/
         SYSTEM_DOMAIN: mitre.c2c.cf-app.com
-        OPS_FILES: gcp.yml tcp-routing-gcp.yml use-3-azs-for-router.yml cf-networking.yml opsfile.yml
+        OPS_FILES: gcp.yml use-3-azs-for-router.yml cf-networking.yml opsfile.yml
         VARS_STORE_FILE: environments/mitre/vars-store.yml
       input_mapping:
         bbl-state: container-networking-deployments
@@ -917,6 +1002,24 @@ jobs:
           repository: updated-bbl-state
           rebase: true
 
+  - name: toque-bbl-destroy
+    serial_groups: [toque]
+    plan:
+    - aggregate:
+      - get: cf-deployment-concourse-tasks
+      - get: container-networking-deployments
+    - task: bbl-destroy
+      file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+      params:
+        BBL_STATE_DIR: environments/toque/
+      input_mapping:
+        bbl-state: container-networking-deployments
+      ensure:
+        put: container-networking-deployments
+        params:
+          repository: updated-bbl-state
+          rebase: true
+
   - name: toque-deploy
     serial_groups: [toque]
     plan:
@@ -948,7 +1051,7 @@ jobs:
       params:
         BBL_STATE_DIR: environments/toque
         SYSTEM_DOMAIN: toque.c2c.cf-app.com
-        OPS_FILES: gcp.yml tcp-routing-gcp.yml use-3-azs-for-router.yml cf-networking.yml opsfile.yml
+        OPS_FILES: gcp.yml use-3-azs-for-router.yml cf-networking.yml opsfile.yml
         VARS_STORE_FILE: environments/toque/vars-store.yml
       input_mapping:
         bbl-state: container-networking-deployments
@@ -1090,6 +1193,24 @@ jobs:
           repository: updated-bbl-state
           rebase: true
 
+  - name: slouch-bbl-destroy
+    serial_groups: [slouch]
+    plan:
+    - aggregate:
+      - get: cf-deployment-concourse-tasks
+      - get: container-networking-deployments
+    - task: bbl-destroy
+      file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+      params:
+        BBL_STATE_DIR: environments/slouch/
+      input_mapping:
+        bbl-state: container-networking-deployments
+      ensure:
+        put: container-networking-deployments
+        params:
+          repository: updated-bbl-state
+          rebase: true
+
   - name: slouch-deploy
     serial_groups: [slouch]
     plan:
@@ -1120,7 +1241,7 @@ jobs:
       params:
         BBL_STATE_DIR: environments/slouch
         SYSTEM_DOMAIN: slouch.c2c.cf-app.com
-        OPS_FILES: gcp.yml tcp-routing-gcp.yml use-3-azs-for-router.yml cf-networking.yml opsfile.yml
+        OPS_FILES: gcp.yml use-3-azs-for-router.yml cf-networking.yml opsfile.yml
         VARS_STORE_FILE: environments/slouch/vars-store.yml
       input_mapping:
         bbl-state: container-networking-deployments
