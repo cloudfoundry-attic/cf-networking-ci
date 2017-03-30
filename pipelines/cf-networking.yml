@@ -127,6 +127,7 @@ resources:
     source:
       uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks
       branch: master
+      tag_filter: v1.*
   - name: cf-deployment
     type: git
     source:
