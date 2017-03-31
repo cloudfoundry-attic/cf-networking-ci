@@ -670,10 +670,11 @@ jobs:
         bbl-state: container-networking-deployments
         release: cf-networking-dev
         vars-store: container-networking-deployments
-    - put: container-networking-deployments
-      params:
-        repository: updated-vars-store
-        rebase: true
+      ensure:
+        put: container-networking-deployments
+        params:
+          repository: updated-vars-store
+          rebase: true
 
   - name: pickelhelm-deploy-firehose-nozzle
     serial_groups: [pickelhelm]
@@ -811,13 +812,11 @@ jobs:
         bbl-state: container-networking-deployments
         vars-store: container-networking-deployments
         release: cf-networking-dev
-    - put: container-networking-deployments
-      params:
-        repository: updated-vars-store
-        rebase: true
-      input_mapping:
-        bbl-state: container-networking-deployments
-        vars-store: container-networking-deployments
+      ensure:
+        put: container-networking-deployments
+        params:
+          repository: updated-vars-store
+          rebase: true
     - task: create-release-tarball
       file: container-networking-ci/tasks/create-release-tarball.yml
       input_mapping:
@@ -1046,10 +1045,11 @@ jobs:
         cf-deployment: cf-deployment
         release: cf-networking-dev
         vars-store: container-networking-deployments
-    - put: container-networking-deployments
-      params:
-        repository: updated-vars-store
-        rebase: true
+      ensure:
+        put: container-networking-deployments
+        params:
+          repository: updated-vars-store
+          rebase: true
 
   - name: toque-deploy-firehose-nozzle
     serial_groups: [toque]
@@ -1236,10 +1236,11 @@ jobs:
         cf-deployment: cf-deployment
         release: cf-networking-dev
         vars-store: container-networking-deployments
-    - put: container-networking-deployments
-      params:
-        repository: updated-vars-store
-        rebase: true
+      ensure:
+        put: container-networking-deployments
+        params:
+          repository: updated-vars-store
+          rebase: true
 
   - name: delete-slouch-deployment
     public: true
