@@ -19,17 +19,6 @@ groups:
   - toque-test
   - trucker-test-upgrade
   - sombrero-test-upgrade
-- name: classic
-  jobs:
-  - mysql-tests
-  - postgres-tests
-  - pickelhelm-deploy
-  - pickelhelm-test
-  - mitre-deploy
-  - mitre-test
-  - mitre-smoke
-  - mitre-cats
-  - mitre-acceptance-errand
 - name: pickelhelm
   jobs:
   - pickelhelm-bbl-up
@@ -75,7 +64,7 @@ groups:
   - slouch-bbl-up
   - slouch-deploy
   - delete-slouch-deployment
-- name: bbl-up
+- name: bbl
   jobs:
   - pickelhelm-bbl-up
   - mitre-bbl-up
@@ -83,8 +72,6 @@ groups:
   - trucker-bbl-up
   - sombrero-bbl-up
   - slouch-bbl-up
-- name: bbl-destroy
-  jobs:
   - pickelhelm-bbl-destroy
   - mitre-bbl-destroy
   - toque-bbl-destroy
