@@ -14,8 +14,8 @@
         border: 0px;
       }
 
-      .row--tall  { height: 40%; }
-      .row--short { height: 60%; }
+      .row--tall  { height: 80%; }
+      .row--short { height: 20%; }
       .row--full  { height: 100%; }
       .row--one-third  { height: 33%; }
 
@@ -54,22 +54,14 @@
     </style>
   </head>
   <body>
-    <div class="row--one-third">
+    <div class="row--tall">
       <div class="col--full">
-        <iframe src="https://c2c.ci.cf-app.com/teams/main/pipelines/cf-networking?groups=classic"></iframe>
+        <iframe src="https://c2c.ci.cf-app.com/teams/main/pipelines/cf-networking?groups=cf-networking"></iframe>
       </div>
     </div>
-    <div class="row--one-third">
-      <div class="col--75pct">
-        <iframe src="https://c2c.ci.cf-app.com/teams/main/pipelines/cf-networking?groups=toque"></iframe>
-      </div>
-      <div class="col--25pct">
+    <div class="row--short">
+      <div class="col--full">
         <iframe src="https://c2c.ci.cf-app.com/teams/main/pipelines/silk"></iframe>
-      </div>
-    </div>
-    <div class="row--one-third">
-      <div class="col--full">
-        <iframe src="https://c2c.ci.cf-app.com/teams/main/pipelines/cf-networking?groups=trucker&groups=sombrero"></iframe>
       </div>
     </div>
     <!-- <div class="row--short">
