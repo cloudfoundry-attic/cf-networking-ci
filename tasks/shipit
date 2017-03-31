@@ -27,7 +27,7 @@ else
   bosh -n finalize-release --version="$VERSION" ${CANDIDATE_DIR}/cf-networking-*.tgz
   git add -A
   git commit -m "Release v${VERSION}"
+  bosh create-release --tarball ../final-release/cf-networking-${VERSION}.tgz releases/cf-networking/cf-networking-${VERSION}.yml
 fi
 
-mv releases/cf-networking/*.tgz ../final-release/cf-networking-${VERSION}.tgz
 cp -r . ../release/master
