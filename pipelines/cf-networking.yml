@@ -823,8 +823,7 @@ jobs:
         cf-networking: cf-networking-dev
     - put: cf-networking-tarball
       params:
-        from: tarballs/cf-networking-([^/]*).tgz
-        to: releases/
+        file: tarballs/cf-networking-*.tgz
     - put: version
       params: {file: version/number}
 
@@ -1337,8 +1336,7 @@ jobs:
           tag_prefix: v
       - put: cf-networking-tarball
         params:
-          from: final-release/cf-networking-([^/]*).tgz
-          to: releases/
+          file: final-release/cf-networking-*.tgz
       - task: build-release-notes
         file: container-networking-ci/tasks/build-release-notes.yml
       - put: cf-networking-github-release
