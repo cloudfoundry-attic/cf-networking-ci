@@ -10,7 +10,6 @@ groups:
   - mitre-acceptance-errand
   - mitre-smoke
   - mitre-cats
-  - mitre-deploy-firehose-nozzle
   - shipit
   - bump-minor-version
   - merge-master
