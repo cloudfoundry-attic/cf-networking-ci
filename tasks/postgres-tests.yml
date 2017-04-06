@@ -13,3 +13,4 @@ run:
 
 params:
   GINKGO_EXTRA_FLAGS: "-race"
+  DB: postgres
