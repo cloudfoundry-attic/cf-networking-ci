@@ -177,12 +177,6 @@ resources:
       private_key: {{container-networking-deployments-push-key}}
       branch: pinned
   ####### Stats
-  - name: mitre-stats
-    type: git
-    source:
-      uri: "git@github.com:cf-container-networking/mitre-stats.git"
-      branch: master
-      private_key: {{container-networking-bot-key}}
   - name: toque-stats
     type: git
     source:
@@ -853,7 +847,6 @@ jobs:
       - get: cf-deployment
         passed: [mitre-deploy]
         trigger: true
-      - get: mitre-stats
     - task: acceptance-tests
       file: container-networking-ci/tasks/acceptance-tests.yml
       input_mapping:
@@ -862,17 +855,6 @@ jobs:
         vars-store: container-networking-deployments
       params:
         ENVIRONMENT_NAME: mitre
-    - task: commit-stats
-      file: container-networking-ci/tasks/commit-new-file.yml
-      input_mapping:
-        input_repo: mitre-stats
-        source: network-stats
-      output_mapping: {output_repo: stats_output}
-      params:
-        SOURCE_FILE: stats.json
-        DEST_SUFFIX: json
-    - put: mitre-stats
-      params: {repository: stats_output}
 
   - name: mitre-deploy-firehose-nozzle
     serial_groups: [mitre]
