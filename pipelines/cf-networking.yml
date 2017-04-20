@@ -649,8 +649,9 @@ jobs:
       - get: container-networking-ci
       - get: cf-deployment-concourse-tasks
       - get: container-networking-deployments
-      - get: cf-deployment-develop
+      - get: cf-deployment
         trigger: true
+      - get: cf-deployment-develop
       - get: cf-networking-dev
         trigger: true
         passed: [postgres-tests, mysql-tests]
