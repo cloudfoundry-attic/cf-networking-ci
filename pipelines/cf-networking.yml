@@ -1209,7 +1209,7 @@ jobs:
       file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
       input_mapping:
         bbl-state: container-networking-deployments
-        cf-deployment: cf-deployment
+        cf-deployment: cf-deployment-develop
       params:
         BBL_STATE_DIR: environments/slouch
     - task: collect-ops-files
@@ -1228,7 +1228,7 @@ jobs:
         VARS_STORE_FILE: environments/slouch/vars-store.yml
       input_mapping:
         bbl-state: container-networking-deployments
-        cf-deployment: cf-deployment
+        cf-deployment: cf-deployment-develop
         release: cf-networking-dev
         vars-store: container-networking-deployments
       ensure:
