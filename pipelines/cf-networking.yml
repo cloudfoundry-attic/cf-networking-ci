@@ -1217,8 +1217,9 @@ jobs:
       params:
         ENVIRONMENT_NAME: slouch
       input_mapping:
-        deployments-repo: container-networking-deployments
+        cf-deployment: cf-deployment-develop
         cf-networking-release: cf-networking-dev
+        deployments-repo: container-networking-deployments
     - task: deploy-cf
       file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
       params:
