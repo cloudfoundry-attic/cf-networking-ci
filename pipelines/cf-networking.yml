@@ -129,6 +129,11 @@ resources:
     source:
       branch: master
       uri: https://github.com/cloudfoundry/cf-deployment.git
+  - name: cf-deployment-develop
+    type: git
+    source:
+      branch: develop
+      uri: https://github.com/cloudfoundry/cf-deployment.git
   ###### bosh.io releases
   - name: datadog-firehose-nozzle-release
     type: bosh-io-release
@@ -1194,7 +1199,7 @@ jobs:
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: cf-deployment
+      - get: cf-deployment-develop
       - get: container-networking-ci
       - get: container-networking-deployments
       - get: cf-networking-dev
