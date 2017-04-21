@@ -825,6 +825,13 @@ jobs:
         params:
           repository: updated-vars-store
           rebase: true
+    - task: create-separate-apps-domain
+      file: container-networking-ci/tasks/create-apps-domain.yml
+      params:
+        NEW_APPS_DOMAIN: apps.mitre.c2c.cf-app.com
+        ENVIRONMENT_NAME: mitre
+      input_mapping:
+        deployments-repo: container-networking-deployments
     - task: create-release-tarball
       file: container-networking-ci/tasks/create-release-tarball.yml
       input_mapping:
