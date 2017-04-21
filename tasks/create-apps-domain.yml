@@ -1,0 +1,17 @@
+---
+image_resource:
+  type: docker-image
+  source: { repository: c2cnetworking/deploy-light }
+
+platform: linux
+
+inputs:
+  - name: container-networking-ci
+  - name: deployments-repo
+
+run:
+  path: container-networking-ci/tasks/create-apps-domain
+
+params:
+  ENVIRONMENT_NAME: ~
+  NEW_APPS_DOMAIN: ~
