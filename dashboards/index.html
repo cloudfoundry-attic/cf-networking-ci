@@ -14,10 +14,8 @@
         border: 0px;
       }
 
-      .row--tall  { height: 80%; }
-      .row--short { height: 20%; }
       .row--full  { height: 100%; }
-      .row--one-third  { height: 33%; }
+      .row--half { height: 50%; }
 
       .col--half {
         width: 50%;
@@ -30,43 +28,26 @@
         width: 100%;
         float: left;
       }
-
-      .col--75pct {
-        width: 75%;
-        float: left;
-        border-right: 5px solid #1A252F;
-        box-sizing: border-box;
-      }
-
-      .col--25pct {
-        width: 25%;
-        float: left;
-        border-right: 5px solid #1A252F;
-        box-sizing: border-box;
-      }
     </style>
   </head>
   <body>
-    <div class="row--tall">
+    <div class="row--half">
       <div class="col--full">
         <iframe src="https://c2c.ci.cf-app.com/teams/main/pipelines/cf-networking?groups=cf-networking"></iframe>
       </div>
     </div>
-    <div class="row--short">
+    <div class="row--half">
       <div class="col--half">
-        <iframe src="https://c2c.ci.cf-app.com/teams/main/pipelines/silk"></iframe>
+        <div class="row--half">
+          <iframe src="https://c2c.ci.cf-app.com/teams/main/pipelines/silk"></iframe>
+        </div>
+        <div class="row--half">
+          <iframe src="https://c2c.ci.cf-app.com/teams/main/pipelines/helpers"></iframe>
+        </div>
       </div>
       <div class="col--half">
-        <iframe src="https://c2c.ci.cf-app.com/teams/main/pipelines/helpers"></iframe>
+        <iframe src="https://c2c.ci.cf-app.com/teams/main/pipelines/cf-networking?groups=ushanka"></iframe>
       </div>
     </div>
-    <!-- <div class="row--short">
-    <!--   <div class="col--left">
-    <!--     <iframe src="https://c2c.ci.cf-app.com/teams/main/pipelines/cf-networking?groups=toque"></iframe>
-    <!--   </div>
-    <!--   <div class="col--right">
-    <!--     <iframe src="https://c2c.ci.cf-app.com/teams/main/pipelines/cf-networking?groups=trucker"></iframe>
-    <!--   </div>
-    <!-- </div> -->
   </body>
 </html>
