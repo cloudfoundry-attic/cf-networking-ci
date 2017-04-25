@@ -5,6 +5,8 @@ groups:
   - postgres-tests
   - pickelhelm-deploy
   - pickelhelm-test
+  - ushanka-deploy
+  - ushanka-test
   - mitre-deploy
   - mitre-test
   - mitre-acceptance-errand
@@ -788,11 +790,11 @@ jobs:
       - get: cf-deployment-concourse-tasks
       - get: container-networking-deployments
       - get: cf-deployment
-        passed: [pickelhelm-test]
+        passed: [pickelhelm-test, ushanka-test]
         trigger: true
       - get: cf-networking-dev
         trigger: true
-        passed: [pickelhelm-test]
+        passed: [pickelhelm-test, ushanka-test]
       - get: version
         params:
           pre: rc
