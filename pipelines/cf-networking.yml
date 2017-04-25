@@ -1035,7 +1035,7 @@ jobs:
       params:
         BBL_STATE_DIR: environments/toque
         SYSTEM_DOMAIN: toque.c2c.cf-app.com
-        OPS_FILES: gcp.yml use-3-azs-for-router.yml use-compiled-releases.yml cf-networking.yml opsfile.yml
+        OPS_FILES: gcp.yml use-3-azs-for-router.yml use-compiled-releases.yml cf-networking.yml silk.yml opsfile.yml
         VARS_STORE_FILE: environments/toque/vars-store.yml
       input_mapping:
         bbl-state: container-networking-deployments
