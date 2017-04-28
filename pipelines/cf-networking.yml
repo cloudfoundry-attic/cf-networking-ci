@@ -685,6 +685,12 @@ jobs:
         params:
           repository: updated-vars-store
           rebase: true
+    - task: bosh-cleanup
+      file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
+      params:
+        BBL_STATE_DIR: environments/pickelhelm/
+      input_mapping:
+        bbl-state: container-networking-deployments
 
   - name: pickelhelm-deploy-firehose-nozzle
     serial_groups: [pickelhelm]
