@@ -842,6 +842,12 @@ jobs:
         file: tarballs/cf-networking-*.tgz
     - put: version
       params: {file: version/number}
+    - task: bosh-cleanup
+      file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
+      params:
+        BBL_STATE_DIR: environments/mitre/
+      input_mapping:
+        bbl-state: container-networking-deployments
 
   - name: mitre-test
     serial_groups: [mitre]
@@ -1053,6 +1059,12 @@ jobs:
         params:
           repository: updated-vars-store
           rebase: true
+    - task: bosh-cleanup
+      file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
+      params:
+        BBL_STATE_DIR: environments/toque/
+      input_mapping:
+        bbl-state: container-networking-deployments
 
   - name: toque-deploy-firehose-nozzle
     serial_groups: [toque]
@@ -1245,6 +1257,12 @@ jobs:
         params:
           repository: updated-vars-store
           rebase: true
+    - task: bosh-cleanup
+      file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
+      params:
+        BBL_STATE_DIR: environments/slouch/
+      input_mapping:
+        bbl-state: container-networking-deployments
 
   - name: delete-slouch-deployment
     public: true
@@ -1328,6 +1346,12 @@ jobs:
         params:
           repository: updated-vars-store
           rebase: true
+    - task: bosh-cleanup
+      file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
+      params:
+        BBL_STATE_DIR: environments/ushanka/
+      input_mapping:
+        bbl-state: container-networking-deployments
 
   - name: ushanka-test
     serial_groups: [ushanka]
