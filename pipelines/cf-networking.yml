@@ -7,6 +7,7 @@ groups:
   - pickelhelm-test
   - ushanka-deploy
   - ushanka-test
+  - ushanka-cats
   - mitre-deploy
   - mitre-test
   - mitre-acceptance-errand
@@ -71,6 +72,7 @@ groups:
   - ushanka-bbl-destroy
   - ushanka-deploy
   - ushanka-test
+  - ushanka-cats
   - delete-ushanka-deployment
 - name: bbl
   jobs:
@@ -808,11 +810,11 @@ jobs:
       - get: cf-deployment-concourse-tasks
       - get: container-networking-deployments
       - get: cf-deployment
-        passed: [pickelhelm-test, ushanka-test]
+        passed: [pickelhelm-test, ushanka-cats]
         trigger: true
       - get: cf-networking-dev
         trigger: true
-        passed: [pickelhelm-test, ushanka-test]
+        passed: [pickelhelm-test, ushanka-cats]
       - get: version
         params:
           pre: rc
@@ -969,7 +971,6 @@ jobs:
         passed: [mitre-test]
         trigger: true
       - get: container-networking-deployments
-        passed: [mitre-test]
       - get: cf-networking-tarball
         passed: [mitre-test]
       - get: version
@@ -1385,6 +1386,29 @@ jobs:
         vars-store: container-networking-deployments
       params:
         ENVIRONMENT_NAME: ushanka
+
+  - name: ushanka-cats
+    serial_groups: [ushanka]
+    plan:
+    - aggregate:
+      - get: container-networking-ci
+      - get: cf-acceptance-tests
+      - get: cats-concourse-task
+      - get: cf-networking-dev
+        passed: [ushanka-test]
+        trigger: true
+      - get: cf-deployment
+        passed: [ushanka-test]
+        trigger: true
+      - get: container-networking-deployments
+    - task: copy-config
+      file: container-networking-ci/tasks/copy-config.yml
+      params:
+        ENVIRONMENT: ushanka
+    - task: cats
+      file: cats-concourse-task/task.yml
+      params:
+        NODES: 16
 
   - name: ushanka-bbl-destroy
     serial_groups: [ushanka]
