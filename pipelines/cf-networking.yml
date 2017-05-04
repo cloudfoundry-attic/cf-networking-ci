@@ -73,6 +73,7 @@ groups:
   - ushanka-deploy
   - ushanka-test
   - ushanka-cats
+  - ushanka-deploy-firehose-nozzle
   - delete-ushanka-deployment
 - name: bbl
   jobs:
@@ -1390,6 +1391,36 @@ jobs:
         vars-store: container-networking-deployments
       params:
         ENVIRONMENT_NAME: ushanka
+
+  - name: ushanka-deploy-firehose-nozzle
+    serial_groups: [ushanka]
+    plan:
+    - aggregate:
+      - get: cf-deployment-concourse-tasks
+      - get: container-networking-ci
+      - get: container-networking-deployments
+        passed: [ushanka-deploy]
+      - get: datadog-firehose-nozzle-release
+    - task: upload-datadog-firehose-nozzle-release
+      file: container-networking-ci/tasks/upload-release-tarball.yml
+      input_mapping:
+        deployments-repo: container-networking-deployments
+        tarballs: datadog-firehose-nozzle-release
+      params:
+        ENVIRONMENT_NAME: ushanka
+    - task: deploy-datadog-firehose-nozzle
+      file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
+      input_mapping:
+        cf-deployment: container-networking-deployments
+        vars-store: container-networking-deployments
+        bbl-state: container-networking-deployments
+        ops-files: container-networking-deployments
+      params:
+        BBL_STATE_DIR: environments/ushanka
+        MANIFEST_FILE: firehose-nozzles.yml
+        OPS_FILES: ""
+        SYSTEM_DOMAIN: ushanka.c2c.cf-app.com
+        VARS_STORE_FILE: environments/ushanka/vars-store.yml
 
   - name: ushanka-cats
     serial_groups: [ushanka]
