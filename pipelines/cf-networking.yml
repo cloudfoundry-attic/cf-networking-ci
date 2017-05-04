@@ -391,14 +391,13 @@ jobs:
         BBL_STATE_DIR: environments/trucker/
       input_mapping:
         bbl-state: container-networking-deployments
-    #   clean-up currently deletes more than we want in this pipeline
-    #   see: https://github.com/cloudfoundry/cf-deployment-concourse-tasks/issues/14
-    # - task: bosh-cleanup
-    #   file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
-    #   params:
-    #     BBL_STATE_DIR: environments/trucker/
-    #   input_mapping:
-    #     bbl-state: container-networking-deployments
+    - task: bosh-cleanup
+      file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
+      params:
+        BBL_STATE_DIR: environments/trucker/
+        CLEAN_ALL: false
+      input_mapping:
+        bbl-state: container-networking-deployments
 
   - name: delete-trucker-deployment
     serial_groups: [trucker]
@@ -564,14 +563,13 @@ jobs:
       input_mapping:
         bbl-state: container-networking-deployments
         cf-networking-release: cf-networking-dev
-    #   clean-up currently deletes more than we want in this pipeline
-    #   see: https://github.com/cloudfoundry/cf-deployment-concourse-tasks/issues/14
-    # - task: bosh-cleanup
-    #   file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
-    #   params:
-    #     BBL_STATE_DIR: environments/sombrero/
-    #   input_mapping:
-    #     bbl-state: container-networking-deployments
+    - task: bosh-cleanup
+      file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
+      params:
+        BBL_STATE_DIR: environments/sombrero/
+        CLEAN_ALL: false
+      input_mapping:
+        bbl-state: container-networking-deployments
 
   - name: delete-sombrero-deployment
     serial_groups:
@@ -708,6 +706,7 @@ jobs:
       file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
       params:
         BBL_STATE_DIR: environments/pickelhelm/
+        CLEAN_ALL: false
       input_mapping:
         bbl-state: container-networking-deployments
 
@@ -865,6 +864,7 @@ jobs:
       file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
       params:
         BBL_STATE_DIR: environments/mitre/
+        CLEAN_ALL: false
       input_mapping:
         bbl-state: container-networking-deployments
 
@@ -1081,6 +1081,7 @@ jobs:
       file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
       params:
         BBL_STATE_DIR: environments/toque/
+        CLEAN_ALL: false
       input_mapping:
         bbl-state: container-networking-deployments
 
@@ -1279,6 +1280,7 @@ jobs:
       file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
       params:
         BBL_STATE_DIR: environments/slouch/
+        CLEAN_ALL: false
       input_mapping:
         bbl-state: container-networking-deployments
 
@@ -1368,6 +1370,7 @@ jobs:
       file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
       params:
         BBL_STATE_DIR: environments/ushanka/
+        CLEAN_ALL: false
       input_mapping:
         bbl-state: container-networking-deployments
 
