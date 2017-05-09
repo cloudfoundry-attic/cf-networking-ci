@@ -958,6 +958,7 @@ jobs:
       file: container-networking-ci/tasks/smoke-tests.yml
       params:
         ENVIRONMENT_NAME: mitre
+        ENVIRONMENT_TAG: mitre.c2c.cf-app.com
         DATADOG_API_KEY: {{datadog_api_key}}
       input_mapping:
         test-config: container-networking-deployments

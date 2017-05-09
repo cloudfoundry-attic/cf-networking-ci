@@ -12,6 +12,7 @@ inputs:
 
 params:
     ENVIRONMENT_NAME: ~
+    ENVIRONMENT_TAG: ~
     CONFIG: ~
     DATADOG_API_KEY: ~
 
