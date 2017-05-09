@@ -134,11 +134,6 @@ resources:
     source:
       branch: master
       uri: https://github.com/cloudfoundry/cf-deployment.git
-  - name: cf-deployment-develop
-    type: git
-    source:
-      branch: develop
-      uri: https://github.com/cloudfoundry/cf-deployment.git
   ###### bosh.io releases
   - name: datadog-firehose-nozzle-release
     type: bosh-io-release
@@ -1238,7 +1233,7 @@ jobs:
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: cf-deployment-develop
+      - get: cf-deployment
       - get: container-networking-ci
       - get: container-networking-deployments
       - get: cf-networking-dev
@@ -1248,7 +1243,6 @@ jobs:
       file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
       input_mapping:
         bbl-state: container-networking-deployments
-        cf-deployment: cf-deployment-develop
       params:
         BBL_STATE_DIR: environments/slouch
     - task: collect-ops-files
@@ -1256,7 +1250,6 @@ jobs:
       params:
         ENVIRONMENT_NAME: slouch
       input_mapping:
-        cf-deployment: cf-deployment-develop
         cf-networking-release: cf-networking-dev
         deployments-repo: container-networking-deployments
     - task: deploy-cf
@@ -1268,7 +1261,6 @@ jobs:
         VARS_STORE_FILE: environments/slouch/vars-store.yml
       input_mapping:
         bbl-state: container-networking-deployments
-        cf-deployment: cf-deployment-develop
         release: cf-networking-dev
         vars-store: container-networking-deployments
       ensure:
