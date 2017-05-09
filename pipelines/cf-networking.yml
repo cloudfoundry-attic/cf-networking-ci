@@ -193,6 +193,10 @@ resources:
     type: time
     source:
       interval: 30m
+  - name: every-fifteen-minutes
+    type: time
+    source:
+      interval: 15m
   ####### Tests
   - name: cf-acceptance-tests
     type: git
@@ -940,6 +944,8 @@ jobs:
     serial_groups: [mitre-test-group]
     plan:
     - aggregate:
+      - get: every-fifteen-minutes
+        trigger: true
       - get: container-networking-deployments
       - get: cf-networking-dev
         passed: [mitre-test]
