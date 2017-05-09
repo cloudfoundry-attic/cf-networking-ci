@@ -802,7 +802,7 @@ jobs:
           rebase: true
 
   - name: mitre-deploy
-    serial_groups: [mitre, version]
+    serial_groups: [mitre-deploy-group, version]
     plan:
     - aggregate:
       - get: container-networking-ci
@@ -864,7 +864,7 @@ jobs:
         bbl-state: container-networking-deployments
 
   - name: mitre-test
-    serial_groups: [mitre]
+    serial_groups: [mitre-test-group, mitre-deploy-group]
     plan:
     - aggregate:
       - get: container-networking-deployments
@@ -890,7 +890,7 @@ jobs:
         ENVIRONMENT_NAME: mitre
 
   - name: mitre-deploy-firehose-nozzle
-    serial_groups: [mitre]
+    serial_groups: [mitre-test-group, mitre-deploy-group]
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
@@ -920,7 +920,7 @@ jobs:
         VARS_STORE_FILE: environments/mitre/vars-store.yml
 
   - name: mitre-acceptance-errand
-    serial_groups: [mitre]
+    serial_groups: [mitre-test-group, mitre-deploy-group]
     plan:
     - aggregate:
       - get: container-networking-ci
@@ -937,7 +937,7 @@ jobs:
         deployments-repo: container-networking-deployments
 
   - name: mitre-smoke
-    serial_groups: [mitre]
+    serial_groups: [mitre-test-group]
     plan:
     - aggregate:
       - get: container-networking-deployments
@@ -958,7 +958,7 @@ jobs:
         cf-networking: cf-networking-dev
 
   - name: mitre-cats
-    serial_groups: [mitre]
+    serial_groups: [mitre-test-group, mitre-deploy-group]
     plan:
     - aggregate:
       - get: container-networking-ci
