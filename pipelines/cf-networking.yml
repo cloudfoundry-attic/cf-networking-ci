@@ -839,7 +839,7 @@ jobs:
       params:
         BBL_STATE_DIR: environments/mitre/
         SYSTEM_DOMAIN: mitre.c2c.cf-app.com
-        OPS_FILES: gcp.yml use-3-azs-for-router.yml use-compiled-releases.yml cf-networking.yml opsfile.yml custom-apps-domain.yml
+        OPS_FILES: gcp.yml use-3-azs-for-router.yml use-compiled-releases.yml cf-networking.yml silk.yml opsfile.yml custom-apps-domain.yml
         VARS_STORE_FILE: environments/mitre/vars-store.yml
       input_mapping:
         bbl-state: container-networking-deployments
@@ -1354,7 +1354,7 @@ jobs:
       params:
         BBL_STATE_DIR: environments/ushanka/
         SYSTEM_DOMAIN: ushanka.c2c.cf-app.com
-        OPS_FILES: gcp.yml use-3-azs-for-router.yml use-compiled-releases.yml cf-networking.yml silk.yml opsfile.yml
+        OPS_FILES: gcp.yml use-3-azs-for-router.yml use-compiled-releases.yml cf-networking.yml opsfile.yml
         VARS_STORE_FILE: environments/ushanka/vars-store.yml
       input_mapping:
         bbl-state: container-networking-deployments
