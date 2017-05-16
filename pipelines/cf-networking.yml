@@ -1445,7 +1445,7 @@ jobs:
     - task: cats
       file: cats-concourse-task/task.yml
       params:
-        NODES: 16
+        NODES: 12
 
   - name: ushanka-bbl-destroy
     serial_groups: [ushanka]
