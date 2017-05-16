@@ -989,7 +989,7 @@ jobs:
     - task: cats
       file: cats-concourse-task/task.yml
       params:
-        NODES: 16
+        NODES: 12
 
   - name: toque-bbl-up
     serial_groups: [toque]
