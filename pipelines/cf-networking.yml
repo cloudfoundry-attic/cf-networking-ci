@@ -320,6 +320,7 @@ jobs:
         REGENERATE_VARS_STORE: true
       input_mapping:
         vars-store: container-networking-deployments
+        vars-files: container-networking-deployments
         bbl-state: container-networking-deployments
     - task: push-app
       config:
@@ -367,6 +368,7 @@ jobs:
       input_mapping:
         release: cf-networking-dev
         vars-store: updated-vars-store
+        vars-files: updated-vars-store
         bbl-state: container-networking-deployments
     - task: ping-app
       config:
@@ -513,6 +515,7 @@ jobs:
         cf-deployment-concourse-tasks: cf-deployment-concourse-tasks-pinned
         release: cf-networking-pinned
         vars-store: container-networking-deployments
+        vars-files: container-networking-deployments
     - task: acceptance-tests
       file: container-networking-ci-pinned/tasks/acceptance-tests.yml
       input_mapping:
@@ -545,6 +548,7 @@ jobs:
       input_mapping:
         release: cf-networking-dev
         vars-store: updated-vars-store
+        vars-files: updated-vars-store
         bbl-state: container-networking-deployments
     - task: acceptance-tests
       file: container-networking-ci/tasks/acceptance-tests.yml
@@ -694,6 +698,7 @@ jobs:
       input_mapping:
         bbl-state: container-networking-deployments
         release: cf-networking-dev
+        vars-files: container-networking-deployments
         vars-store: container-networking-deployments
       ensure:
         put: container-networking-deployments
@@ -843,6 +848,7 @@ jobs:
       input_mapping:
         bbl-state: container-networking-deployments
         vars-store: container-networking-deployments
+        vars-files: container-networking-deployments
         release: cf-networking-dev
       ensure:
         put: container-networking-deployments
@@ -1072,6 +1078,7 @@ jobs:
         bbl-state: container-networking-deployments
         cf-deployment: cf-deployment
         release: cf-networking-dev
+        vars-files: container-networking-deployments
         vars-store: container-networking-deployments
       ensure:
         put: container-networking-deployments
@@ -1269,6 +1276,7 @@ jobs:
         bbl-state: container-networking-deployments
         release: cf-networking-dev
         vars-store: container-networking-deployments
+        vars-files: container-networking-deployments
       ensure:
         put: container-networking-deployments
         params:
@@ -1358,6 +1366,7 @@ jobs:
       input_mapping:
         bbl-state: container-networking-deployments
         release: cf-networking-dev
+        vars-files: container-networking-deployments
         vars-store: container-networking-deployments
       ensure:
         put: container-networking-deployments
