@@ -726,6 +726,7 @@ jobs:
     - task: upload-datadog-firehose-nozzle-release
       file: container-networking-ci/tasks/upload-release-tarball.yml
       input_mapping:
+        deployments-repo: container-networking-deployments
         tarballs: datadog-firehose-nozzle-release
       params:
         ENVIRONMENT_NAME: pickelhelm
