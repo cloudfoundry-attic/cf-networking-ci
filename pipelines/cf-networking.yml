@@ -66,6 +66,7 @@ groups:
   - slouch-bbl-up
   - slouch-deploy
   - delete-slouch-deployment
+  - slouch-cats
 - name: ushanka
   jobs:
   - ushanka-bbl-up
