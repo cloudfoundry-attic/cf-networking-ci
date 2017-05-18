@@ -6,7 +6,7 @@ image_resource:
   source: { repository: c2cnetworking/deploy }
 
 inputs:
-  - name: container-networking-ci
+  - name: cf-networking-ci
   - name: input_repo
   - name: source
 
@@ -18,4 +18,4 @@ params:
     DEST_SUFFIX: ~
 
 run:
-  path: container-networking-ci/tasks/commit-new-file
+  path: cf-networking-ci/tasks/commit-new-file

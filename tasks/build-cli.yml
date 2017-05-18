@@ -6,11 +6,11 @@ image_resource:
   source: { repository: c2cnetworking/dev-postgres }
 
 inputs:
-  - name: container-networking-ci
+  - name: cf-networking-ci
   - name: cf-networking
 
 outputs:
   - name: binaries
 
 run:
-  path: container-networking-ci/tasks/build-cli
+  path: cf-networking-ci/tasks/build-cli

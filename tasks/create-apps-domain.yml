@@ -6,11 +6,11 @@ image_resource:
 platform: linux
 
 inputs:
-  - name: container-networking-ci
+  - name: cf-networking-ci
   - name: deployments-repo
 
 run:
-  path: container-networking-ci/tasks/create-apps-domain
+  path: cf-networking-ci/tasks/create-apps-domain
 
 params:
   ENVIRONMENT_NAME: ~

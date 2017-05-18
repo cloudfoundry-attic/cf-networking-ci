@@ -109,16 +109,16 @@ groups:
 
 resources:
   ###### Control plane
-  - name: container-networking-ci
+  - name: cf-networking-ci
     type: git
     source:
-      uri: https://github.com/cloudfoundry-incubator/container-networking-ci
-  - name: container-networking-deployments
+      uri: https://github.com/cloudfoundry-incubator/cf-networking-ci
+  - name: cf-networking-deployments
     type: git
     source:
-      uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
+      uri: "git@github.com:cloudfoundry/cf-networking-deployments.git"
       branch: master
-      private_key: {{container-networking-deployments-push-key}}
+      private_key: {{cf-networking-deployments-push-key}}
   - name: cats-concourse-task
     type: git
     source:
@@ -170,16 +170,16 @@ resources:
     source:
       branch: pinned
       uri: https://github.com/cf-container-networking/cf-deployment.git
-  - name: container-networking-ci-pinned
+  - name: cf-networking-ci-pinned
     type: git
     source:
-      uri: https://github.com/cloudfoundry-incubator/container-networking-ci
+      uri: https://github.com/cloudfoundry-incubator/cf-networking-ci
       branch: pinned
-  - name: container-networking-deployments-pinned
+  - name: cf-networking-deployments-pinned
     type: git
     source:
-      uri: "git@github.com:cloudfoundry/container-networking-deployments.git"
-      private_key: {{container-networking-deployments-push-key}}
+      uri: "git@github.com:cloudfoundry/cf-networking-deployments.git"
+      private_key: {{cf-networking-deployments-push-key}}
       branch: pinned
   ####### Stats
   - name: toque-stats
@@ -241,7 +241,7 @@ jobs:
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
     - task: bbl-up
       file: cf-deployment-concourse-tasks/bbl-up/task.yml
       params:
@@ -256,9 +256,9 @@ jobs:
         LB_DOMAIN: trucker.c2c.cf-app.com
         BBL_ENV_NAME: trucker
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
       ensure:
-        put: container-networking-deployments
+        put: cf-networking-deployments
         params:
           repository: updated-bbl-state
           rebase: true
@@ -268,15 +268,15 @@ jobs:
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
     - task: bbl-destroy
       file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
       params:
         BBL_STATE_DIR: environments/trucker/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
       ensure:
-        put: container-networking-deployments
+        put: cf-networking-deployments
         params:
           repository: updated-bbl-state
           rebase: true
@@ -285,9 +285,9 @@ jobs:
     serial_groups: [trucker]
     plan:
     - aggregate:
-      - get: container-networking-ci
+      - get: cf-networking-ci
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
       - get: cf-deployment
       - get: cf-networking-dev
         passed: [postgres-tests, mysql-tests]
@@ -297,20 +297,20 @@ jobs:
       params:
         BBL_STATE_DIR: environments/trucker/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
     - task: upload-stemcell
       file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/trucker/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
     - task: collect-ops-files
-      file: container-networking-ci/tasks/collect-ops-files.yml
+      file: cf-networking-ci/tasks/collect-ops-files.yml
       params:
         ENVIRONMENT_NAME: trucker
       input_mapping:
         cf-networking-release: cf-networking-dev
-        deployments-repo: container-networking-deployments
+        deployments-repo: cf-networking-deployments
     - task: deploy-vanilla
       file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
       params:
@@ -320,9 +320,9 @@ jobs:
         VARS_STORE_FILE: environments/trucker/vars-store.yml
         REGENERATE_VARS_STORE: true
       input_mapping:
-        vars-store: container-networking-deployments
-        vars-files: container-networking-deployments
-        bbl-state: container-networking-deployments
+        vars-store: cf-networking-deployments
+        vars-files: cf-networking-deployments
+        bbl-state: cf-networking-deployments
     - task: push-app
       config:
         platform: linux
@@ -353,12 +353,12 @@ jobs:
             cf push proxy
             curl -v -f http://proxy.${ENVIRONMENT}.c2c.cf-app.com
     - task: collect-ops-files
-      file: container-networking-ci/tasks/collect-ops-files.yml
+      file: cf-networking-ci/tasks/collect-ops-files.yml
       params:
         ENVIRONMENT_NAME: trucker
       input_mapping:
         cf-networking-release: cf-networking-dev
-        deployments-repo: container-networking-deployments
+        deployments-repo: cf-networking-deployments
     - task: deploy-upgrade
       file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
       params:
@@ -370,7 +370,7 @@ jobs:
         release: cf-networking-dev
         vars-store: updated-vars-store
         vars-files: updated-vars-store
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
     - task: ping-app
       config:
         platform: linux
@@ -391,20 +391,20 @@ jobs:
       params:
         BBL_STATE_DIR: environments/trucker/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
     - task: bosh-cleanup
       file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
       params:
         BBL_STATE_DIR: environments/trucker/
         CLEAN_ALL: false
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
 
   - name: delete-trucker-deployment
     serial_groups: [trucker]
     plan:
     - aggregate:
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
         passed: [trucker-test-upgrade]
         trigger: true
       - get: cf-deployment-concourse-tasks
@@ -416,14 +416,14 @@ jobs:
       params:
         BBL_STATE_DIR: environments/trucker/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
 
   - name: sombrero-bbl-up
     serial_groups: [sombrero]
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
     - task: bbl-up
       file: cf-deployment-concourse-tasks/bbl-up/task.yml
       params:
@@ -438,9 +438,9 @@ jobs:
         LB_DOMAIN: sombrero.c2c.cf-app.com
         BBL_ENV_NAME: sombrero
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
       ensure:
-        put: container-networking-deployments
+        put: cf-networking-deployments
         params:
           repository: updated-bbl-state
           rebase: true
@@ -450,15 +450,15 @@ jobs:
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
     - task: bbl-destroy
       file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
       params:
         BBL_STATE_DIR: environments/sombrero/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
       ensure:
-        put: container-networking-deployments
+        put: cf-networking-deployments
         params:
           repository: updated-bbl-state
           rebase: true
@@ -467,10 +467,10 @@ jobs:
     serial_groups: [sombrero]
     plan:
     - aggregate:
-      - get: container-networking-ci
-      - get: container-networking-ci-pinned
-      - get: container-networking-deployments
-      - get: container-networking-deployments-pinned
+      - get: cf-networking-ci
+      - get: cf-networking-ci-pinned
+      - get: cf-networking-deployments
+      - get: cf-networking-deployments-pinned
       - get: cf-deployment
       - get: cf-deployment-pinned
       - get: cf-deployment-concourse-tasks
@@ -484,24 +484,24 @@ jobs:
       params:
         BBL_STATE_DIR: environments/sombrero/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
         cf-deployment-concourse-tasks: cf-deployment-concourse-tasks-pinned
     - task: upload-stemcell
       file: cf-deployment-concourse-tasks-pinned/bosh-upload-stemcell-from-cf-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/sombrero/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
         cf-deployment: cf-deployment-pinned
         cf-deployment-concourse-tasks: cf-deployment-concourse-tasks-pinned
     - task: collect-ops-files
-      file: container-networking-ci/tasks/collect-ops-files.yml
+      file: cf-networking-ci/tasks/collect-ops-files.yml
       params:
         ENVIRONMENT_NAME: sombrero
       input_mapping:
         cf-deployment: cf-deployment-pinned
         cf-networking-release: cf-networking-pinned
-        deployments-repo: container-networking-deployments
+        deployments-repo: cf-networking-deployments
     - task: deploy-oldest-compatible-version
       file: cf-deployment-concourse-tasks-pinned/bosh-deploy-with-created-release/task.yml
       params:
@@ -511,34 +511,34 @@ jobs:
         VARS_STORE_FILE: environments/sombrero/vars-store.yml
         REGENERATE_VARS_STORE: true
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
         cf-deployment: cf-deployment-pinned
         cf-deployment-concourse-tasks: cf-deployment-concourse-tasks-pinned
         release: cf-networking-pinned
-        vars-store: container-networking-deployments
-        vars-files: container-networking-deployments
+        vars-store: cf-networking-deployments
+        vars-files: cf-networking-deployments
     - task: acceptance-tests
-      file: container-networking-ci-pinned/tasks/acceptance-tests.yml
+      file: cf-networking-ci-pinned/tasks/acceptance-tests.yml
       input_mapping:
         cf-networking: cf-networking-pinned
-        container-networking-ci: container-networking-ci-pinned
-        test-config: container-networking-deployments-pinned
+        cf-networking-ci: cf-networking-ci-pinned
+        test-config: cf-networking-deployments-pinned
         vars-store: updated-vars-store
       params:
         ENVIRONMENT_NAME: sombrero
     - task: collect-ops-files
-      file: container-networking-ci/tasks/collect-ops-files.yml
+      file: cf-networking-ci/tasks/collect-ops-files.yml
       params:
         ENVIRONMENT_NAME: sombrero
       input_mapping:
         cf-networking-release: cf-networking-dev
-        deployments-repo: container-networking-deployments
+        deployments-repo: cf-networking-deployments
     - task: upload-stemcell
       file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/sombrero/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
     - task: deploy-upgrade
       file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
       params:
@@ -550,12 +550,12 @@ jobs:
         release: cf-networking-dev
         vars-store: updated-vars-store
         vars-files: updated-vars-store
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
     - task: acceptance-tests
-      file: container-networking-ci/tasks/acceptance-tests.yml
+      file: cf-networking-ci/tasks/acceptance-tests.yml
       input_mapping:
         cf-networking: cf-networking-dev
-        test-config: container-networking-deployments
+        test-config: cf-networking-deployments
         vars-store: updated-vars-store
       params:
         ENVIRONMENT_NAME: sombrero
@@ -564,7 +564,7 @@ jobs:
       params:
         BBL_STATE_DIR: environments/sombrero/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
         cf-networking-release: cf-networking-dev
     - task: bosh-cleanup
       file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
@@ -572,14 +572,14 @@ jobs:
         BBL_STATE_DIR: environments/sombrero/
         CLEAN_ALL: false
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
 
   - name: delete-sombrero-deployment
     serial_groups:
     - sombrero
     plan:
     - aggregate:
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
       - get: cf-deployment-concourse-tasks
       - get: cf-networking-dev
         passed:
@@ -590,7 +590,7 @@ jobs:
       params:
         BBL_STATE_DIR: environments/sombrero/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
         cf-networking-release: cf-networking-dev
 
   - name: postgres-tests
@@ -599,9 +599,9 @@ jobs:
     - aggregate:
       - get: cf-networking-dev
         trigger: true
-      - get: container-networking-ci
+      - get: cf-networking-ci
     - task: unit-and-integration-tests
-      file: container-networking-ci/tasks/postgres-tests.yml
+      file: cf-networking-ci/tasks/postgres-tests.yml
       privileged: true
       input_mapping:
         cf-networking-release: cf-networking-dev
@@ -612,9 +612,9 @@ jobs:
     - aggregate:
       - get: cf-networking-dev
         trigger: true
-      - get: container-networking-ci
+      - get: cf-networking-ci
     - task: unit-and-integration-tests
-      file: container-networking-ci/tasks/mysql-tests.yml
+      file: cf-networking-ci/tasks/mysql-tests.yml
       privileged: true
       input_mapping:
         cf-networking-release: cf-networking-dev
@@ -624,7 +624,7 @@ jobs:
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
     - task: bbl-up
       file: cf-deployment-concourse-tasks/bbl-up/task.yml
       params:
@@ -639,9 +639,9 @@ jobs:
         LB_DOMAIN: pickelhelm.c2c.cf-app.com
         BBL_ENV_NAME: pickelhelm
       input_mapping: 
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
       ensure:
-        put: container-networking-deployments
+        put: cf-networking-deployments
         params:
           repository: updated-bbl-state
           rebase: true
@@ -651,15 +651,15 @@ jobs:
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
     - task: bbl-destroy
       file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
       params:
         BBL_STATE_DIR: environments/pickelhelm/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
       ensure:
-        put: container-networking-deployments
+        put: cf-networking-deployments
         params:
           repository: updated-bbl-state
           rebase: true
@@ -668,9 +668,9 @@ jobs:
     serial_groups: [pickelhelm]
     plan:
     - aggregate:
-      - get: container-networking-ci
+      - get: cf-networking-ci
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
       - get: cf-deployment
         trigger: true
       - get: cf-networking-dev
@@ -681,14 +681,14 @@ jobs:
       params:
         BBL_STATE_DIR: environments/pickelhelm/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
     - task: collect-ops-files
-      file: container-networking-ci/tasks/collect-ops-files.yml
+      file: cf-networking-ci/tasks/collect-ops-files.yml
       params:
         ENVIRONMENT_NAME: pickelhelm
       input_mapping:
         cf-networking-release: cf-networking-dev
-        deployments-repo: container-networking-deployments
+        deployments-repo: cf-networking-deployments
     - task: deploy-cf
       file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
       params:
@@ -697,12 +697,12 @@ jobs:
         OPS_FILES: gcp.yml use-3-azs-for-router.yml use-compiled-releases.yml cf-networking.yml silk.yml opsfile.yml
         VARS_STORE_FILE: environments/pickelhelm/vars-store.yml
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
         release: cf-networking-dev
-        vars-files: container-networking-deployments
-        vars-store: container-networking-deployments
+        vars-files: cf-networking-deployments
+        vars-store: cf-networking-deployments
       ensure:
-        put: container-networking-deployments
+        put: cf-networking-deployments
         params:
           repository: updated-vars-store
           rebase: true
@@ -712,32 +712,32 @@ jobs:
         BBL_STATE_DIR: environments/pickelhelm/
         CLEAN_ALL: false
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
 
   - name: pickelhelm-deploy-firehose-nozzle
     serial_groups: [pickelhelm]
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-ci
-      - get: container-networking-deployments
+      - get: cf-networking-ci
+      - get: cf-networking-deployments
         passed: [pickelhelm-deploy]
       - get: datadog-firehose-nozzle-release
     - task: upload-datadog-firehose-nozzle-release
-      file: container-networking-ci/tasks/upload-release-tarball.yml
+      file: cf-networking-ci/tasks/upload-release-tarball.yml
       input_mapping:
-        deployments-repo: container-networking-deployments
+        deployments-repo: cf-networking-deployments
         tarballs: datadog-firehose-nozzle-release
       params:
         ENVIRONMENT_NAME: pickelhelm
     - task: deploy-datadog-firehose-nozzle
       file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
       input_mapping:
-        bbl-state: container-networking-deployments
-        cf-deployment: container-networking-deployments
-        ops-files: container-networking-deployments
-        vars-files: container-networking-deployments
-        vars-store: container-networking-deployments
+        bbl-state: cf-networking-deployments
+        cf-deployment: cf-networking-deployments
+        ops-files: cf-networking-deployments
+        vars-files: cf-networking-deployments
+        vars-store: cf-networking-deployments
       params:
         BBL_STATE_DIR: environments/pickelhelm
         MANIFEST_FILE: firehose-nozzles.yml
@@ -750,8 +750,8 @@ jobs:
     serial_groups: [pickelhelm]
     plan:
     - aggregate:
-      - get: container-networking-ci
-      - get: container-networking-deployments
+      - get: cf-networking-ci
+      - get: cf-networking-deployments
         passed: [pickelhelm-deploy]
       - get: cf-deployment
         passed: [pickelhelm-deploy]
@@ -759,11 +759,11 @@ jobs:
         passed: [pickelhelm-deploy]
         trigger: true
     - task: acceptance-tests
-      file: container-networking-ci/tasks/acceptance-tests.yml
+      file: cf-networking-ci/tasks/acceptance-tests.yml
       input_mapping:
         cf-networking: cf-networking-dev
-        test-config: container-networking-deployments
-        vars-store: container-networking-deployments
+        test-config: cf-networking-deployments
+        vars-store: cf-networking-deployments
       params:
         ENVIRONMENT_NAME: pickelhelm
 
@@ -772,7 +772,7 @@ jobs:
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
     - task: bbl-up
       file: cf-deployment-concourse-tasks/bbl-up/task.yml
       params:
@@ -787,9 +787,9 @@ jobs:
         LB_DOMAIN: mitre.c2c.cf-app.com
         BBL_ENV_NAME: mitre
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
       ensure:
-        put: container-networking-deployments
+        put: cf-networking-deployments
         params:
           repository: updated-bbl-state
           rebase: true
@@ -799,15 +799,15 @@ jobs:
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
     - task: bbl-destroy
       file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
       params:
         BBL_STATE_DIR: environments/mitre/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
       ensure:
-        put: container-networking-deployments
+        put: cf-networking-deployments
         params:
           repository: updated-bbl-state
           rebase: true
@@ -816,9 +816,9 @@ jobs:
     serial_groups: [mitre-deploy-group, version]
     plan:
     - aggregate:
-      - get: container-networking-ci
+      - get: cf-networking-ci
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
       - get: cf-deployment
         passed: [pickelhelm-test, ushanka-cats]
         trigger: true
@@ -833,14 +833,14 @@ jobs:
       params:
         BBL_STATE_DIR: environments/mitre/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
     - task: collect-ops-files
-      file: container-networking-ci/tasks/collect-ops-files.yml
+      file: cf-networking-ci/tasks/collect-ops-files.yml
       params:
         ENVIRONMENT_NAME: mitre
       input_mapping:
         cf-networking-release: cf-networking-dev
-        deployments-repo: container-networking-deployments
+        deployments-repo: cf-networking-deployments
     - task: deploy-cf
       file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
       params:
@@ -849,17 +849,17 @@ jobs:
         OPS_FILES: gcp.yml use-3-azs-for-router.yml use-compiled-releases.yml cf-networking.yml silk.yml opsfile.yml custom-apps-domain.yml
         VARS_STORE_FILE: environments/mitre/vars-store.yml
       input_mapping:
-        bbl-state: container-networking-deployments
-        vars-store: container-networking-deployments
-        vars-files: container-networking-deployments
+        bbl-state: cf-networking-deployments
+        vars-store: cf-networking-deployments
+        vars-files: cf-networking-deployments
         release: cf-networking-dev
       ensure:
-        put: container-networking-deployments
+        put: cf-networking-deployments
         params:
           repository: updated-vars-store
           rebase: true
     - task: create-release-tarball
-      file: container-networking-ci/tasks/create-release-tarball.yml
+      file: cf-networking-ci/tasks/create-release-tarball.yml
       input_mapping:
         cf-networking: cf-networking-dev
     - put: cf-networking-tarball
@@ -873,13 +873,13 @@ jobs:
         BBL_STATE_DIR: environments/mitre/
         CLEAN_ALL: false
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
 
   - name: mitre-test
     serial_groups: [mitre-test-group, mitre-deploy-group]
     plan:
     - aggregate:
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
         passed: [mitre-deploy]
       - get: cf-networking-dev
         passed: [mitre-deploy]
@@ -888,16 +888,16 @@ jobs:
         passed: [mitre-deploy]
       - get: version
         passed: [mitre-deploy]
-      - get: container-networking-ci
+      - get: cf-networking-ci
       - get: cf-deployment
         passed: [mitre-deploy]
         trigger: true
     - task: acceptance-tests
-      file: container-networking-ci/tasks/acceptance-tests.yml
+      file: cf-networking-ci/tasks/acceptance-tests.yml
       input_mapping:
         cf-networking: cf-networking-dev
-        test-config: container-networking-deployments
-        vars-store: container-networking-deployments
+        test-config: cf-networking-deployments
+        vars-store: cf-networking-deployments
       params:
         ENVIRONMENT_NAME: mitre
 
@@ -906,25 +906,25 @@ jobs:
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-ci
-      - get: container-networking-deployments
+      - get: cf-networking-ci
+      - get: cf-networking-deployments
         passed: [mitre-deploy]
       - get: datadog-firehose-nozzle-release
     - task: upload-datadog-firehose-nozzle-release
-      file: container-networking-ci/tasks/upload-release-tarball.yml
+      file: cf-networking-ci/tasks/upload-release-tarball.yml
       input_mapping:
-        deployments-repo: container-networking-deployments
+        deployments-repo: cf-networking-deployments
         tarballs: datadog-firehose-nozzle-release
       params:
         ENVIRONMENT_NAME: mitre
     - task: deploy-datadog-firehose-nozzle
       file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
       input_mapping:
-        cf-deployment: container-networking-deployments
-        vars-store: container-networking-deployments
-        bbl-state: container-networking-deployments
-        vars-files: container-networking-deployments
-        ops-files: container-networking-deployments
+        cf-deployment: cf-networking-deployments
+        vars-store: cf-networking-deployments
+        bbl-state: cf-networking-deployments
+        vars-files: cf-networking-deployments
+        ops-files: cf-networking-deployments
       params:
         BBL_STATE_DIR: environments/mitre
         MANIFEST_FILE: firehose-nozzles.yml
@@ -936,18 +936,18 @@ jobs:
     serial_groups: [mitre-test-group, mitre-deploy-group]
     plan:
     - aggregate:
-      - get: container-networking-ci
-      - get: container-networking-deployments
+      - get: cf-networking-ci
+      - get: cf-networking-deployments
       - get: cf-networking-tarball
         passed: [mitre-test]
         trigger: true
     - task: run-errand
-      file: container-networking-ci/tasks/run-errand.yml
+      file: cf-networking-ci/tasks/run-errand.yml
       params:
         ENVIRONMENT_NAME: mitre
         ERRAND: cf-networking-acceptance
       input_mapping:
-        deployments-repo: container-networking-deployments
+        deployments-repo: cf-networking-deployments
 
   - name: mitre-smoke
     serial_groups: [mitre-test-group]
@@ -955,29 +955,29 @@ jobs:
     - aggregate:
       - get: every-fifteen-minutes
         trigger: true
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
       - get: cf-networking-dev
         passed: [mitre-test]
         trigger: true
-      - get: container-networking-ci
+      - get: cf-networking-ci
       - get: cf-deployment
         passed: [mitre-test]
         trigger: true
     - task: smoke-tests
-      file: container-networking-ci/tasks/smoke-tests.yml
+      file: cf-networking-ci/tasks/smoke-tests.yml
       params:
         ENVIRONMENT_NAME: mitre
         ENVIRONMENT_TAG: mitre.c2c.cf-app.com
         DATADOG_API_KEY: {{datadog_api_key}}
       input_mapping:
-        test-config: container-networking-deployments
+        test-config: cf-networking-deployments
         cf-networking: cf-networking-dev
 
   - name: mitre-cats
     serial_groups: [mitre-test-group, mitre-deploy-group]
     plan:
     - aggregate:
-      - get: container-networking-ci
+      - get: cf-networking-ci
       - get: cf-acceptance-tests
       - get: cats-concourse-task
       - get: cf-networking-dev
@@ -986,13 +986,13 @@ jobs:
       - get: cf-deployment
         passed: [mitre-test]
         trigger: true
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
       - get: cf-networking-tarball
         passed: [mitre-test]
       - get: version
         passed: [mitre-test]
     - task: copy-config
-      file: container-networking-ci/tasks/copy-config.yml
+      file: cf-networking-ci/tasks/copy-config.yml
       params:
         ENVIRONMENT: mitre
     - task: cats
@@ -1005,7 +1005,7 @@ jobs:
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
     - task: bbl-up
       file: cf-deployment-concourse-tasks/bbl-up/task.yml
       params:
@@ -1020,9 +1020,9 @@ jobs:
         LB_DOMAIN: toque.c2c.cf-app.com
         BBL_ENV_NAME: toque
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
       ensure:
-        put: container-networking-deployments
+        put: cf-networking-deployments
         params:
           repository: updated-bbl-state
           rebase: true
@@ -1032,15 +1032,15 @@ jobs:
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
     - task: bbl-destroy
       file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
       params:
         BBL_STATE_DIR: environments/toque/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
       ensure:
-        put: container-networking-deployments
+        put: cf-networking-deployments
         params:
           repository: updated-bbl-state
           rebase: true
@@ -1051,8 +1051,8 @@ jobs:
     - aggregate:
       - get: cf-deployment-concourse-tasks
       - get: cf-deployment
-      - get: container-networking-ci
-      - get: container-networking-deployments
+      - get: cf-networking-ci
+      - get: cf-networking-deployments
       - get: cf-networking-dev
         passed: [mysql-tests, postgres-tests]
         trigger: true
@@ -1060,16 +1060,16 @@ jobs:
     - task: upload-stemcell
       file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
         cf-deployment: cf-deployment
       params:
         BBL_STATE_DIR: environments/toque
     - task: collect-ops-files
-      file: container-networking-ci/tasks/collect-ops-files.yml
+      file: cf-networking-ci/tasks/collect-ops-files.yml
       params:
         ENVIRONMENT_NAME: toque
       input_mapping:
-        deployments-repo: container-networking-deployments
+        deployments-repo: cf-networking-deployments
         cf-networking-release: cf-networking-dev
     - task: deploy-cf
       file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
@@ -1079,13 +1079,13 @@ jobs:
         OPS_FILES: gcp.yml use-3-azs-for-router.yml use-compiled-releases.yml cf-networking.yml silk.yml opsfile.yml
         VARS_STORE_FILE: environments/toque/vars-store.yml
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
         cf-deployment: cf-deployment
         release: cf-networking-dev
-        vars-files: container-networking-deployments
-        vars-store: container-networking-deployments
+        vars-files: cf-networking-deployments
+        vars-store: cf-networking-deployments
       ensure:
-        put: container-networking-deployments
+        put: cf-networking-deployments
         params:
           repository: updated-vars-store
           rebase: true
@@ -1095,32 +1095,32 @@ jobs:
         BBL_STATE_DIR: environments/toque/
         CLEAN_ALL: false
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
 
   - name: toque-deploy-firehose-nozzle
     serial_groups: [toque]
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-ci
-      - get: container-networking-deployments
+      - get: cf-networking-ci
+      - get: cf-networking-deployments
         passed: [toque-deploy]
       - get: datadog-firehose-nozzle-release
     - task: upload-datadog-firehose-nozzle-release
-      file: container-networking-ci/tasks/upload-release-tarball.yml
+      file: cf-networking-ci/tasks/upload-release-tarball.yml
       input_mapping:
-        deployments-repo: container-networking-deployments
+        deployments-repo: cf-networking-deployments
         tarballs: datadog-firehose-nozzle-release
       params:
         ENVIRONMENT_NAME: toque
     - task: deploy-datadog-firehose-nozzle
       file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
       input_mapping:
-        cf-deployment: container-networking-deployments
-        vars-store: container-networking-deployments
-        bbl-state: container-networking-deployments
-        vars-files: container-networking-deployments
-        ops-files: container-networking-deployments
+        cf-deployment: cf-networking-deployments
+        vars-store: cf-networking-deployments
+        bbl-state: cf-networking-deployments
+        vars-files: cf-networking-deployments
+        ops-files: cf-networking-deployments
       params:
         BBL_STATE_DIR: environments/toque
         MANIFEST_FILE: firehose-nozzles.yml
@@ -1132,8 +1132,8 @@ jobs:
     serial_groups: [toque]
     plan:
     - aggregate:
-      - get: container-networking-ci
-      - get: container-networking-deployments
+      - get: cf-networking-ci
+      - get: cf-networking-deployments
         passed: [toque-deploy]
       - get: cf-networking-dev
         passed: [toque-deploy]
@@ -1141,14 +1141,14 @@ jobs:
       - get: toque-scaling-test-params
         trigger: true
     - task: set-scaling-test-params
-      file: container-networking-ci/tasks/set-scaling-test-params.yml
+      file: cf-networking-ci/tasks/set-scaling-test-params.yml
       params:
         ENVIRONMENT_NAME: toque
       input_mapping:
-        deployments-repo: container-networking-deployments
+        deployments-repo: cf-networking-deployments
         scaling-test-params: toque-scaling-test-params
     - task: push-apps
-      file: container-networking-ci/tasks/push-apps.yml
+      file: cf-networking-ci/tasks/push-apps.yml
       params:
         ENVIRONMENT_NAME: toque
       input_mapping:
@@ -1163,21 +1163,21 @@ jobs:
         trigger: true
       - get: cf-networking-dev
         passed: [toque-push]
-      - get: container-networking-ci
+      - get: cf-networking-ci
       - get: toque-scaling-test-params
         passed: [toque-push]
       - get: toque-stats
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
         passed: [toque-push]
     - task: set-scaling-test-params
-      file: container-networking-ci/tasks/set-scaling-test-params.yml
+      file: cf-networking-ci/tasks/set-scaling-test-params.yml
       params:
         ENVIRONMENT_NAME: toque
       input_mapping:
-        deployments-repo: container-networking-deployments
+        deployments-repo: cf-networking-deployments
         scaling-test-params: toque-scaling-test-params
     - task: emit-datadog-test-start
-      file: container-networking-ci/tasks/emit-datadog-event.yml
+      file: cf-networking-ci/tasks/emit-datadog-event.yml
       params:
         TITLE: test_start
         TEXT: test_start
@@ -1185,7 +1185,7 @@ jobs:
         AWS_ENV: toque.c2c.cf-app.com
         DATADOG_API_KEY: {{datadog_api_key}}
     - task: test-scalability
-      file: container-networking-ci/tasks/test-scalability.yml
+      file: cf-networking-ci/tasks/test-scalability.yml
       params:
         ENVIRONMENT_NAME: toque
       input_mapping:
@@ -1193,7 +1193,7 @@ jobs:
         test-config: test-config
       ensure:
         task: emit-datadog-test-stop
-        file: container-networking-ci/tasks/emit-datadog-event.yml
+        file: cf-networking-ci/tasks/emit-datadog-event.yml
         params:
           TITLE: test_end
           TEXT: test_end
@@ -1206,7 +1206,7 @@ jobs:
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
     - task: bbl-up
       file: cf-deployment-concourse-tasks/bbl-up/task.yml
       params:
@@ -1221,9 +1221,9 @@ jobs:
         LB_DOMAIN: slouch.c2c.cf-app.com
         BBL_ENV_NAME: slouch
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
       ensure:
-        put: container-networking-deployments
+        put: cf-networking-deployments
         params:
           repository: updated-bbl-state
           rebase: true
@@ -1233,15 +1233,15 @@ jobs:
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
     - task: bbl-destroy
       file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
       params:
         BBL_STATE_DIR: environments/slouch/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
       ensure:
-        put: container-networking-deployments
+        put: cf-networking-deployments
         params:
           repository: updated-bbl-state
           rebase: true
@@ -1252,24 +1252,24 @@ jobs:
     - aggregate:
       - get: cf-deployment-concourse-tasks
       - get: cf-deployment
-      - get: container-networking-ci
-      - get: container-networking-deployments
+      - get: cf-networking-ci
+      - get: cf-networking-deployments
       - get: cf-networking-dev
         passed: [mysql-tests, postgres-tests]
       - get: datadog-firehose-nozzle-release
     - task: upload-stemcell
       file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
       params:
         BBL_STATE_DIR: environments/slouch
     - task: collect-ops-files
-      file: container-networking-ci/tasks/collect-ops-files.yml
+      file: cf-networking-ci/tasks/collect-ops-files.yml
       params:
         ENVIRONMENT_NAME: slouch
       input_mapping:
         cf-networking-release: cf-networking-dev
-        deployments-repo: container-networking-deployments
+        deployments-repo: cf-networking-deployments
     - task: deploy-cf
       file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
       params:
@@ -1278,11 +1278,11 @@ jobs:
         OPS_FILES: gcp.yml use-3-azs-for-router.yml use-compiled-releases.yml opsfile.yml
         VARS_STORE_FILE: environments/slouch/vars-store.yml
       input_mapping:
-        bbl-state: container-networking-deployments
-        vars-store: container-networking-deployments
-        vars-files: container-networking-deployments
+        bbl-state: cf-networking-deployments
+        vars-store: cf-networking-deployments
+        vars-files: cf-networking-deployments
       ensure:
-        put: container-networking-deployments
+        put: cf-networking-deployments
         params:
           repository: updated-vars-store
           rebase: true
@@ -1292,13 +1292,13 @@ jobs:
         BBL_STATE_DIR: environments/slouch/
         CLEAN_ALL: false
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
 
   - name: slouch-cats
     serial_groups: [slouch]
     plan:
     - aggregate:
-      - get: container-networking-ci
+      - get: cf-networking-ci
       - get: cf-acceptance-tests
       - get: cats-concourse-task
       - get: cf-networking-dev
@@ -1307,9 +1307,9 @@ jobs:
       - get: cf-deployment
         passed: [slouch-deploy]
         trigger: true
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
     - task: copy-config
-      file: container-networking-ci/tasks/copy-config.yml
+      file: cf-networking-ci/tasks/copy-config.yml
       params:
         ENVIRONMENT: slouch
     - task: cats
@@ -1322,21 +1322,21 @@ jobs:
     serial_groups: [slouch]
     plan:
     - aggregate:
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
       - get: cf-deployment-concourse-tasks
     - task: delete-deployment
       file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/slouch/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
 
   - name: ushanka-bbl-up
     serial_groups: [ushanka]
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
     - task: bbl-up
       file: cf-deployment-concourse-tasks/bbl-up/task.yml
       params:
@@ -1351,9 +1351,9 @@ jobs:
         LB_DOMAIN: ushanka.c2c.cf-app.com
         BBL_ENV_NAME: ushanka
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
       ensure:
-        put: container-networking-deployments
+        put: cf-networking-deployments
         params:
           repository: updated-bbl-state
           rebase: true
@@ -1362,9 +1362,9 @@ jobs:
     serial_groups: [ushanka]
     plan:
     - aggregate:
-      - get: container-networking-ci
+      - get: cf-networking-ci
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
       - get: cf-deployment
         trigger: true
       - get: cf-networking-dev
@@ -1375,14 +1375,14 @@ jobs:
       params:
         BBL_STATE_DIR: environments/ushanka/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
     - task: collect-ops-files
-      file: container-networking-ci/tasks/collect-ops-files.yml
+      file: cf-networking-ci/tasks/collect-ops-files.yml
       params:
         ENVIRONMENT_NAME: ushanka
       input_mapping:
         cf-networking-release: cf-networking-dev
-        deployments-repo: container-networking-deployments
+        deployments-repo: cf-networking-deployments
     - task: deploy-cf
       file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
       params:
@@ -1391,12 +1391,12 @@ jobs:
         OPS_FILES: gcp.yml use-3-azs-for-router.yml use-compiled-releases.yml cf-networking.yml opsfile.yml
         VARS_STORE_FILE: environments/ushanka/vars-store.yml
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
         release: cf-networking-dev
-        vars-files: container-networking-deployments
-        vars-store: container-networking-deployments
+        vars-files: cf-networking-deployments
+        vars-store: cf-networking-deployments
       ensure:
-        put: container-networking-deployments
+        put: cf-networking-deployments
         params:
           repository: updated-vars-store
           rebase: true
@@ -1406,14 +1406,14 @@ jobs:
         BBL_STATE_DIR: environments/ushanka/
         CLEAN_ALL: false
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
 
   - name: ushanka-test
     serial_groups: [ushanka]
     plan:
     - aggregate:
-      - get: container-networking-ci
-      - get: container-networking-deployments
+      - get: cf-networking-ci
+      - get: cf-networking-deployments
         passed: [ushanka-deploy]
       - get: cf-deployment
         passed: [ushanka-deploy]
@@ -1421,11 +1421,11 @@ jobs:
         passed: [ushanka-deploy]
         trigger: true
     - task: acceptance-tests
-      file: container-networking-ci/tasks/acceptance-tests.yml
+      file: cf-networking-ci/tasks/acceptance-tests.yml
       input_mapping:
         cf-networking: cf-networking-dev
-        test-config: container-networking-deployments
-        vars-store: container-networking-deployments
+        test-config: cf-networking-deployments
+        vars-store: cf-networking-deployments
       params:
         ENVIRONMENT_NAME: ushanka
 
@@ -1434,25 +1434,25 @@ jobs:
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-ci
-      - get: container-networking-deployments
+      - get: cf-networking-ci
+      - get: cf-networking-deployments
         passed: [ushanka-deploy]
       - get: datadog-firehose-nozzle-release
     - task: upload-datadog-firehose-nozzle-release
-      file: container-networking-ci/tasks/upload-release-tarball.yml
+      file: cf-networking-ci/tasks/upload-release-tarball.yml
       input_mapping:
-        deployments-repo: container-networking-deployments
+        deployments-repo: cf-networking-deployments
         tarballs: datadog-firehose-nozzle-release
       params:
         ENVIRONMENT_NAME: ushanka
     - task: deploy-datadog-firehose-nozzle
       file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
       input_mapping:
-        cf-deployment: container-networking-deployments
-        vars-store: container-networking-deployments
-        bbl-state: container-networking-deployments
-        vars-files: container-networking-deployments
-        ops-files: container-networking-deployments
+        cf-deployment: cf-networking-deployments
+        vars-store: cf-networking-deployments
+        bbl-state: cf-networking-deployments
+        vars-files: cf-networking-deployments
+        ops-files: cf-networking-deployments
       params:
         BBL_STATE_DIR: environments/ushanka
         MANIFEST_FILE: firehose-nozzles.yml
@@ -1464,7 +1464,7 @@ jobs:
     serial_groups: [ushanka]
     plan:
     - aggregate:
-      - get: container-networking-ci
+      - get: cf-networking-ci
       - get: cf-acceptance-tests
       - get: cats-concourse-task
       - get: cf-networking-dev
@@ -1473,9 +1473,9 @@ jobs:
       - get: cf-deployment
         passed: [ushanka-test]
         trigger: true
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
     - task: copy-config
-      file: container-networking-ci/tasks/copy-config.yml
+      file: cf-networking-ci/tasks/copy-config.yml
       params:
         ENVIRONMENT: ushanka
     - task: cats
@@ -1488,15 +1488,15 @@ jobs:
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
     - task: bbl-destroy
       file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
       params:
         BBL_STATE_DIR: environments/ushanka/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
       ensure:
-        put: container-networking-deployments
+        put: cf-networking-deployments
         params:
           repository: updated-bbl-state
           rebase: true
@@ -1506,14 +1506,14 @@ jobs:
     serial_groups: [ushanka]
     plan:
     - aggregate:
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
       - get: cf-deployment-concourse-tasks
     - task: delete-deployment
       file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/ushanka/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
 
 
 ##### Human-triggered utilities
@@ -1523,50 +1523,50 @@ jobs:
     serial_groups: [pickelhelm]
     plan:
     - aggregate:
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
       - get: cf-deployment-concourse-tasks
     - task: delete-deployment
       file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/pickelhelm/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
 
   - name: delete-deployment-mitre-cf
     public: true
     serial_groups: [mitre-test-group, mitre-deploy-group]
     plan:
     - aggregate:
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
       - get: cf-deployment-concourse-tasks
     - task: delete-deployment
       file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/mitre/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
 
   - name: delete-toque-deployment
     public: true
     serial_groups: [toque]
     plan:
     - aggregate:
-      - get: container-networking-deployments
+      - get: cf-networking-deployments
       - get: cf-deployment-concourse-tasks
     - task: delete-deployment
       file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
       params:
         BBL_STATE_DIR: environments/toque/
       input_mapping:
-        bbl-state: container-networking-deployments
+        bbl-state: cf-networking-deployments
 
   - name: shipit
     serial_groups: [version]
     plan:
     - do:
       - aggregate:
-        - get: container-networking-deployments
-        - get: container-networking-ci
+        - get: cf-networking-deployments
+        - get: cf-networking-ci
         - get: version
           params:
             bump: final
@@ -1581,11 +1581,11 @@ jobs:
         - get: cf-networking-tarball
           passed: [mitre-cats]
       - task: shipit
-        file: container-networking-ci/tasks/shipit.yml
+        file: cf-networking-ci/tasks/shipit.yml
         input_mapping:
           cf-networking: cf-networking-dev
       - task: build-cli
-        file: container-networking-ci/tasks/build-cli.yml
+        file: cf-networking-ci/tasks/build-cli.yml
         input_mapping:
           cf-networking: cf-networking-dev
       - put: version
@@ -1599,7 +1599,7 @@ jobs:
         params:
           file: final-release/cf-networking-*.tgz
       - task: build-release-notes
-        file: container-networking-ci/tasks/build-release-notes.yml
+        file: cf-networking-ci/tasks/build-release-notes.yml
       - put: cf-networking-github-release
         params:
           name: version/number
@@ -1627,7 +1627,7 @@ jobs:
     plan:
     - do:
       - aggregate:
-        - get: container-networking-ci
+        - get: cf-networking-ci
         - get: cf-networking-master
           params:
             submodules: none
@@ -1637,7 +1637,7 @@ jobs:
         - get: cf-networking-dev
           params: {submodules: none}
       - task: merge-master
-        file: container-networking-ci/tasks/merge-master.yml
+        file: cf-networking-ci/tasks/merge-master.yml
       - put: cf-networking-dev
         params: {repository: release-merged}
 

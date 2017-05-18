@@ -7,8 +7,8 @@ platform: linux
 
 inputs:
   - name: version
-  - name: container-networking-ci
-  - name: container-networking-deployments
+  - name: cf-networking-ci
+  - name: cf-networking-deployments
   - name: cf-networking-tarball
   - name: cf-networking
 
@@ -17,4 +17,4 @@ outputs:
   - name: release
 
 run:
-  path: container-networking-ci/tasks/shipit
+  path: cf-networking-ci/tasks/shipit

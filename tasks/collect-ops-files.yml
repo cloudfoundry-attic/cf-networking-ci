@@ -6,7 +6,7 @@ image_resource:
 platform: linux
 
 inputs:
-  - name: container-networking-ci
+  - name: cf-networking-ci
   - name: cf-deployment
   - name: deployments-repo
   - name: cf-networking-release
@@ -15,7 +15,7 @@ outputs:
   - name: ops-files
 
 run:
-  path: container-networking-ci/tasks/collect-ops-files
+  path: cf-networking-ci/tasks/collect-ops-files
 
 params:
   ENVIRONMENT_NAME: ~

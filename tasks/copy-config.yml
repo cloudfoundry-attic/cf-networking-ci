@@ -9,11 +9,11 @@ params:
   ENVIRONMENT: ~
 
 inputs:
-  - name: container-networking-ci
-  - name: container-networking-deployments
+  - name: cf-networking-ci
+  - name: cf-networking-deployments
 
 outputs:
   - name: integration-config
 
 run:
-  path: container-networking-ci/tasks/copy-config
+  path: cf-networking-ci/tasks/copy-config

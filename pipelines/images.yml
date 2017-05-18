@@ -2,7 +2,7 @@ resources:
 - name: dev-postgres-dockerfile
   type: git
   source:
-    uri: git://github.com/cloudfoundry-incubator/container-networking-ci
+    uri: git://github.com/cloudfoundry-incubator/cf-networking-ci
     branch: master
     paths:
       - dockerfiles/dev-postgres
@@ -18,7 +18,7 @@ resources:
 - name: dev-mysql-dockerfile
   type: git
   source:
-    uri: git://github.com/cloudfoundry-incubator/container-networking-ci
+    uri: git://github.com/cloudfoundry-incubator/cf-networking-ci
     branch: master
     paths:
       - dockerfiles/dev-mysql
@@ -34,7 +34,7 @@ resources:
 - name: deploy-dockerfile
   type: git
   source:
-    uri: git://github.com/cloudfoundry-incubator/container-networking-ci
+    uri: git://github.com/cloudfoundry-incubator/cf-networking-ci
     branch: master
     paths:
       - dockerfiles/deploy
@@ -50,7 +50,7 @@ resources:
 - name: small-git-dockerfile
   type: git
   source:
-    uri: git://github.com/cloudfoundry-incubator/container-networking-ci
+    uri: git://github.com/cloudfoundry-incubator/cf-networking-ci
     branch: master
     paths:
       - dockerfiles/small-git
@@ -66,7 +66,7 @@ resources:
 - name: deploy-light-dockerfile
   type: git
   source:
-    uri: git://github.com/cloudfoundry-incubator/container-networking-ci
+    uri: git://github.com/cloudfoundry-incubator/cf-networking-ci
     branch: master
     paths:
       - dockerfiles/deploy-light
@@ -86,22 +86,22 @@ resources:
     bucket: golang
     regexp: 'go(1\.\d+(\.\d+)?)\.linux-amd64\.tar.gz'
 
-- name: container-networking-ci
+- name: cf-networking-ci
   type: git
   source:
-    uri: https://github.com/cloudfoundry-incubator/container-networking-ci
+    uri: https://github.com/cloudfoundry-incubator/cf-networking-ci
 
 jobs:
 - name: build-dev-postgres-image
   plan:
   - aggregate:
-    - get: container-networking-ci
+    - get: cf-networking-ci
     - get: dev-postgres-dockerfile
       trigger: true
     - get: golang-1.x-tarball
       trigger: true
   - task: add-golang
-    file: container-networking-ci/tasks/add-golang-to-docker-context.yml
+    file: cf-networking-ci/tasks/add-golang-to-docker-context.yml
     input_mapping:
       dockerfile: dev-postgres-dockerfile
     params:
@@ -113,13 +113,13 @@ jobs:
 - name: build-dev-mysql-image
   plan:
   - aggregate:
-    - get: container-networking-ci
+    - get: cf-networking-ci
     - get: dev-mysql-dockerfile
       trigger: true
     - get: golang-1.x-tarball
       trigger: true
   - task: add-golang
-    file: container-networking-ci/tasks/add-golang-to-docker-context.yml
+    file: cf-networking-ci/tasks/add-golang-to-docker-context.yml
     input_mapping:
       dockerfile: dev-mysql-dockerfile
     params:

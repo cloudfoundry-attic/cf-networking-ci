@@ -4,9 +4,9 @@ set -e -u
 set -o pipefail
 
 # replace admin password in test config
-pushd container-networking-deployments/environments/${ENVIRONMENT}
+pushd cf-networking-deployments/environments/${ENVIRONMENT}
   ADMIN_PASSWORD=`grep uaa_scim_users_admin_password vars-store.yml  | cut -d' ' -f2`
   sed -i -- "s/{{admin-password}}/${ADMIN_PASSWORD}/g" integration_config.json
 popd
 
-cp container-networking-deployments/environments/${ENVIRONMENT}/integration_config.json integration-config/
+cp cf-networking-deployments/environments/${ENVIRONMENT}/integration_config.json integration-config/

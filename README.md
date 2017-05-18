@@ -1,7 +1,7 @@
-# container-networking-ci
+# cf-networking-ci
 Public config for the Container Networking team's CI
 
-Keep credentials and other private config in our [private repo](https://github.com/cloudfoundry/container-networking-deployments)
+Keep credentials and other private config in our [private repo](https://github.com/cloudfoundry/cf-networking-deployments)
 
 The main source code repo is [cf-networking-release](https://github.com/cloudfoundry-incubator/cf-networking-release).
 

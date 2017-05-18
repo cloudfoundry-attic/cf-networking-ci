@@ -6,7 +6,7 @@ image_resource:
   source: { repository: c2cnetworking/dev-postgres }
 
 inputs:
-  - name: container-networking-ci
+  - name: cf-networking-ci
   - name: test-config
   - name: vars-store
   - name: cf-networking
@@ -19,4 +19,4 @@ params:
     CONFIG: ~
 
 run:
-  path: container-networking-ci/tasks/acceptance-tests
+  path: cf-networking-ci/tasks/acceptance-tests

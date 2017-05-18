@@ -6,7 +6,7 @@ image_resource:
   source: { repository: c2cnetworking/deploy-light }
 
 inputs:
-  - name: container-networking-ci
+  - name: cf-networking-ci
   - name: deployments-repo
 
 params:
@@ -14,4 +14,4 @@ params:
   ENVIRONMENT_NAME: ~
 
 run:
-  path: container-networking-ci/tasks/run-errand
+  path: cf-networking-ci/tasks/run-errand

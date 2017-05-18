@@ -6,7 +6,7 @@ image_resource:
   source: { repository: c2cnetworking/dev-postgres }
 
 inputs:
-  - name: container-networking-ci
+  - name: cf-networking-ci
   - name: test-config
   - name: cf-networking
 
@@ -14,4 +14,4 @@ params:
     ENVIRONMENT_NAME: ~
 
 run:
-  path: container-networking-ci/tasks/push-apps
+  path: cf-networking-ci/tasks/push-apps
