@@ -1266,7 +1266,7 @@ jobs:
         cf-networking-release: cf-networking-dev
         deployments-repo: container-networking-deployments
     - task: deploy-cf
-      file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
+      file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
       params:
         BBL_STATE_DIR: environments/slouch
         SYSTEM_DOMAIN: slouch.c2c.cf-app.com
@@ -1274,7 +1274,6 @@ jobs:
         VARS_STORE_FILE: environments/slouch/vars-store.yml
       input_mapping:
         bbl-state: container-networking-deployments
-        release: cf-networking-dev
         vars-store: container-networking-deployments
         vars-files: container-networking-deployments
       ensure:
@@ -1304,8 +1303,6 @@ jobs:
         passed: [slouch-deploy]
         trigger: true
       - get: container-networking-deployments
-      - get: cf-networking-tarball
-        passed: [slouch-deploy]
     - task: copy-config
       file: container-networking-ci/tasks/copy-config.yml
       params:
