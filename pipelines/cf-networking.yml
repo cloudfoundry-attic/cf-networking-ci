@@ -765,7 +765,7 @@ jobs:
         ENVIRONMENT_NAME: pickelhelm
 
   - name: mitre-bbl-up
-    serial_groups: [mitre]
+    serial_groups: [mitre-test-group, mitre-deploy-group]
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
@@ -792,7 +792,7 @@ jobs:
           rebase: true
 
   - name: mitre-bbl-destroy
-    serial_groups: [mitre]
+    serial_groups: [mitre-deploy-group]
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
@@ -1506,7 +1506,7 @@ jobs:
 
   - name: delete-deployment-mitre-cf
     public: true
-    serial_groups: [mitre]
+    serial_groups: [mitre-test-group, mitre-deploy-group]
     plan:
     - aggregate:
       - get: container-networking-deployments
