@@ -521,7 +521,7 @@ jobs:
       file: cf-networking-ci-pinned/tasks/acceptance-tests.yml
       input_mapping:
         cf-networking: cf-networking-pinned
-        cf-networking-ci: cf-networking-ci-pinned
+        container-networking-ci: cf-networking-ci-pinned
         test-config: cf-networking-deployments-pinned
         vars-store: updated-vars-store
       params:
