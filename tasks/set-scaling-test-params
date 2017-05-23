@@ -5,7 +5,7 @@ set -o pipefail
 
 # replace admin password in test config
 pushd ${PWD}/deployments-repo/environments/${ENVIRONMENT_NAME}
-  ADMIN_PASSWORD=`grep uaa_scim_users_admin_password vars-store.yml  | cut -d' ' -f2`
+  ADMIN_PASSWORD=`grep cf_admin_password vars-store.yml  | cut -d' ' -f2`
   sed -i -- "s/{{admin-password}}/${ADMIN_PASSWORD}/g" test-config.json
 popd
 
