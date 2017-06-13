@@ -8,6 +8,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
   jq \
   iptables \
   g++ \
+  netcat \
   &&  apt-get autoremove -yqq \
   &&  apt-get clean \
   &&  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
