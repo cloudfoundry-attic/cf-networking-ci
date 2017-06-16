@@ -3,6 +3,7 @@ groups:
   jobs:
   - mysql-tests
   - postgres-tests
+  - windows-tests
   - pickelhelm-deploy
   - pickelhelm-test
   - mitre-deploy
@@ -604,6 +605,19 @@ jobs:
       input_mapping:
         cf-networking-release: cf-networking-dev
 
+  - name: windows-tests
+    public: true
+    plan:
+    - aggregate:
+      - get: cf-networking-dev
+        trigger: true
+      - get: cf-networking-ci
+    - task: garden-external-networker-windows
+      file: cf-networking-ci/tasks/garden-external-networker-windows.yml
+      input_mapping:
+        cf-networking-release: cf-networking-dev
+        ci: cf-networking-ci
+
   - name: pickelhelm-bbl-up
     serial_groups: [pickelhelm]
     plan:
@@ -660,7 +674,7 @@ jobs:
         trigger: true
       - get: cf-networking-dev
         trigger: true
-        passed: [postgres-tests, mysql-tests]
+        passed: [postgres-tests, mysql-tests, windows-tests]
     - task: upload-stemcell
       file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
       params:
@@ -1041,7 +1055,7 @@ jobs:
       - get: cf-networking-ci
       - get: cf-networking-deployments
       - get: cf-networking-dev
-        passed: [mysql-tests, postgres-tests]
+        passed: [mysql-tests, postgres-tests, windows-tests]
         trigger: true
       - get: datadog-firehose-nozzle-release
     - task: upload-stemcell
@@ -1242,7 +1256,7 @@ jobs:
       - get: cf-networking-ci
       - get: cf-networking-deployments
       - get: cf-networking-dev
-        passed: [mysql-tests, postgres-tests]
+        passed: [mysql-tests, postgres-tests, windows-tests]
       - get: datadog-firehose-nozzle-release
     - task: upload-stemcell
       file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
