@@ -9,6 +9,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
   iptables \
   g++ \
   netcat \
+  module-init-tools \
   &&  apt-get autoremove -yqq \
   &&  apt-get clean \
   &&  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
