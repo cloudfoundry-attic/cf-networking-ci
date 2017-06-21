@@ -1,14 +1,14 @@
 #!/bin/bash
 set -xeu
 
-CF_DEPLOYMENT_PATCH_PATH="${PWD}/cf-deployment-patch"
+CF_DEPLOYMENT_PATH="${PWD}/cf-deployment"
 
-git clone ./cf-deployment ./cf-deployment-patch-rebased
+git clone ./cf-deployment-patch ./cf-deployment-patch-rebased
 
 pushd cf-deployment-patch-rebased
-  git remote add fork "$CF_DEPLOYMENT_PATCH_PATH"
+  git remote add fork "$CF_DEPLOYMENT_PATH"
   git fetch fork
   git config --global user.email "container-networking+ci@pivotal.io"
   git config --global user.name "Container Networking Bot"
-  git rebase fork/release-candidate-patch
+  git rebase fork/release-candidate
 popd
