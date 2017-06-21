@@ -4,7 +4,6 @@ groups:
   - mysql-tests
   - postgres-tests
   - windows-tests
-  - update-cf-deployment-patch
   - pickelhelm-deploy
   - pickelhelm-test
   - mitre-deploy
@@ -119,19 +118,8 @@ resources:
   - name: cf-deployment
     type: git
     source:
-      branch: release-candidate
+      branch: master
       uri: https://github.com/cloudfoundry/cf-deployment.git
-  - name: cf-deployment-patch
-    type: git
-    source:
-      branch: release-candidate-patch
-      uri: https://github.com/cf-container-networking/cf-deployment.git
-  - name: cf-deployment-patch-rebased
-    type: git
-    source:
-      branch: release-candidate-patch
-      uri: git@github.com:cf-container-networking/cf-deployment.git
-      private_key: {{cf-deployment-cf-container-networking-key}}
   ###### bosh.io releases
   - name: datadog-firehose-nozzle-release
     type: bosh-io-release
@@ -629,22 +617,6 @@ jobs:
       input_mapping:
         cf-networking-release: cf-networking-dev
         ci: cf-networking-ci
-
-  - name: update-cf-deployment-patch
-    public: true
-    plan:
-    - aggregate:
-      - get: cf-deployment-patch
-      - get: cf-deployment
-      - get: cf-networking-ci
-    - task: rebase-rc-onto-patch
-      file: cf-networking-ci/tasks/update-cf-deployment-patch.yml
-      input_mapping:
-        cf-deployment-patch: cf-deployment-patch
-    - put: cf-deployment-patch-rebased
-      params:
-        repository: cf-deployment
-        rebase: true
 
   - name: pickelhelm-bbl-up
     serial_groups: [pickelhelm]
