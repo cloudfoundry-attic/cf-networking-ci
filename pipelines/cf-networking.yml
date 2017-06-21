@@ -4,6 +4,7 @@ groups:
   - mysql-tests
   - postgres-tests
   - windows-tests
+  - update-cf-deployment-patch
   - pickelhelm-deploy
   - pickelhelm-test
   - mitre-deploy
@@ -629,6 +630,7 @@ jobs:
     - aggregate:
       - get: cf-deployment-patch
       - get: cf-deployment
+      - get: cf-networking-ci
     - task: rebase-rc-onto-patch
       file: cf-networking-ci/update-cf-deployment-patch.yml
 
