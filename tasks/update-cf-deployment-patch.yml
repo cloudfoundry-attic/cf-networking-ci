@@ -10,6 +10,9 @@ inputs:
   - name: cf-deployment-patch
   - name: cf-deployment
 
+outputs:
+  - name: cf-deployment
+
 params: {}
 
 run:
