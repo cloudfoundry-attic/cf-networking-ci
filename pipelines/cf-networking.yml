@@ -1396,6 +1396,10 @@ jobs:
           passed: [mitre-cats]
         - get: cf-networking-tarball
           passed: [mitre-cats, mitre-acceptance-errand]
+      - task: check-non-experimental
+        file: cf-networking-ci/tasks/check-non-experimental.yml
+        input_mapping:
+          cf-networking: cf-networking-dev
       - task: shipit
         file: cf-networking-ci/tasks/shipit.yml
         input_mapping:
