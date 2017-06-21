@@ -125,11 +125,6 @@ resources:
     source:
       branch: release-candidate-patch
       uri: https://github.com/cf-container-networking/cf-deployment.git
-  - name: cf-deployment-cf-networking
-    type: git
-    source:
-      branch: release-candidate
-      uri: https://github.com/cf-container-networking/cf-deployment.git
   ###### bosh.io releases
   - name: datadog-firehose-nozzle-release
     type: bosh-io-release
@@ -629,9 +624,13 @@ jobs:
         ci: cf-networking-ci
 
   - name: update-cf-deployment-patch
+    public: true
     plan:
-      - task: rebase-rc-onto-patch
-        file: cf-networking-ci/update-cf-deployment-patch.yml
+    - aggregate:
+      - get: cf-deployment-patch
+      - get: cf-deployment
+    - task: rebase-rc-onto-patch
+      file: cf-networking-ci/update-cf-deployment-patch.yml
 
   - name: pickelhelm-bbl-up
     serial_groups: [pickelhelm]
