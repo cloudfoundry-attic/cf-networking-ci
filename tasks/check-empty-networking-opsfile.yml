@@ -9,7 +9,4 @@ inputs:
   - name: cf-networking
 
 run:
-  path: cf-networking-ci/tasks/check-non-experimental
-
-params:
-  ENVIRONMENT_NAME: ~
+  path: cf-networking-ci/tasks/check-empty-networking-opsfile

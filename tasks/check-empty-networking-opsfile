@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e -u
+
+pushd "cf-networking"
+  if [ ! -f "manifest-generation/opsfiles/cf-networking.yml" ] ; then
+    exit 1
+  fi
+
+  let non_comment_lines=$(grep -Ecv '^#' manifest-generation/opsfiles/cf-networking.yml)
+  if [ "$non_comment_lines" -gt "0" ]; then
+    echo "additions in cf-networking.yml should be merged in cf-deployment before shipping"
+    exit 1
+  fi
+popd
