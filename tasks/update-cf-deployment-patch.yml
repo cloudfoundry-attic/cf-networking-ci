@@ -11,7 +11,7 @@ inputs:
   - name: cf-deployment
 
 outputs:
-  - name: cf-deployment
+  - name: cf-deployment-patch-merged
 
 params: {}
 
