@@ -1,0 +1,7 @@
+#!/bin/bash
+
+CF_DEPLOYMENT_PATH=cf-deployment
+pushd cf-deployment-patch
+  git remote add fork "$CF_DEPLOYMENT_PATH"
+  git rebase fork/release-candidate
+popd
