@@ -1,7 +1,9 @@
 #!/bin/bash
+set -xeu
 
-CF_DEPLOYMENT_PATH=cf-deployment
-pushd cf-deployment-patch
-  git remote add fork "$CF_DEPLOYMENT_PATH"
-  git rebase fork/release-candidate
+CF_DEPLOYMENT_PATCH_PATH="${PWD}/cf-deployment-patch"
+pushd cf-deployment
+  git remote add fork "$CF_DEPLOYMENT_PATCH_PATH"
+  git fetch fork/release-candidate-patch
+  git merge fork/release-candidate-patch
 popd
