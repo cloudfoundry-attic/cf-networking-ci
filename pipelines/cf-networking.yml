@@ -1272,7 +1272,7 @@ jobs:
         cf-networking-release: cf-networking-dev
         deployments-repo: cf-networking-deployments
     - task: deploy-cf
-      file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
+      file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
       params:
         BBL_STATE_DIR: environments/slouch
         SYSTEM_DOMAIN: slouch.c2c.cf-app.com
@@ -1280,6 +1280,7 @@ jobs:
         VARS_STORE_FILE: environments/slouch/vars-store.yml
       input_mapping:
         bbl-state: cf-networking-deployments
+        release: cf-networking-dev
         vars-store: cf-networking-deployments
         vars-files: cf-networking-deployments
       ensure:
