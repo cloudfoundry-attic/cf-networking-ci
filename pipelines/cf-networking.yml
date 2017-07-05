@@ -891,6 +891,10 @@ jobs:
       - get: cf-deployment
         passed: [mitre-deploy]
         trigger: true
+    - task: check-cli-version
+      file: cf-networking-ci/tasks/check-cli-version.yml
+      input_mapping:
+        cf-networking: cf-networking-dev
     - task: acceptance-tests
       file: cf-networking-ci/tasks/acceptance-tests.yml
       input_mapping:
