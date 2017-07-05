@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -e -x
+
+cd cf-networking
+export GOPATH=$PWD
+
+VERSION=$(cat ./version/number)
+if [ -z "$VERSION" ]; then
+  echo "missing version number"
+  exit 1
+fi
+
+go build -o /tmp/bin/network-policy-plugin ./src/cli-plugin
+cf install-plugin -f /tmp/bin/network-policy-plugin
+
+PLUGIN_VERSION=$(cf plugins | grep network-policy | cut -d ' ' -f4 | uniq)
+
+if [ "$VERSION" != "$PLUGIN_VERSION" ]; then
+  echo "Plugin version does not match version resource"
+fi
