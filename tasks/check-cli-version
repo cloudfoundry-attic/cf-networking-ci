@@ -21,4 +21,5 @@ PLUGIN_VERSION=$(cf plugins | grep network-policy | cut -d ' ' -f4 | uniq)
 
 if [ "$VERSION" != "$PLUGIN_VERSION" ]; then
   echo "Plugin version does not match version resource"
+  exit 1
 fi
