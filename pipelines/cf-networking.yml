@@ -167,6 +167,17 @@ resources:
       uri: "git@github.com:cloudfoundry/cf-networking-deployments.git"
       private_key: {{cf-networking-deployments-push-key}}
       branch: pinned
+  - name: cli-plugin-fork
+    type: git
+    source:
+      uri: "git@github.com:cf-container-networking/cli-plugin-repo.git"
+      private_key: {{cli-plugin-fork-push-key}}
+      branch: update-networking-plugin
+  - name: cli-plugin-master
+    type: git
+    source:
+      uri: "https://github.com/cloudfoundry-incubator/cli-plugin-repo.git"
+      branch: master
   ####### Stats
   - name: toque-stats
     type: git
@@ -1401,6 +1412,8 @@ jobs:
           passed: [mitre-cats]
         - get: cf-networking-tarball
           passed: [mitre-cats, mitre-acceptance-errand]
+        - get: cli-plugin-fork
+        - get: cli-plugin-master
       - task: check-empty-networking-opsfile
         file: cf-networking-ci/tasks/check-empty-networking-opsfile.yml
         input_mapping:
@@ -1434,6 +1447,14 @@ jobs:
           globs:
           - final-release/cf-networking-*.tgz
           - binaries/network-policy-plugin-*
+      - task: update-plugin-repo
+        file: cf-networking-ci/tasks/update-plugin-repo.yml
+      - put: cli-plugin-fork
+        params: {repository: fork-merged}
+      - task: create-plugin-pr
+        file: cf-networking-ci/tasks/create-plugin-pr.yml
+        params:
+          GITHUB_TOKEN: {{github-access-token}}
 
   # bump minor version (i.e. 0.1.0 -> 0.2.0)
   - name: bump-minor-version
