@@ -10,6 +10,7 @@ inputs:
   - name: cli-plugin-fork
   - name: cli-plugin-master
   - name: binaries
+  - name: version
 
 outputs:
   - name: fork-merged
