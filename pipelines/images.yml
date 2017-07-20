@@ -31,6 +31,22 @@ resources:
     email: {{dockerhub_email}}
     repository: c2cnetworking/dev-mysql
 
+- name: dev-mysql-5.6-dockerfile
+  type: git
+  source:
+    uri: git://github.com/cloudfoundry-incubator/cf-networking-ci
+    branch: master
+    paths:
+      - dockerfiles/dev-mysql-5.6
+
+- name: dev-mysql-5.6-image
+  type: docker-image
+  source:
+    username: {{dockerhub_username}}
+    password: {{dockerhub_password}}
+    email: {{dockerhub_email}}
+    repository: c2cnetworking/dev-mysql-5.6
+
 - name: deploy-dockerfile
   type: git
   source:
@@ -125,6 +141,24 @@ jobs:
     params:
       INPUT_DOCKERFILE_PATH: dockerfile/dockerfiles/dev-mysql/Dockerfile
   - put: dev-mysql-image
+    params:
+      build: docker-build-context
+
+- name: build-dev-mysql-5.6-image
+  plan:
+  - aggregate:
+    - get: cf-networking-ci
+    - get: dev-mysql-5.6-dockerfile
+      trigger: true
+    - get: golang-1.x-tarball
+      trigger: true
+  - task: add-golang
+    file: cf-networking-ci/tasks/add-golang-to-docker-context.yml
+    input_mapping:
+      dockerfile: dev-mysql-5.6-dockerfile
+    params:
+      INPUT_DOCKERFILE_PATH: dockerfile/dockerfiles/dev-mysql-5.6/Dockerfile
+  - put: dev-mysql-5.6-image
     params:
       build: docker-build-context
 
