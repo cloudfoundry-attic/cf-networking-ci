@@ -17,7 +17,7 @@ git clone ./cli-plugin-master ./fork-merged
 
 cd fork-merged
 
-bosh-cli interpolate repo-index.yml -o $TEMPLATE_PATH \
+bosh interpolate repo-index.yml -o $TEMPLATE_PATH \
   --vars-env=CFN --var-errs > /tmp/repo-index.yml
 cp /tmp/repo-index.yml repo-index.yml
 
