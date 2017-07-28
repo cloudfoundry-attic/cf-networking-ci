@@ -8,7 +8,7 @@ export PATH=$GOPATH/bin:$PATH
 FORK=$PWD/cli-plugin-fork
 TEMPLATE_PATH=$PWD/cf-networking-ci/opsfiles/cli-plugin-template.yml
 RELEASE_PATH=$PWD/cf-networking-github-release
-export CFN_version=$(cat "$RELEASE_PATH"/version | cut -d 'v' -f 2)
+export CFN_version=$(cat "$RELEASE_PATH"/version)
 export CFN_update_time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 export CFN_osx_checksum=$(shasum -a 1 "$RELEASE_PATH"/network-policy-plugin-darwin64 | cut -d ' ' -f 1)
 export CFN_win64_checksum=$(shasum -a 1 "$RELEASE_PATH"/network-policy-plugin-windows64.exe | cut -d ' ' -f 1)
@@ -25,5 +25,6 @@ cp /tmp/repo-index.yml repo-index.yml
 git config --global user.email "container-networking+ci@pivotal.io"
 git config --global user.name "Container Networking Bot"
 
+git co -b update-networking-plugin
 git add .
 git commit -m "Update network-policy plugin"

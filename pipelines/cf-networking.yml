@@ -1501,7 +1501,13 @@ jobs:
         - get: cf-networking-github-release
           params:
             globs:
-            - binaries/network-policy-plugin-*
+            - network-policy-plugin-*
+        - get: cf-networking-master
+          params:  # just here for a dependency/trigger, so keep it light
+            submodules: none
+            depth: 1
+          passed: [merge-master]
+          trigger: true
       - task: update-plugin-repo
         file: cf-networking-ci/tasks/update-plugin-repo.yml
       - put: cli-plugin-fork
