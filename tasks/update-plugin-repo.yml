@@ -9,8 +9,7 @@ inputs:
   - name: cf-networking-ci
   - name: cli-plugin-fork
   - name: cli-plugin-master
-  - name: binaries
-  - name: version
+  - name: cf-networking-github-release
 
 outputs:
   - name: fork-merged
