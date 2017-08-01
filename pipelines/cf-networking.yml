@@ -2,8 +2,10 @@ groups:
 - name: cf-networking
   jobs:
   - mysql-tests
+  - mysql-5.6-tests
   - postgres-tests
   - windows-tests
+  - unit-and-integration-tests
   - pickelhelm-deploy
   - pickelhelm-test
   - mitre-deploy
@@ -288,7 +290,7 @@ jobs:
       - get: cf-networking-deployments
       - get: cf-deployment
       - get: cf-networking-dev
-        passed: [postgres-tests, mysql-tests]
+        passed: [unit-and-integration-tests]
         trigger: true
     - task: delete-deployment
       file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
@@ -475,7 +477,7 @@ jobs:
       - get: cf-deployment-concourse-tasks-pinned
       - get: cf-networking-pinned
       - get: cf-networking-dev
-        passed: [postgres-tests, mysql-tests]
+        passed: [unit-and-integration-tests]
         trigger: true
     - task: delete-deployment
       file: cf-deployment-concourse-tasks-pinned/bosh-delete-deployment/task.yml
@@ -617,6 +619,19 @@ jobs:
       input_mapping:
         cf-networking-release: cf-networking-dev
 
+  - name: mysql-5.6-tests
+    public: true
+    plan:
+    - aggregate:
+      - get: cf-networking-dev
+        trigger: true
+      - get: cf-networking-ci
+    - task: unit-and-integration-tests
+      file: cf-networking-ci/tasks/mysql-5.6-tests.yml
+      privileged: true
+      input_mapping:
+        cf-networking-release: cf-networking-dev
+
   - name: windows-tests
     public: true
     plan:
@@ -629,6 +644,13 @@ jobs:
       input_mapping:
         cf-networking-release: cf-networking-dev
         ci: cf-networking-ci
+
+  - name: unit-and-integration-tests
+    public: true
+    plan:
+    - get: cf-networking-dev
+      passed: [postgres-tests, mysql-tests, mysql-5.6-tests, windows-tests]
+      trigger: true
 
   - name: pickelhelm-bbl-up
     serial_groups: [pickelhelm]
@@ -686,7 +708,7 @@ jobs:
         trigger: true
       - get: cf-networking-dev
         trigger: true
-        passed: [postgres-tests, mysql-tests, windows-tests]
+        passed: [unit-and-integration-tests]
     - task: upload-stemcell
       file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
       params:
@@ -1082,7 +1104,7 @@ jobs:
       - get: cf-networking-ci
       - get: cf-networking-deployments
       - get: cf-networking-dev
-        passed: [mysql-tests, postgres-tests, windows-tests]
+        passed: [unit-and-integration-tests]
         trigger: true
       - get: datadog-firehose-nozzle-release
     - task: upload-stemcell
@@ -1283,7 +1305,7 @@ jobs:
       - get: cf-networking-ci
       - get: cf-networking-deployments
       - get: cf-networking-dev
-        passed: [mysql-tests, postgres-tests, windows-tests]
+        passed: [unit-and-integration-tests]
       - get: datadog-firehose-nozzle-release
     - task: upload-stemcell
       file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
