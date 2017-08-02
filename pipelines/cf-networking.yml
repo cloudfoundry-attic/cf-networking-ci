@@ -13,6 +13,7 @@ groups:
   - mitre-acceptance-errand
   - mitre-smoke
   - mitre-cats
+  - ship-what
   - shipit
   - bump-minor-version
   - merge-master
@@ -1426,6 +1427,24 @@ jobs:
       input_mapping:
         bbl-state: cf-networking-deployments
 
+  - name: ship-what
+    serial_groups: [version]
+    plan:
+    - do:
+      - aggregate:
+        - get: version
+          passed: [mitre-cats]
+        - get: cf-networking-dev
+          params:
+            fetch: [master]
+            submodules: none
+          passed: [mitre-cats, trucker-test-upgrade, sombrero-test-upgrade, mitre-acceptance-errand, mitre-smoke]
+          trigger: true
+        - get: cf-deployment
+          passed: [mitre-cats]
+        - get: cf-networking-tarball
+          passed: [mitre-cats, mitre-acceptance-errand]
+
   - name: shipit
     serial_groups: [version]
     plan:
@@ -1436,16 +1455,16 @@ jobs:
         - get: version
           params:
             bump: final
-          passed: [mitre-cats]
+          passed: [ship-what]
         - get: cf-networking-dev
           params:
             fetch: [master]
             submodules: none
-          passed: [mitre-cats, trucker-test-upgrade, sombrero-test-upgrade, mitre-acceptance-errand, mitre-smoke]
+          passed: [ship-what]
         - get: cf-deployment
-          passed: [mitre-cats]
+          passed: [ship-what]
         - get: cf-networking-tarball
-          passed: [mitre-cats, mitre-acceptance-errand]
+          passed: [ship-what]
         - get: cli-plugin-fork
         - get: cli-plugin-master
       - task: check-empty-networking-opsfile
