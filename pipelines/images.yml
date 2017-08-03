@@ -15,6 +15,22 @@ resources:
     email: {{dockerhub_email}}
     repository: c2cnetworking/dev-postgres
 
+- name: dev-postgres-ifb-dockerfile
+  type: git
+  source:
+    uri: git://github.com/cloudfoundry-incubator/cf-networking-ci
+    branch: master
+    paths:
+      - dockerfiles/dev-postgres-ifb
+
+- name: dev-postgres-ifb-image
+  type: docker-image
+  source:
+    username: {{dockerhub_username}}
+    password: {{dockerhub_password}}
+    email: {{dockerhub_email}}
+    repository: c2cnetworking/dev-postgres-ifb
+
 - name: dev-mysql-dockerfile
   type: git
   source:
@@ -30,6 +46,22 @@ resources:
     password: {{dockerhub_password}}
     email: {{dockerhub_email}}
     repository: c2cnetworking/dev-mysql
+
+- name: dev-mysql-ifb-dockerfile
+  type: git
+  source:
+    uri: git://github.com/cloudfoundry-incubator/cf-networking-ci
+    branch: master
+    paths:
+      - dockerfiles/dev-mysql-ifb
+
+- name: dev-mysql-ifb-image
+  type: docker-image
+  source:
+    username: {{dockerhub_username}}
+    password: {{dockerhub_password}}
+    email: {{dockerhub_email}}
+    repository: c2cnetworking/dev-mysql-ifb
 
 - name: dev-mysql-5.6-dockerfile
   type: git
@@ -126,6 +158,23 @@ jobs:
     params:
       build: docker-build-context
 
+
+- name: build-dev-postgres-ifb-image
+  plan:
+  - aggregate:
+    - get: cf-networking-ci
+    - get: dev-postgres-ifb-dockerfile
+      trigger: true
+  - task: set-docker-image-tag
+    file: cf-networking-ci/tasks/set-docker-image-tag.yml
+    params:
+      TAG: {{docker_ifb_kernel_version}}-moby
+  - put: dev-postgres-ifb-image
+    params:
+      build_args:
+        KERNELVER: {{docker_ifb_kernel_version}}
+      tag: docker-image-tag-path/tag
+
 - name: build-dev-mysql-image
   plan:
   - aggregate:
@@ -143,6 +192,22 @@ jobs:
   - put: dev-mysql-image
     params:
       build: docker-build-context
+
+- name: build-dev-mysql-ifb-image
+  plan:
+  - aggregate:
+    - get: cf-networking-ci
+    - get: dev-mysql-ifb-dockerfile
+      trigger: true
+  - task: set-docker-image-tag
+    file: cf-networking-ci/tasks/set-docker-image-tag.yml
+    params:
+      TAG: {{docker_ifb_kernel_version}}-moby
+  - put: dev-mysql-ifb-image
+    params:
+      build_args:
+        KERNELVER: {{docker_ifb_kernel_version}}
+      tag: docker-image-tag-path/tag
 
 - name: build-dev-mysql-5.6-image
   plan:
