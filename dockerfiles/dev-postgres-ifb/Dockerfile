@@ -28,12 +28,12 @@ RUN wget -nv -P /srv https://www.kernel.org/pub/linux/kernel/v4.x/linux-$KERNELV
 
 # build kernel modules
 RUN cd /srv/linux-$KERNELVER \
- && make defconfig \
- && ([ ! -f /proc/1/root/proc/config.gz ] || zcat /proc/1/root/proc/config.gz > .config) \
- # enable modules
- && echo 'CONFIG_IFB=m' >> .config \
- # patch modules
- && sed -i'.bak' '/hcd->amd_resume_bug/{s/^/\/\//;n;s/^/\/\//}' ./drivers/usb/core/hcd-pci.c \
+ && make defconfig
+
+ADD config /srv/linux-$KERNELVER/.config
+
+# enable modules
+RUN cd /srv/linux-$KERNELVER \
  # build modules
  && make oldconfig \
  && make modules_prepare \
