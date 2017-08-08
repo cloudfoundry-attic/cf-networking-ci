@@ -234,7 +234,6 @@ resources:
       user: cloudfoundry-incubator
       repository: cf-networking-release
       access_token: {{github-access-token}}
-      drafts: true
 
 jobs:
   - name: trucker-bbl-up
@@ -1548,7 +1547,6 @@ jobs:
             submodules: none
             depth: 1
           passed: [merge-master]
-          trigger: true
       - task: update-plugin-repo
         file: cf-networking-ci/tasks/update-plugin-repo.yml
       - put: cli-plugin-fork
