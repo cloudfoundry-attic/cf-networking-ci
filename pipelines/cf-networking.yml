@@ -257,6 +257,7 @@ jobs:
         BBL_ENV_NAME: trucker
       input_mapping:
         bbl-state: cf-networking-deployments
+        ops-files: cf-networking-deployments
       ensure:
         put: cf-networking-deployments
         params:
@@ -439,6 +440,7 @@ jobs:
         BBL_ENV_NAME: sombrero
       input_mapping:
         bbl-state: cf-networking-deployments
+        ops-files: cf-networking-deployments
       ensure:
         put: cf-networking-deployments
         params:
@@ -671,8 +673,9 @@ jobs:
         BBL_LB_KEY: {{pickelhelm-lb-key}}
         LB_DOMAIN: pickelhelm.c2c.cf-app.com
         BBL_ENV_NAME: pickelhelm
-      input_mapping: 
+      input_mapping:
         bbl-state: cf-networking-deployments
+        ops-files: cf-networking-deployments
       ensure:
         put: cf-networking-deployments
         params:
@@ -821,6 +824,7 @@ jobs:
         BBL_ENV_NAME: mitre
       input_mapping:
         bbl-state: cf-networking-deployments
+        ops-files: cf-networking-deployments
       ensure:
         put: cf-networking-deployments
         params:
@@ -1071,6 +1075,7 @@ jobs:
         BBL_ENV_NAME: toque
       input_mapping:
         bbl-state: cf-networking-deployments
+        ops-files: cf-networking-deployments
       ensure:
         put: cf-networking-deployments
         params:
@@ -1272,6 +1277,7 @@ jobs:
         BBL_ENV_NAME: slouch
       input_mapping:
         bbl-state: cf-networking-deployments
+        ops-files: cf-networking-deployments
       ensure:
         put: cf-networking-deployments
         params:
