@@ -1472,10 +1472,6 @@ jobs:
           passed: [ship-what]
         - get: cli-plugin-fork
         - get: cli-plugin-master
-      - task: check-empty-networking-opsfile
-        file: cf-networking-ci/tasks/check-empty-networking-opsfile.yml
-        input_mapping:
-          cf-networking: cf-networking-dev
       - task: shipit
         file: cf-networking-ci/tasks/shipit.yml
         input_mapping:
