@@ -68,7 +68,6 @@ groups:
   - slouch-bbl-up
   - slouch-deploy
   - delete-slouch-deployment
-  - slouch-cats
 - name: bbl
   jobs:
   - pickelhelm-bbl-up
@@ -1350,29 +1349,6 @@ jobs:
         CLEAN_ALL: false
       input_mapping:
         bbl-state: cf-networking-deployments
-
-  - name: slouch-cats
-    serial_groups: [slouch]
-    plan:
-    - aggregate:
-      - get: cf-networking-ci
-      - get: cf-acceptance-tests
-      - get: cats-concourse-task
-      - get: cf-networking-dev
-        passed: [slouch-deploy]
-        trigger: true
-      - get: cf-deployment
-        passed: [slouch-deploy]
-        trigger: true
-      - get: cf-networking-deployments
-    - task: copy-config
-      file: cf-networking-ci/tasks/copy-config.yml
-      params:
-        ENVIRONMENT: slouch
-    - task: cats
-      file: cats-concourse-task/task.yml
-      params:
-        NODES: 8
 
   - name: delete-slouch-deployment
     public: true
