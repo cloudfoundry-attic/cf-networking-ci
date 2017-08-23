@@ -729,7 +729,7 @@ jobs:
       params:
         BBL_STATE_DIR: environments/pickelhelm/
         SYSTEM_DOMAIN: pickelhelm.c2c.cf-app.com
-        OPS_FILES: gcp.yml use-3-azs-for-router.yml use-compiled-releases.yml bypass-cc-bridge.yml cf-networking.yml datadog.yml opsfile.yml
+        OPS_FILES: gcp.yml use-3-azs-for-router.yml use-compiled-releases.yml bypass-cc-bridge.yml datadog.yml cf-networking.yml opsfile.yml
         VARS_STORE_FILE: environments/pickelhelm/vars-store.yml
       input_mapping:
         bbl-state: cf-networking-deployments
@@ -893,7 +893,7 @@ jobs:
       params:
         BBL_STATE_DIR: environments/mitre/
         SYSTEM_DOMAIN: mitre.c2c.cf-app.com
-        OPS_FILES: gcp.yml use-3-azs-for-router.yml use-compiled-releases.yml bypass-cc-bridge.yml cf-networking.yml datadog.yml opsfile.yml custom-apps-domain.yml enable-iptables-logger.yml
+        OPS_FILES: gcp.yml use-3-azs-for-router.yml enable-iptables-logger.yml use-compiled-releases.yml bypass-cc-bridge.yml datadog.yml custom-apps-domain.yml cf-networking.yml opsfile.yml
         VARS_STORE_FILE: environments/mitre/vars-store.yml
       input_mapping:
         bbl-state: cf-networking-deployments
@@ -1130,7 +1130,7 @@ jobs:
       params:
         BBL_STATE_DIR: environments/toque
         SYSTEM_DOMAIN: toque.c2c.cf-app.com
-        OPS_FILES: gcp.yml use-3-azs-for-router.yml use-compiled-releases.yml bypass-cc-bridge.yml cf-networking.yml datadog.yml opsfile.yml
+        OPS_FILES: gcp.yml use-3-azs-for-router.yml use-compiled-releases.yml bypass-cc-bridge.yml datadog.yml cf-networking.yml opsfile.yml
         VARS_STORE_FILE: environments/toque/vars-store.yml
       input_mapping:
         bbl-state: cf-networking-deployments
@@ -1330,7 +1330,7 @@ jobs:
       params:
         BBL_STATE_DIR: environments/slouch
         SYSTEM_DOMAIN: slouch.c2c.cf-app.com
-        OPS_FILES: gcp.yml use-3-azs-for-router.yml use-compiled-releases.yml bypass-cc-bridge.yml cf-networking.yml opsfile.yml disable-etcd.yml
+        OPS_FILES: gcp.yml use-3-azs-for-router.yml use-compiled-releases.yml disable-etcd.yml bypass-cc-bridge.yml cf-networking.yml opsfile.yml
         VARS_STORE_FILE: environments/slouch/vars-store.yml
       input_mapping:
         bbl-state: cf-networking-deployments
