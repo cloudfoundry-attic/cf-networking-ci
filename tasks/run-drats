@@ -9,6 +9,7 @@ export PATH=$GOPATH/bin:$PATH
 # install glide because drats doesn't
 mkdir -p $GOPATH/bin
 curl https://glide.sh/get | sh
+curl -L -o /usr/local/bin/bosh-cli https://s3.amazonaws.com/bosh-cli-artifacts/bosh-cli-2.0.17-linux-amd64 && chmod +x /usr/local/bin/bosh-cli
 
 pushd deployments-repo/environments/$ENVIRONMENT_NAME > /dev/null
   export DEPLOYMENT_TO_BACKUP="cf"
@@ -20,8 +21,6 @@ pushd deployments-repo/environments/$ENVIRONMENT_NAME > /dev/null
   export BOSH_CERT_PATH=/tmp/ca.crt
   export BBR_BUILD_PATH=/tmp/bbr
 popd
-
-alias bosh-cli=bosh
 
 pushd $GOPATH/src/github.com/cloudfoundry-incubator/disaster-recovery-acceptance-tests > /dev/null
   ./scripts/run_acceptance_tests.sh
