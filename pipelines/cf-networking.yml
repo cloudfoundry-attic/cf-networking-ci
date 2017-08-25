@@ -1100,7 +1100,7 @@ jobs:
       input_mapping:
         deployments-repo: cf-networking-deployments
       params:
-        ENVIRONMENT: mitre
+        ENVIRONMENT_NAME: mitre
 
   - name: toque-bbl-up
     serial_groups: [toque]
