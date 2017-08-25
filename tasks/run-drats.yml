@@ -9,6 +9,7 @@ inputs:
   - name: cf-networking-ci
   - name: deployments-repo
   - name: disaster-recovery-acceptance-tests
+    path: /go/src/github.com/cloudfoundry-incubator/disaster-recovery-acceptance-tests
 
 params:
   ENVIRONMENT_NAME: ~
