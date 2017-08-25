@@ -3,6 +3,13 @@
 curl -L https://github.com/cloudfoundry-incubator/bosh-backup-and-restore/releases/download/v1.0.0/bbr-1.0.0.tar \
    --output /tmp/bbr
 
+export GOPATH=$PWD
+export PATH=$GOPATH/bin:$PATH
+
+# install glide because drats doesn't
+mkdir -p $GOPATH/bin
+curl https://glide.sh/get | sh
+
 pushd deployments-repo/environments/$ENVIRONMENT_NAME > /dev/null
   export DEPLOYMENT_TO_BACKUP="cf"
   export DEPLOYMENT_TO_RESTORE="cf"
