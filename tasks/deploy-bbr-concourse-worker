@@ -8,5 +8,5 @@ pushd deployments-repo/environments/$ENVIRONMENT_NAME
   export BOSH_CA_CERT=/tmp/ca.crt
   export BOSH_DEPLOYMENT=concourse
 
-  bosh deploy concourse.yml
+  bosh -n deploy concourse.yml
 popd
