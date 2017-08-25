@@ -1,7 +1,7 @@
 #!/bin/bash -eu
 
 curl -L https://github.com/cloudfoundry-incubator/bosh-backup-and-restore/releases/download/v1.0.0/bbr-1.0.0.tar \
-   --output /tmp/bbr && chmod +x /tmp/bbr
+   --output /tmp/bbr.tar && tar -xvf /tmp/bbr.tar -C /tmp
 
 export GOPATH=${PWD}/go
 export PATH=$GOPATH/bin:$PATH
@@ -19,7 +19,7 @@ pushd deployments-repo/environments/$ENVIRONMENT_NAME > /dev/null
   export BOSH_CLIENT=$(bbl director-username)
   bbl director-ca-cert > /tmp/ca.crt
   export BOSH_CERT_PATH=/tmp/ca.crt
-  export BBR_BUILD_PATH=/tmp/bbr
+  export BBR_BUILD_PATH=/tmp/releases/bbr
 popd
 
 pushd $GOPATH/src/github.com/cloudfoundry-incubator/disaster-recovery-acceptance-tests > /dev/null
