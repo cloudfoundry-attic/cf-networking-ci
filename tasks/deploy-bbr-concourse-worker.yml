@@ -1,0 +1,16 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source: { repository: c2cnetworking/dev-mysql }
+
+inputs:
+  - name: cf-networking-ci
+  - name: deployments-repo
+
+params:
+  ENVIRONMENT_NAME: ~
+
+run:
+  path: cf-networking-ci/tasks/deploy-bbr-concourse-worker
