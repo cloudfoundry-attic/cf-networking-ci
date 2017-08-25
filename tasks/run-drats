@@ -1,7 +1,7 @@
 #!/bin/bash -eu
 
 curl -L https://github.com/cloudfoundry-incubator/bosh-backup-and-restore/releases/download/v1.0.0/bbr-1.0.0.tar \
-   --output /tmp/bbr
+   --output /tmp/bbr && chmod +x /tmp/bbr
 
 export GOPATH=${PWD}/go
 export PATH=$GOPATH/bin:$PATH
