@@ -13,6 +13,7 @@ groups:
   - mitre-acceptance-errand
   - mitre-smoke
   - mitre-cats
+  - mitre-drats
   - ship-what
   - shipit
   - bump-minor-version
@@ -40,6 +41,7 @@ groups:
   - mitre-acceptance-errand
   - mitre-smoke
   - mitre-cats
+  - mitre-drats
   - mitre-deploy-firehose-nozzle
   - delete-deployment-mitre-cf
 - name: trucker
@@ -123,6 +125,11 @@ resources:
     source:
       branch: release-candidate
       uri: https://github.com/cloudfoundry/cf-deployment.git
+  - name: disaster-recovery-acceptance-tests
+    type: git
+    source:
+      branch: master
+      uri: https://github.com/cloudfoundry-incubator/disaster-recovery-acceptance-tests
   ###### bosh.io releases
   - name: concourse
     type: bosh-io-release
@@ -1071,6 +1078,30 @@ jobs:
       params:
         NODES: 8
 
+  - name: mitre-drats
+    serial_groups: [mitre-test-group, mitre-deploy-group]
+    plan:
+    - aggregate:
+      - get: cf-networking-ci
+      - get: cf-networking-dev
+        passed: [mitre-cats]
+        trigger: true
+      - get: cf-deployment
+        passed: [mitre-cats]
+        trigger: true
+      - get: cf-networking-deployments
+      - get: cf-networking-tarball
+        passed: [mitre-cats]
+      - get: version
+        passed: [mitre-cats]
+      - get: disaster-recovery-acceptance-tests
+    - task: run-drats
+      file: cf-networking-ci/tasks/run-drats.yml
+      input_mapping:
+        deployments-repo: cf-networking-deployments
+      params:
+        ENVIRONMENT: mitre
+
   - name: toque-bbl-up
     serial_groups: [toque]
     plan:
@@ -1432,17 +1463,17 @@ jobs:
     - do:
       - aggregate:
         - get: version
-          passed: [mitre-cats]
+          passed: [mitre-drats]
         - get: cf-networking-dev
           params:
             fetch: [master]
             submodules: none
-          passed: [mitre-cats, trucker-test-upgrade, sombrero-test-upgrade, mitre-acceptance-errand, mitre-smoke]
+          passed: [mitre-drats, trucker-test-upgrade, sombrero-test-upgrade, mitre-acceptance-errand, mitre-smoke]
           trigger: true
         - get: cf-deployment
-          passed: [mitre-cats]
+          passed: [mitre-drats]
         - get: cf-networking-tarball
-          passed: [mitre-cats, mitre-acceptance-errand]
+          passed: [mitre-drats, mitre-acceptance-errand]
 
   - name: shipit
     serial_groups: [version]
