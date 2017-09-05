@@ -14,6 +14,7 @@ groups:
   - mitre-smoke
   - mitre-cats
   - mitre-drats
+  - check-empty-networking-opsfile
   - ship-what
   - shipit
   - bump-minor-version
@@ -1476,6 +1477,25 @@ jobs:
           passed: [mitre-drats]
         - get: cf-networking-tarball
           passed: [mitre-drats, mitre-acceptance-errand]
+
+  - name: check-empty-networking-opsfile
+    serial_groups: [version]
+    plan:
+    - do:
+      - aggregate:
+        - get: cf-networking-ci
+        - get: version
+          passed: [mitre-drats]
+        - get: cf-networking-dev
+          params:
+            fetch: [master]
+            submodules: none
+          passed: [mitre-drats, trucker-test-upgrade, sombrero-test-upgrade, mitre-acceptance-errand, mitre-smoke]
+          trigger: true
+      - task: check-empty-networking-opsfile
+        file: cf-networking-ci/tasks/check-empty-networking-opsfile.yml
+        input_mapping:
+          cf-networking: cf-networking-dev
 
   - name: shipit
     serial_groups: [version]
