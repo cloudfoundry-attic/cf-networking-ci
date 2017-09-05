@@ -1469,7 +1469,6 @@ jobs:
           passed: [mitre-drats]
         - get: cf-networking-dev
           params:
-            fetch: [master]
             submodules: none
           passed: [mitre-drats, trucker-test-upgrade, sombrero-test-upgrade, mitre-acceptance-errand, mitre-smoke]
           trigger: true
@@ -1488,7 +1487,6 @@ jobs:
           passed: [mitre-drats]
         - get: cf-networking-dev
           params:
-            fetch: [master]
             submodules: none
           passed: [mitre-drats, trucker-test-upgrade, sombrero-test-upgrade, mitre-acceptance-errand, mitre-smoke]
           trigger: true
@@ -1510,7 +1508,6 @@ jobs:
           passed: [ship-what]
         - get: cf-networking-dev
           params:
-            fetch: [master]
             submodules: none
           passed: [ship-what]
         - get: cf-deployment
@@ -1570,7 +1567,6 @@ jobs:
         - get: cf-networking-master
           params:
             submodules: none
-            fetch: [develop]
           passed: [shipit]
           trigger: true
         - get: cf-networking-dev
