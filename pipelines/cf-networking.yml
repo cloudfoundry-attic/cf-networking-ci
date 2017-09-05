@@ -19,7 +19,6 @@ groups:
   - shipit
   - bump-minor-version
   - merge-master
-  - update-cli-plugin-repo
   - toque-deploy
   - toque-push
   - toque-test
@@ -182,17 +181,6 @@ resources:
       uri: "git@github.com:cloudfoundry/cf-networking-deployments.git"
       private_key: {{cf-networking-deployments-push-key}}
       branch: pinned
-  - name: cli-plugin-fork
-    type: git
-    source:
-      uri: "git@github.com:cf-container-networking/cli-plugin-repo.git"
-      private_key: {{cli-plugin-fork-push-key}}
-      branch: update-networking-plugin
-  - name: cli-plugin-master
-    type: git
-    source:
-      uri: "https://github.com/cloudfoundry-incubator/cli-plugin-repo.git"
-      branch: master
   ####### Stats
   - name: toque-stats
     type: git
@@ -965,10 +953,6 @@ jobs:
       - get: cf-deployment
         passed: [mitre-deploy]
         trigger: true
-    - task: check-cli-version
-      file: cf-networking-ci/tasks/check-cli-version.yml
-      input_mapping:
-        cf-networking: cf-networking-dev
     - task: acceptance-tests
       file: cf-networking-ci/tasks/acceptance-tests.yml
       input_mapping:
@@ -1514,14 +1498,8 @@ jobs:
           passed: [ship-what]
         - get: cf-networking-tarball
           passed: [ship-what]
-        - get: cli-plugin-fork
-        - get: cli-plugin-master
       - task: shipit
         file: cf-networking-ci/tasks/shipit.yml
-        input_mapping:
-          cf-networking: cf-networking-dev
-      - task: build-cli
-        file: cf-networking-ci/tasks/build-cli.yml
         input_mapping:
           cf-networking: cf-networking-dev
       - put: version
@@ -1544,7 +1522,7 @@ jobs:
           tag_prefix: v
           globs:
           - final-release/cf-networking-*.tgz
-          - binaries/network-policy-plugin-*
+          # - binaries/network-policy-plugin-*
 
   # bump minor version (i.e. 0.1.0 -> 0.2.0)
   - name: bump-minor-version
@@ -1575,33 +1553,6 @@ jobs:
         file: cf-networking-ci/tasks/merge-master.yml
       - put: cf-networking-dev
         params: {repository: release-merged}
-
-  - name: update-cli-plugin-repo
-    plan:
-    - do:
-      - aggregate:
-        - get: cf-networking-ci
-        - get: cli-plugin-fork
-        - get: cli-plugin-master
-        - get: cf-networking-github-release
-          params:
-            globs:
-            - network-policy-plugin-*
-        - get: cf-networking-master
-          params:  # just here for a dependency/trigger, so keep it light
-            submodules: none
-            depth: 1
-          passed: [merge-master]
-      - task: update-plugin-repo
-        file: cf-networking-ci/tasks/update-plugin-repo.yml
-      - put: cli-plugin-fork
-        params:
-          repository: fork-merged
-          force: true
-      - task: create-plugin-pr
-        file: cf-networking-ci/tasks/create-plugin-pr.yml
-        params:
-          GITHUB_TOKEN: {{github-access-token}}
 
   # versioning
   - name: patch-bump
