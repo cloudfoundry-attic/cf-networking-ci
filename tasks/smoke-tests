@@ -16,9 +16,6 @@ echo "$CONFIG"
 cd cf-networking
 export GOPATH=$PWD
 
-go build -o /tmp/bin/network-policy-plugin ./src/cli-plugin
-cf install-plugin -f /tmp/bin/network-policy-plugin
-
 cd src/test/smoke
 export APPS_DIR=../../example-apps
 set +e
