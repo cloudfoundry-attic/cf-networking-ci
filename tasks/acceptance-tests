@@ -21,6 +21,11 @@ export NETWORK_STATS_FILE=$PWD/network-stats/stats.json
 cd cf-networking
 export GOPATH=$PWD
 
+if [ -d "./src/cli-plugin" ]; then
+  go build -o /tmp/bin/network-policy-plugin ./src/cli-plugin
+  cf install-plugin -f /tmp/bin/network-policy-plugin
+fi
+
 cd src/test/acceptance
 export APPS_DIR=../../example-apps
 ginkgo -r -v
