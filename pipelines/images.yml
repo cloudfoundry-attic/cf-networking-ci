@@ -2,7 +2,7 @@ resources:
 - name: dev-postgres-dockerfile
   type: git
   source:
-    uri: git://github.com/cloudfoundry-incubator/cf-networking-ci
+    uri: git://github.com/cloudfoundry/cf-networking-ci
     branch: master
     paths:
       - dockerfiles/dev-postgres
@@ -18,7 +18,7 @@ resources:
 - name: dev-postgres-ifb-dockerfile
   type: git
   source:
-    uri: git://github.com/cloudfoundry-incubator/cf-networking-ci
+    uri: git://github.com/cloudfoundry/cf-networking-ci
     branch: master
     paths:
       - dockerfiles/dev-postgres-ifb
@@ -34,7 +34,7 @@ resources:
 - name: dev-mysql-dockerfile
   type: git
   source:
-    uri: git://github.com/cloudfoundry-incubator/cf-networking-ci
+    uri: git://github.com/cloudfoundry/cf-networking-ci
     branch: master
     paths:
       - dockerfiles/dev-mysql
@@ -50,7 +50,7 @@ resources:
 - name: dev-mysql-ifb-dockerfile
   type: git
   source:
-    uri: git://github.com/cloudfoundry-incubator/cf-networking-ci
+    uri: git://github.com/cloudfoundry/cf-networking-ci
     branch: master
     paths:
       - dockerfiles/dev-mysql-ifb
@@ -66,7 +66,7 @@ resources:
 - name: dev-mysql-5.6-dockerfile
   type: git
   source:
-    uri: git://github.com/cloudfoundry-incubator/cf-networking-ci
+    uri: git://github.com/cloudfoundry/cf-networking-ci
     branch: master
     paths:
       - dockerfiles/dev-mysql-5.6
@@ -82,7 +82,7 @@ resources:
 - name: deploy-dockerfile
   type: git
   source:
-    uri: git://github.com/cloudfoundry-incubator/cf-networking-ci
+    uri: git://github.com/cloudfoundry/cf-networking-ci
     branch: master
     paths:
       - dockerfiles/deploy
@@ -98,7 +98,7 @@ resources:
 - name: small-git-dockerfile
   type: git
   source:
-    uri: git://github.com/cloudfoundry-incubator/cf-networking-ci
+    uri: git://github.com/cloudfoundry/cf-networking-ci
     branch: master
     paths:
       - dockerfiles/small-git
@@ -114,7 +114,7 @@ resources:
 - name: deploy-light-dockerfile
   type: git
   source:
-    uri: git://github.com/cloudfoundry-incubator/cf-networking-ci
+    uri: git://github.com/cloudfoundry/cf-networking-ci
     branch: master
     paths:
       - dockerfiles/deploy-light
@@ -137,7 +137,7 @@ resources:
 - name: cf-networking-ci
   type: git
   source:
-    uri: https://github.com/cloudfoundry-incubator/cf-networking-ci
+    uri: https://github.com/cloudfoundry/cf-networking-ci
 
 jobs:
 - name: build-dev-postgres-image

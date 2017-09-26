@@ -3,7 +3,7 @@ Container networking performance tests will be conducted on the following enviro
 
 ## Setup
 ### Number of Diego Cells
-0. Git checkout [cf-networking-ci](https://github.com/cloudfoundry-incubator/cf-networking-ci) repository under ~/workspace.
+0. Git checkout [cf-networking-ci](https://code.cloudfoundry.org/cf-networking-ci) repository under ~/workspace.
 
     ```
     $ cd ~/workspace && git clone https://github.com/cloudfoundry-incubator/cf-networking-ci.git
@@ -32,5 +32,5 @@ Container networking performance tests will be conducted on the following enviro
     ```
 *Note: In order to reconfigure a [Concourse](http://concourse.ci) pipeline you may need to first download the `fly` command line tool for [Mac](https://c2c.ci.cf-app.com/api/v1/cli?arch=amd64&platform=darwin), [Windows](https://c2c.ci.cf-app.com/api/v1/cli?arch=amd64&platform=windows) or [Linux](https://c2c.ci.cf-app.com/api/v1/cli?arch=amd64&platform=linux)*
 
-0.  Git commit `CELL_COUNT` changes back to [cf-networking-ci](https://github.com/cloudfoundry-incubator/cf-networking-ci)
+0.  Git commit `CELL_COUNT` changes back to [cf-networking-ci](https://code.cloudfoundry.org/cf-networking-ci)
 0.  Deploy `CELL_COUNT` changes using `toque-deploy` stage in [CI](https://c2c.ci.cf-app.com/pipelines/cf-networking/jobs/toque-deploy)

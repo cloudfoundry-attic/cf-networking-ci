@@ -103,7 +103,7 @@ resources:
   - name: cf-networking-ci
     type: git
     source:
-      uri: https://github.com/cloudfoundry-incubator/cf-networking-ci
+      uri: https://github.com/cloudfoundry/cf-networking-ci
   - name: cf-networking-deployments
     type: git
     source:
@@ -173,7 +173,7 @@ resources:
   - name: cf-networking-ci-pinned
     type: git
     source:
-      uri: https://github.com/cloudfoundry-incubator/cf-networking-ci
+      uri: https://github.com/cloudfoundry/cf-networking-ci
       branch: pinned
   - name: cf-networking-deployments-pinned
     type: git
