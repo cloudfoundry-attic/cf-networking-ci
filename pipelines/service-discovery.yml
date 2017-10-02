@@ -1,5 +1,7 @@
 groups:
 - name: service-discovery
+  jobs:
+  - unit-tests
 
 resources:
   - name: cf-networking-ci
@@ -9,7 +11,7 @@ resources:
   - name: service-discovery-release
     type: git
     source:
-      uri: https://github.com/cloudfoundry/service-discovery-release
+      uri: https://github.com/cloudfoundry-incubator/service-discovery-release
 
 jobs:
   - name: unit-tests
@@ -19,4 +21,4 @@ jobs:
           - get: service-discovery-release
             trigger: true
       - task: unit-tests
-        file: cf-networking-ci/tasks/service-discovery/test-unit
+        file: cf-networking-ci/tasks/service-discovery/test-unit.yml
