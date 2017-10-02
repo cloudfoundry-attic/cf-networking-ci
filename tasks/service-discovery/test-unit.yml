@@ -1,0 +1,17 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: golang
+    tag: '1.8'
+
+inputs:
+  - name: cf-networking-ci
+  - name: service-discovery-release
+
+params: {}
+
+run:
+  path: cf-networking-ci/tasks/service-discovery/test-unit
