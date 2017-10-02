@@ -2,6 +2,7 @@ groups:
 - name: service-discovery
   jobs:
   - unit-tests
+  - acceptance-tests
 
 resources:
   - name: cf-networking-ci
@@ -12,6 +13,11 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry-incubator/service-discovery-release
+  - name: bosh-dns-release
+    type: git
+    source:
+      uri: https://github.com/cf-container-networking/bosh-dns-release
+      branch: wip-http-json-spike
 
 jobs:
   - name: unit-tests
@@ -22,3 +28,16 @@ jobs:
             trigger: true
       - task: unit-tests
         file: cf-networking-ci/tasks/service-discovery/test-unit.yml
+
+  - name: acceptance-tests
+    plan:
+      - aggregate:
+          - get: cf-networking-ci
+          - get: bosh-dns-release
+            trigger: true
+          - get: service-discovery-release
+            passed: [unit-tests]
+            trigger: true
+      - task: acceptance-tests
+        privileged: true
+        file: cf-networking-ci/tasks/service-discovery/test-acceptance.yml

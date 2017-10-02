@@ -8,6 +8,7 @@ image_resource:
 
 inputs:
   - name: service-discovery-release
+  - name: bosh-dns-release
 
 params: []
 
