@@ -12,8 +12,10 @@ curl https://glide.sh/get | sh
 curl -L -o /usr/local/bin/bosh-cli https://s3.amazonaws.com/bosh-cli-artifacts/bosh-cli-2.0.17-linux-amd64 && chmod +x /usr/local/bin/bosh-cli
 
 pushd deployments-repo/environments/$ENVIRONMENT_NAME > /dev/null
-  export DEPLOYMENT_TO_BACKUP="cf"
-  export DEPLOYMENT_TO_RESTORE="cf"
+  export CF_DEPLOYMENT_NAME="cf"
+  export CF_API_URL="api.${ENVIRONMENT_NAME}.c2c.cf-app.com"
+  export CF_ADMIN_USERNAME="admin"
+  export CF_ADMIN_PASSWORD=$(grep cf_admin_password vars-store.yml  | cut -d ' ' -f2)
   export BOSH_URL=$(bbl director-address)
   export BOSH_CLIENT_SECRET=$(bbl director-password)
   export BOSH_CLIENT=$(bbl director-username)
