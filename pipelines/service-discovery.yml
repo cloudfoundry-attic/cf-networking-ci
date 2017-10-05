@@ -29,6 +29,19 @@ resources:
       uri: "git@github.com:cloudfoundry/cf-networking-deployments.git"
       branch: master
       private_key: {{cf-networking-deployments-push-key}}
+  - name: cf-deployment
+    type: git
+    source:
+      branch: release-candidate
+      uri: https://github.com/cloudfoundry/cf-deployment.git
+  - name: cf-networking-dev
+    type: git
+    source:
+      uri: git@github.com:cloudfoundry/cf-networking-release.git
+      branch: develop
+      ignore_paths:
+        - docs
+      private_key: {{cf-networking-deploy-key}}
 
 jobs:
   - name: unit-tests
@@ -109,10 +122,9 @@ jobs:
           - get: cf-deployment
             trigger: true
           - get: cf-networking-dev
-            trigger: true
-            passed: [unit-and-integration-tests]
           - get: service-discovery-release
             trigger: true
+            passed: [acceptance-tests]
           - get: bosh-dns-release
             trigger: true
       - task: upload-stemcell
