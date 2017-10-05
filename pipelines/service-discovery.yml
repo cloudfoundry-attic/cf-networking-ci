@@ -3,6 +3,7 @@ groups:
   jobs:
   - unit-tests
   - acceptance-tests
+  - ushanka-deploy
 
 resources:
   - name: cf-networking-ci
