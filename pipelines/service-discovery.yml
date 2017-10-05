@@ -4,6 +4,11 @@ groups:
   - unit-tests
   - acceptance-tests
   - ushanka-deploy
+- name: ushanka
+  jobs:
+  - ushanka-bbl-up
+  - ushanka-bbl-destroy
+  - ushanka-deploy
 
 resources:
   - name: cf-networking-ci
