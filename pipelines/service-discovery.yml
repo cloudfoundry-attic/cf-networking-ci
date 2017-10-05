@@ -149,12 +149,14 @@ jobs:
       - task: upload-local-bosh-dns-releases
         file: cf-networking-ci/tasks/service-discovery/upload-local-release.yml
         input_mapping:
+          bbl-state: cf-networking-deployments
           local-release: bosh-dns-release
         params:
           BBL_STATE_DIR: environments/ushanka/
       - task: upload-local-service-discovery-releases
         file: cf-networking-ci/tasks/service-discovery/upload-local-release.yml
         input_mapping:
+          bbl-state: cf-networking-deployments
           local-release: service-discovery-release
         params:
           BBL_STATE_DIR: environments/ushanka/
