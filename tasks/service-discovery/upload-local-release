@@ -7,5 +7,5 @@ setup_bosh_env_vars
 
 pushd local-release
   bosh create-release --force
-  bosh upload-release
+  bosh upload-release --rebase
 popd
