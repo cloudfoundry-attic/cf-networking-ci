@@ -91,6 +91,7 @@ jobs:
           BBL_LB_KEY: {{ushanka-lb-key}}
           LB_DOMAIN: ushanka.c2c.cf-app.com
           BBL_ENV_NAME: ushanka
+          OPS_FILES: local-dns.yml
         input_mapping:
           bbl-state: cf-networking-deployments
           ops-files: cf-networking-deployments
