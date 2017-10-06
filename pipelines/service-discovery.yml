@@ -142,6 +142,8 @@ jobs:
           - get: service-discovery-release
             trigger: true
             passed: [unit-tests]
+          - get: capi-release
+          - get: diego-release
           - get: bosh-dns-release
             trigger: true
       - task: upload-stemcell
