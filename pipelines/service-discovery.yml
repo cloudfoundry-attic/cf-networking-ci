@@ -192,7 +192,7 @@ jobs:
         params:
           BBL_STATE_DIR: environments/ushanka/
           SYSTEM_DOMAIN: ushanka.c2c.cf-app.com
-          OPS_FILES: use-bosh-dns.yml use-compiled-releases.yml datadog.yml cf-networking.yml opsfile.yml
+          OPS_FILES: use-compiled-releases.yml datadog.yml cf-networking.yml opsfile.yml
           VARS_STORE_FILE: environments/ushanka/vars-store.yml
         input_mapping:
           bbl-state: cf-networking-deployments
