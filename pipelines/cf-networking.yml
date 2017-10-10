@@ -125,6 +125,18 @@ resources:
     source:
       branch: release-candidate
       uri: https://github.com/cloudfoundry/cf-deployment.git
+  - name: cf-deployment-old
+    type: git
+    source:
+      tag_filter: v0.0.1
+      uri: https://github.com/cloudfoundry/cf-deployment.git
+  - name: cf-networking-old
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry/cf-networking-release.git
+      branch: v0.18.x
+      ignore_paths:
+        - docs
   - name: disaster-recovery-acceptance-tests
     type: git
     source:
@@ -1342,16 +1354,16 @@ jobs:
     plan:
     - aggregate:
       - get: cf-deployment-concourse-tasks
-      - get: cf-deployment
+      - get: cf-deployment-old
       - get: cf-networking-ci
       - get: cf-networking-deployments
-      - get: cf-networking-dev
-        passed: [unit-and-integration-tests]
+      - get: cf-networking-old
       - get: datadog-firehose-nozzle-release
     - task: upload-stemcell
       file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
       input_mapping:
         bbl-state: cf-networking-deployments
+        cf-deployment: cf-deployment-old
       params:
         BBL_STATE_DIR: environments/slouch
     - task: collect-ops-files
@@ -1359,18 +1371,20 @@ jobs:
       params:
         ENVIRONMENT_NAME: slouch
       input_mapping:
-        cf-networking-release: cf-networking-dev
+        cf-networking-release: cf-networking-old
+        cf-deployment: cf-deployment-old
         deployments-repo: cf-networking-deployments
     - task: deploy-cf
       file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
       params:
         BBL_STATE_DIR: environments/slouch
         SYSTEM_DOMAIN: slouch.c2c.cf-app.com
-        OPS_FILES: use-compiled-releases.yml cf-networking.yml opsfile.yml
+        OPS_FILES: gcp.yml tcp-routing-gcp.yml use-3-azs-for-router.yml cf-networking.yml opsfile.yml
         VARS_STORE_FILE: environments/slouch/vars-store.yml
       input_mapping:
+        cf-deployment: cf-deployment-old
         bbl-state: cf-networking-deployments
-        release: cf-networking-dev
+        release: cf-networking-old
         vars-store: cf-networking-deployments
         vars-files: cf-networking-deployments
       ensure:
