@@ -16,7 +16,7 @@ pushd deployments-repo/environments/$ENVIRONMENT_NAME > /dev/null
   export CF_API_URL="https://api.${ENVIRONMENT_NAME}.c2c.cf-app.com"
   export CF_ADMIN_USERNAME="admin"
   export CF_ADMIN_PASSWORD=$(grep cf_admin_password vars-store.yml  | cut -d ' ' -f2)
-  export BOSH_URL=$(bbl director-address)
+  export BOSH_ENVIRONMENT=$(bbl director-address)
   export BOSH_CLIENT_SECRET=$(bbl director-password)
   export BOSH_CLIENT=$(bbl director-username)
   bbl director-ca-cert > /tmp/ca.crt
