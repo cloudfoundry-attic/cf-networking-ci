@@ -128,7 +128,7 @@ resources:
   - name: disaster-recovery-acceptance-tests
     type: git
     source:
-      branch: master
+      branch: wip-networking-drats
       uri: https://github.com/cf-container-networking/disaster-recovery-acceptance-tests
   ###### bosh.io releases
   - name: concourse
