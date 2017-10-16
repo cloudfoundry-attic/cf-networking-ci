@@ -12,13 +12,6 @@ curl https://glide.sh/get | sh
 curl -L -o /usr/local/bin/bosh-cli https://s3.amazonaws.com/bosh-cli-artifacts/bosh-cli-2.0.17-linux-amd64 && chmod +x /usr/local/bin/bosh-cli
 
 pushd deployments-repo/environments/$ENVIRONMENT_NAME > /dev/null
-  # Old vars
-  export CF_API_URL="https://api.${ENVIRONMENT_NAME}.c2c.cf-app.com"
-  export CF_ADMIN_USERNAME="admin"
-  export CF_ADMIN_PASSWORD=$(grep cf_admin_password vars-store.yml  | cut -d ' ' -f2)
-  export BOSH_URL=$(bbl director-address)
-
-  # New vars
   export CF_DEPLOYMENT_NAME="cf"
   export CF_API_URL="https://api.${ENVIRONMENT_NAME}.c2c.cf-app.com"
   export CF_ADMIN_USERNAME="admin"
@@ -30,6 +23,7 @@ pushd deployments-repo/environments/$ENVIRONMENT_NAME > /dev/null
   bbl director-ca-cert > /tmp/ca.crt
   export BOSH_CERT_PATH=/tmp/ca.crt
   export BBR_BUILD_PATH=/tmp/releases/bbr
+  export FOCUSED_SUITE_NAME="cf-networking"
 popd
 
 pushd $GOPATH/src/github.com/cloudfoundry-incubator/disaster-recovery-acceptance-tests > /dev/null
