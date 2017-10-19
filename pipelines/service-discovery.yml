@@ -64,8 +64,6 @@ jobs:
       - aggregate:
           - get: cf-networking-ci
           - get: cf-networking-deployments
-          - get: bosh-dns-release
-            trigger: true
           - get: service-discovery-release
             passed: [ushanka-deploy]
             trigger: true
