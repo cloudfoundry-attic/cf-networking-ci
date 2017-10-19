@@ -73,6 +73,7 @@ jobs:
     plan:
       - aggregate:
           - get: cf-networking-ci
+          - get: cf-networking-deployments
           - get: bosh-dns-release
             trigger: true
           - get: service-discovery-release
@@ -81,6 +82,11 @@ jobs:
       - task: acceptance-tests
         privileged: true
         file: cf-networking-ci/tasks/service-discovery/test-acceptance.yml
+        input_mapping:
+          test-config: cf-networking-deployments
+          vars-store: cf-networking-deployments
+        params:
+          ENVIRONMENT_NAME: ushanka
 
   - name: ushanka-bbl-up
     serial_groups: [ushanka]
