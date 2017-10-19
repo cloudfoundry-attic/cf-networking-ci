@@ -29,11 +29,6 @@ resources:
     source:
       uri: https://github.com/cloudfoundry/capi-release
       branch: master
-  - name: diego-release
-    type: git
-    source:
-      uri: https://github.com/cloudfoundry/diego-release
-      branch: develop
   - name: cf-deployment-concourse-tasks
     type: git
     source:
@@ -149,7 +144,6 @@ jobs:
             trigger: true
             passed: [unit-tests]
           - get: capi-release
-          - get: diego-release
           - get: bosh-dns-release
             trigger: true
       - task: upload-stemcell
@@ -170,13 +164,6 @@ jobs:
         input_mapping:
           bbl-state: cf-networking-deployments
           local-release: capi-release
-        params:
-          BBL_STATE_DIR: environments/ushanka/
-      - task: upload-local-diego-release
-        file: cf-networking-ci/tasks/service-discovery/upload-local-release.yml
-        input_mapping:
-          bbl-state: cf-networking-deployments
-          local-release: diego-release
         params:
           BBL_STATE_DIR: environments/ushanka/
       - task: upload-local-bosh-dns-releases
