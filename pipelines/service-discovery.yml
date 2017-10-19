@@ -24,11 +24,6 @@ resources:
     source:
       uri: https://github.com/cf-container-networking/bosh-dns-release
       branch: wip-http-json-spike
-  - name: capi-release
-    type: git
-    source:
-      uri: https://github.com/cloudfoundry/capi-release
-      branch: master
   - name: cf-deployment-concourse-tasks
     type: git
     source:
@@ -143,7 +138,6 @@ jobs:
           - get: service-discovery-release
             trigger: true
             passed: [unit-tests]
-          - get: capi-release
           - get: bosh-dns-release
             trigger: true
       - task: upload-stemcell
@@ -159,13 +153,6 @@ jobs:
         input_mapping:
           cf-networking-release: cf-networking-dev
           deployments-repo: cf-networking-deployments
-      - task: upload-local-capi-release
-        file: cf-networking-ci/tasks/service-discovery/upload-local-release.yml
-        input_mapping:
-          bbl-state: cf-networking-deployments
-          local-release: capi-release
-        params:
-          BBL_STATE_DIR: environments/ushanka/
       - task: upload-local-bosh-dns-releases
         file: cf-networking-ci/tasks/service-discovery/upload-local-release.yml
         input_mapping:
