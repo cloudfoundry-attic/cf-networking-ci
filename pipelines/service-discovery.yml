@@ -3,6 +3,7 @@ groups:
   jobs:
   - unit-tests
   - acceptance-tests
+  - smoke-tests
   - ushanka-deploy
 - name: ushanka
   jobs:
@@ -48,6 +49,11 @@ resources:
       ignore_paths:
         - docs
       private_key: {{cf-networking-deploy-key}}
+  ####### Timers
+  - name: every-fifteen-minutes
+    type: time
+    source:
+      interval: 15m
 
 jobs:
   - name: unit-tests
@@ -75,6 +81,26 @@ jobs:
           vars-store: cf-networking-deployments
         params:
           ENVIRONMENT_NAME: ushanka
+
+  - name: smoke-tests
+    plan:
+      - aggregate:
+          - get: every-fifteen-minutes
+            trigger: true
+          - get: cf-networking-ci
+          - get: cf-networking-deployments
+          - get: service-discovery-release
+            passed: [ushanka-deploy]
+            trigger: true
+      - task: smoke-tests
+        privileged: true
+        file: cf-networking-ci/tasks/service-discovery/smoke-tests.yml
+        input_mapping:
+          test-config: cf-networking-deployments
+        params:
+          ENVIRONMENT_NAME: ushanka
+          ENVIRONMENT_TAG: ushanka.c2c.cf-app.com
+          DATADOG_API_KEY: {{datadog_api_key}}
 
   - name: ushanka-bbl-up
     serial_groups: [ushanka]
