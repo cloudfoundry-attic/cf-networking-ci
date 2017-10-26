@@ -1,4 +1,0 @@
-#!/bin/bash
-set -xeu
-
-./service-discovery-release/scripts/unit-tests.sh
