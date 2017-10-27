@@ -3,7 +3,7 @@
 # Changing it on an existing deployment will only append the domain, not replace old ones.
 
 - type: replace
-  path: /instance_groups/name=api/jobs/name=cloud_controller_ng/properties/app_domains
+  path: /instance_groups/name=api/jobs/name=cloud_controller_ng/properties/app_domains?
   value:
   - "((apps_domain))"
 
@@ -13,10 +13,10 @@
   - "((apps_domain))"
 
 - type: replace
-  path: /instance_groups/name=scheduler/jobs/name=cloud_controller_clock/properties/app_domains
+  path: /instance_groups/name=scheduler/jobs/name=cloud_controller_clock/properties/app_domains?
   value:
   - "((apps_domain))"
 
 - type: replace
-  path: /instance_groups/name=smoke-tests/jobs/name=smoke_tests/properties/smoke_tests/apps_domain
+  path: /instance_groups/name=smoke-tests/jobs/name=smoke_tests/properties/smoke_tests/apps_domain?
   value: "((apps_domain))"
