@@ -6,9 +6,9 @@ curl -L https://github.com/cloudfoundry-incubator/bosh-backup-and-restore/releas
 export GOPATH=${PWD}/go
 export PATH=$GOPATH/bin:$PATH
 
-# install glide because drats doesn't
-mkdir -p $GOPATH/bin
-curl https://glide.sh/get | sh
+# install dep because drats doesn't
+curl -L -o /usr/local/bin/dep https://github.com/golang/dep/releases/download/v0.3.1/dep-linux-amd64 && chmod +x /usr/local/bin/dep
+
 curl -L -o /usr/local/bin/bosh-cli https://s3.amazonaws.com/bosh-cli-artifacts/bosh-cli-2.0.17-linux-amd64 && chmod +x /usr/local/bin/bosh-cli
 
 pushd deployments-repo/environments/$ENVIRONMENT_NAME > /dev/null
