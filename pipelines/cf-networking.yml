@@ -154,6 +154,10 @@ resources:
       uri: git@github.com:cloudfoundry/cf-networking-release.git
       branch: master
       private_key: {{cf-networking-deploy-key}}
+  - name: service-discovery-master
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry-incubator/service-discovery-release
   ###### Pinned versions
   - name: cf-networking-pinned
     type: git
@@ -1143,6 +1147,7 @@ jobs:
       - get: cf-deployment
       - get: cf-networking-ci
       - get: cf-networking-deployments
+      - get: service-discovery-master
       - get: cf-networking-dev
         passed: [unit-and-integration-tests]
         trigger: true
@@ -1154,6 +1159,14 @@ jobs:
         cf-deployment: cf-deployment
       params:
         BBL_STATE_DIR: environments/toque
+    - task: upload-local-service-discovery-release
+      file: service-discovery-master/ci/tasks/upload-local-release.yml
+      input_mapping:
+        bbl-state: cf-networking-deployments
+        local-release: service-discovery-master
+        service-discovery-release: service-discovery-master
+      params:
+        BBL_STATE_DIR: environments/toque/
     - task: collect-ops-files
       file: cf-networking-ci/tasks/collect-ops-files.yml
       params:
@@ -1166,7 +1179,7 @@ jobs:
       params:
         BBL_STATE_DIR: environments/toque
         SYSTEM_DOMAIN: toque.c2c.cf-app.com
-        OPS_FILES: use-compiled-releases.yml datadog.yml cf-networking.yml opsfile.yml
+        OPS_FILES: use-compiled-releases.yml datadog.yml cf-networking.yml use-bosh-dns-for-containers.yml use-bosh-dns.yml opsfile.yml # TODO Add service-discvoery stuff to opsfile
         VARS_STORE_FILE: environments/toque/vars-store.yml
       input_mapping:
         bbl-state: cf-networking-deployments
