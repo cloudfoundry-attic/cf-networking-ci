@@ -27,5 +27,5 @@ pushd deployments-repo/environments/$ENVIRONMENT_NAME > /dev/null
 popd
 
 pushd $GOPATH/src/github.com/cloudfoundry-incubator/disaster-recovery-acceptance-tests > /dev/null
-  ./scripts/run_acceptance_tests.sh
+  ./scripts/_run_acceptance_tests.sh
 popd
