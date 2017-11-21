@@ -154,10 +154,10 @@ resources:
       uri: git@github.com:cloudfoundry/cf-networking-release.git
       branch: master
       private_key: {{cf-networking-deploy-key}}
-  - name: service-discovery-master
+  - name: cf-app-sd-master
     type: git
     source:
-      uri: https://github.com/cloudfoundry-incubator/service-discovery-release
+      uri: https://github.com/cloudfoundry/cf-app-sd-release
   ###### Pinned versions
   - name: cf-networking-pinned
     type: git
@@ -1148,7 +1148,7 @@ jobs:
       - get: cf-deployment
       - get: cf-networking-ci
       - get: cf-networking-deployments
-      - get: service-discovery-master
+      - get: cf-app-sd-master
       - get: cf-networking-dev
         passed: [unit-and-integration-tests]
         trigger: true
@@ -1160,12 +1160,12 @@ jobs:
         cf-deployment: cf-deployment
       params:
         BBL_STATE_DIR: environments/toque
-    - task: upload-local-service-discovery-release
-      file: service-discovery-master/ci/tasks/upload-local-release.yml
+    - task: upload-local-cf-app-sd-release
+      file: cf-app-sd-master/ci/tasks/upload-local-release.yml
       input_mapping:
         bbl-state: cf-networking-deployments
-        local-release: service-discovery-master
-        service-discovery-release: service-discovery-master
+        local-release: cf-app-sd-master
+        cf-app-sd-release: cf-app-sd-master
       params:
         BBL_STATE_DIR: environments/toque/
     - task: collect-ops-files
