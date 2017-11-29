@@ -1,3 +1,7 @@
+# DEPRECATED
+We added the ci code to our [cf-networking-release repo](https://github.com/cloudfoundry/cf-networking-release) so they will be versioned in lock-step.
+The `pinned` branch of this repo is still being used by our ci code.
+
 # cf-networking-ci
 Public config for the Container Networking team's CI
 
